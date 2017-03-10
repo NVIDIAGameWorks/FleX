@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<XPJ version="4">
+
+  <Project name="flexExtD3D">
+
+    <!-- depends on flex solver project -->
+    <Conditional value="${config}" match="internal">
+      <Import file="../../../src/compiler/xpj/flexD3D.xpj" />
+    </Conditional>
+
+    <Export platforms="Win32 Win64">../${xpj:TOOL}${xpj:PLATFORM}</Export>
+
+    <Target name="flexExtD3D">
+
+      <Var name="ProjectRoot" value="../../.." />
+
+      <!-- Windows -->
+
+      <Config name="default" type="dll" platforms="Win32 Win64">
+
+        <OutDir platform="Win32">../../../bin/win32/</OutDir>
+        <OutDir platform="Win64">../../../bin/win64/</OutDir>
+
+        <Preprocessor type="define">
+          _CONSOLE
+          WIN32
+        </Preprocessor>
+
+        <WarningLevel>3</WarningLevel>
+        <GenerateDebugInformation>true</GenerateDebugInformation>
+        <CharacterSet>MultiByte</CharacterSet>
+
+        <SearchPaths type="header">
+          ..\..\..\..\..
+        </SearchPaths>
+
+        <Libraries>
+          kernel32.lib
+          user32.lib
+          gdi32.lib
+          winspool.lib
+          comdlg32.lib
+          advapi32.lib
+          shell32.lib
+          ole32.lib
+          oleaut32.lib
+          uuid.lib
+          odbc32.lib
+          odbccp32.lib
+          delayimp.lib
+        </Libraries>
+
+      <LFlags>/DELAYLOAD:d3d11.dll /DELAYLOAD:d3d12.dll</LFlags>
+
+
+      </Config>
+
+      <Config name="debug" type="dll" platforms="Win32 Win64">
+
+        <OutFile platform="Win32">NvFlexExtDebugD3D_x86.dll</OutFile>
+        <OutFile platform="Win64">NvFlexExtDebugD3D_x64.dll</OutFile>
+
+        <IntDir>./build/${xpj:PLATFORM}/DX/debug/</IntDir>
+
+        <Preprocessor type="define">
+          _DEBUG
+        </Preprocessor>
+        <Preprocessor type="define">
+          _ITERATOR_DEBUG_LEVEL=0
+        </Preprocessor>
+        <RuntimeLibrary>MTd</RuntimeLibrary>
+        <GenerateDebugInformation>true</GenerateDebugInformation>
+        <FloatingPointModel>Precise</FloatingPointModel>
+        <ExportLibrary platform="Win32">..\..\..\lib\win32\NvFlexExtDebugD3D_x86.lib</ExportLibrary>
+        <ExportLibrary platform="Win64">..\..\..\lib\win64\NvFlexExtDebugD3D_x64.lib</ExportLibrary>
+
+        <Libraries platforms="Win32">
+          ${user:ProjectRoot}/lib/win32/NvFlexDebugD3D_x86.lib
+        </Libraries>
+
+        <Libraries platforms="Win64">
+          ${user:ProjectRoot}/lib/win64/NvFlexDebugD3D_x64.lib
+        </Libraries>
+
+      </Config>
+
+      <Config name="release" type="dll" platforms="Win32 Win64">
+
+        <OutFile platform="Win32">NvFlexExtReleaseD3D_x86.dll</OutFile>
+        <OutFile platform="Win64">NvFlexExtReleaseD3D_x64.dll</OutFile>
+
+        <IntDir>./build/${xpj:PLATFORM}/DX/release/</IntDir>
+
+        <Preprocessor type="define">
+          NDEBUG
+        </Preprocessor>
+        <RuntimeLibrary>MT</RuntimeLibrary>
+        <WholeProgramOptimization>1</WholeProgramOptimization>
+        <Optimization>3</Optimization>
+        <EnableIntrinsicFunctions>true</EnableIntrinsicFunctions>
+        <BufferSecurityCheck>false</BufferSecurityCheck>
+        <EnableFunctionLevelLinking>true</EnableFunctionLevelLinking>
+        <FloatingPointModel>Fast</FloatingPointModel>
+
+        <ExportLibrary platform="Win32">..\..\..\lib\win32\NvFlexExtReleaseD3D_x86.lib</ExportLibrary>
+        <ExportLibrary platform="Win64">..\..\..\lib\win64\NvFlexExtReleaseD3D_x64.lib</ExportLibrary>
+
+        <Libraries platforms="Win32">
+          ${user:ProjectRoot}/lib/win32/NvFlexReleaseD3D_x86.lib
+        </Libraries>
+
+        <Libraries platforms="Win64">
+          ${user:ProjectRoot}/lib/win64/NvFlexReleaseD3D_x64.lib
+        </Libraries>
+
+      </Config>
+
+
+      <SearchPaths type="header">
+        ..\..\..\
+        ..\..\..\external\D3D11\include
+        ..\..\..\external\D3D12\include
+      </SearchPaths>
+
+      <SearchPaths type="lib" platform="Win32">
+        ..\..\..\external\D3D11\libs\x86
+        ..\..\..\external\D3D12\libs\x86
+        ..\..\..\lib\win32
+      </SearchPaths>
+
+      <SearchPaths type="lib" platform="Win64">
+        ..\..\..\external\D3D11\libs\x64
+        ..\..\..\external\D3D12\libs\x64
+        ..\..\..\lib\win64
+      </SearchPaths>      
+      
+      <!-- Source -->
+
+      <Files name="Core" type="source" root="${user:ProjectRoot}/core">
+        sdf.cpp
+        voxelize.cpp
+        maths.cpp
+        aabbtree.cpp
+      </Files>
+
+      <Files name="src" type="source" root="${user:ProjectRoot}/extensions/dx">
+        flexExt.cpp
+        flexExt.hlsl
+        flexExt_dx_common.h
+      </Files>
+
+      <Files name="src" type="source" root="${user:ProjectRoot}/include">
+        flexExt.h
+      </Files>
+
+      <Files name="src" type="source" root="${user:ProjectRoot}/extensions">
+        flexExtCloth.cpp
+        flexExtRigid.cpp
+        flexExtSoft.cpp
+        flexExtMovingFrame.cpp
+        flexExtContainer.cpp
+      </Files>
+
+      <HLSL Configurations="release" DisableOptim="No" Debug="No" ShaderModel="5.0" Platforms="Win32 Win64" ObjectFileOutput=" " WarningAsErrors="false" OutputHeaderFileName="${user:ProjectRoot}/extensions/dx/shaders/%(Filename).h">
+        <File  ShaderType="Compute" EntryPoint="UpdateForceFields::execute" OutputHeaderVarName="g_flexExt_UpdateForceFields"> "${user:ProjectRoot}/extensions/dx/shaders/flexExt.UpdateForceFields.hlsl" </File>
+      </HLSL>
+
+    <Conditional value="${config}" match="internal">
+      <Dependencies>
+        flexD3D
+      </Dependencies>
+    </Conditional>
+
+    </Target>
+  </Project>
+</XPJ>

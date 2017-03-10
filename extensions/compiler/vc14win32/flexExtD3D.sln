@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "flexExtD3D", "./flexExtD3D.vcxproj", "{9B42889D-2F0D-0378-E87E-82C8D918DB4D}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		debug|Win32 = debug|Win32
+		release|Win32 = release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9B42889D-2F0D-0378-E87E-82C8D918DB4D}.debug|Win32.ActiveCfg = debug|Win32
+		{9B42889D-2F0D-0378-E87E-82C8D918DB4D}.debug|Win32.Build.0 = debug|Win32
+		{9B42889D-2F0D-0378-E87E-82C8D918DB4D}.release|Win32.ActiveCfg = release|Win32
+		{9B42889D-2F0D-0378-E87E-82C8D918DB4D}.release|Win32.Build.0 = release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddins) = postSolution
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+	EndGlobalSection
+EndGlobal

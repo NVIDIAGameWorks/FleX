@@ -1,0 +1,171 @@
+1.1.0
+-----
+
+- New API style, for consistency with other products the API has now an NvFlex prefix and follows a naming convention similar to PhysX
+- Add support for DirectX, in addition to CUDA there is now a cross platform DirectX 11 and 12 version of the Flex libraries that Windows applications can link against
+- Add support for max acceleration clamping, see NvFlexParams::maxAcceleration, can be useful to reduce popping with fast moving kinematic shapes and large interpenetration
+- Add support to querying compute device, see NvFlexGetDeviceName()
+- Add support for flushing compute queue, see NvFlexFlush()
+- Add support for multiple library instances, NvFlexInit() now returns a library which is bound to a single compute device
+- Add support for local space particle simulation, see NvFlexExtMovingFrameInit() and two new local space fluid and cloth demos
+- Add support for CUDA 8.0.44
+- Remove NvFlexError enum, errors will be reported through the NvFlexErrorCallback passed to NvFlexInit()
+- Remove NvFlexMemory enum, users should use the new NvFlexBufferType
+- Fix bug in inflatable constraint solver that could cause some shapes to generate NaNs
+- Fix for SDF contact generation when the particle lies completely outside volume, fixes a problem with ghost contacts
+- Fix for friction being incorrectly applied on trigger shapes
+- Fix for multi-phase fluid cohesion not working correctly, re-enable Rayleigh-Taylor instability test
+- Fix bug with public projects that referenced internal CUDA paths 
+- Fix for calling NvFlexSetInflatables() with a count of zero
+- Fix for buoyancy parameter
+- Fix for bug in BVH builder that could cause missed collisions
+- New optional NvFlexDevice library for handling GPU selection and initialization in CUDA
+- New buffer based API, all data must now be passed to Flex through FlexBuffers created through NvFlexAllocBuffer()
+- New stable shape matching code for more robust and efficient soft bodies, removes need for NvFlexParams::inertiaBias
+- New collision shape API supports instancing of convex meshes and a much simplified API, see NvFlexSetShapes()
+- Improvements to collision detection for moving shapes, Flex will now perform a CCD check also taking into account the shape trajectory using the prev/current transforms of each shape
+
+1.0.0
+-----
+
+- Added support for reporting collision shape ids, and trigger volume shapes, see flexGetContacts()
+- Optimizations to host code performance
+- Fix for potential memory leak in SDF object destruction
+- Fix for potentially missed collisions during convex shape CCD
+- Fix for incorrect bounds computation during flexSetShapes() (if not specified by user)
+- Fix for initial shape translations being incorrect when using a transform with flexExtCreateInstance()
+- Move flexExt.h header to the /include folder
+
+0.9.5
+-----
+
+- Fix for NaNs being generated during shape matching with plastic deformation enabled
+- Fix for bug that could lead to translational drifting of shape matched rigid bodies
+- Fix for incorrect interaction of restitution and friction when using the collision margin parameters
+- New geometry instancing API for specifying collision shapes, adds support for transformed triangle meshes and signed distance fields, see flexSetShapes()
+- New BVH based collision detection improves performance for scenes with large triangle meshes
+- New mesh tearing API, see flexExtTearClothMesh()
+- New CCD collision detection for particle versus convex shape, helps reduce tunneling with thin convexes
+- Performance improvements for soft body cooking times in flexExtCreateSoftFromMesh()
+- Exposed intertial bias for shape matching constraints, see FlexParams::mInertiaBias
+- Exposed parameter to control the lifetime of diffuse particles, see FlexParams::mDiffuseLifetime
+
+0.9.0
+-----
+
+- Added support for soft bodies, particles can now belong to multiple shape-matching clusters used to drive linear blend skinning
+- Added support for particle rest positions that can be used to filter collisions between particles that touch in their rest pose, see flexSetRestPositions()
+- Added support for spheres and capsules as collision shapes, renamed flexSetConvexes() to flexSetShapes()
+- Added support for user callbacks, these can be used to implement custom constraints, force fields, etc. See flexRegisterSolverCallback()
+- Added support for the NVIDIA control panel, Flex will now use the selected PhysX device if desired, see flexInit() for details
+- Added support for Android platforms
+- Added flexGetParams() method to retrieve default values and set defaults to sensible values
+- Improved shape-matching algorithm with better inversion handling
+- Optimizations for flexSetTriangles(), users can now pass the triangle bounds to avoid having them re-calculated explicitly
+- Rigid constraints now use quaternions as their orientation representation, see flexSetRigids() and flexGetRigidTransforms()
+- Exposed anisotropy min/max clamping for better control of particle fluid rendering, see FlexParams::mAnisotropyMin and FlexParams::mAnisotropyMax
+- Fix for smooth particles not being generated if anisotropy was not enabled
+- Fix for demo mouse picking 
+- Fix for flexGetContacts() returning incorrect values, added contact visualization to the demo app
+- Fix for bug in flexGetBounds() which meant it could return bounds with one frame delay, users should now synchronize the flexGetBounds() call like other query methods
+- Fix whitespace on flex.h to play nice with Github's code view
+- Fix for triangle mesh collision when particle moves in the plane of the triangle incorrectly reporting contact
+- Fix leak when destroying solver
+- Fix for incomplete initialization of FlexExtAssets in the extension creation methods
+- Rename FlexParams::mMaxVelocity -> FlexParams::mMaxSpeed
+
+0.8.0
+-----
+
+- Upgrade to CUDA 7.0
+- Linux binaries are now compiled with -fPIC
+- Fix for extensions library not writing velocities correctly
+- Fix for memory leak when using moving convex shapes
+- Optimizations for inflatable constraints to reduce number of kernel launches
+- Added option to control the max number of neighbors stored per-particle, this can reduce memory usage, see flexCreateSolver()
+
+0.2.5
+-----
+
+- Fix for vertex normal calculation when using sparse active particle set
+- Fix for division by zero in rest density calculation when fluid rest distance was 0.0
+- Fix for infinite mass particles being moved by kinematic objects
+- Added CUDA force fields to extensions library, see flexExtSetForceFields()
+- Added particle contact reporting API, see flexGetContacts()
+- Added early out to avoid Laplacian smoothing and anisotropy calculation if not using them
+- Added global damping parameter to model viscous drag on particles (not just cloth), see FlexParams::mDamping
+- Added user manual in pdf and chm formats
+- Made enum names consistent, eFlexHost -> eFlexMemoryHost
+- Upgraded to CUB 1.3.2
+- Extended particle phase parameters to allow fine grained control over self-collision and fluid properties, see flexMakePhase()
+
+0.2.3
+-----
+
+- Switched to bindless textures, 50% reduction in CPU usage, because of this change Flex now requires an SM3.0 or above GPU
+- Optimized convex grid rasterization by assigning 4 warps/shape, reduces time from 1ms->0.25ms for large shapes
+- Added error mesasge callback, see flexInit()
+- Added flexSetFence()/flexWaitFence() for more fine grained synchronization with Flex GPU work, flexSynchronize() has been removed
+- Added static/dynamic flags for convex shapes to allow prioritising static contacts over dynamic, can be useful to prevent tunnelling through thin shapes
+- Added local/global relaxation to improve convergence for some scenes (see FlexParams::eRelaxationMode)
+- Removed flexGetVorticities(), allows optimizations for vorticity confinement calculation
+- Fix for flexSetSprings(), flexSetTriangles(), and flexSetConvexes() reallocing more often than necessary
+- Fix for flexGetDensities(), and flexGetAnisotropy() not returning the full particle array if using sparse active set
+- Fix for memory leak when instance creation fails in flexExtCreateInstance()
+- Fix for memory leak when setting rigid bodies multiple times
+- Fix for potential GPU crash when using plastic deformation on rigid bodies
+- Smooth vertex normals are now computed for particles belonging to dynamic triangles (cloth), they can be retrieved via flexGetNormals()
+- Optimized CompactObjects in flexExtPushToDevice()
+- Made headers compile with /W4 on MSVC
+- Added debug capture functionality
+
+0.2.2
+-----
+
+- Fix for infinite mass particles gaining velocity during collisions
+- Fix bug with planar triangle mesh rasterization
+- Fix for zero-length distance constraints
+- Fix cloth drag and lift causing instability at high velocities
+- Fix for convex grid perf. when there is a single large convex body
+- Improved behaviour when particles are overconstrained (constraint averaging), can reduce jitter for pinned cloth
+- Improved adhesion behaviour for fluids against solids
+- Improved restitution behavior
+- Improved fluid rendering performance by using a smaller bilateral filter kernel
+- Change particle friction to be an absolute parameter instead of a multiplier on dynamic friction
+- Change sort to use async device-device memcpys to avoid stalling host
+- Exposed new parameter to control collision margin against shapes see FlexParams::mShapeCollisionMargin 
+- Warning fixes for Linux and Windows
+- Fix z-precision rendering issues in demo
+- Added "Ext" prefix to extensions types
+- Clamp particle velocity to maximum user velocity before prediction step, improves behaviour when interacting with force fields
+
+0.2.1
+-----
+
+- Add support for lower dimensional particle rigid bodies (rods, planes)
+- Allow specifying rigid rotations through the solver API
+- Allow separate control of fluid and solid rest distances
+- Add GUI to demo
+
+0.2.0
+-----
+
+- Fix for rest density calculation when number of neighbors > than max
+- Add support for async memory copies back to pinned host memory
+- Add functions to allocate pinned host memory, see flexAlloc()
+- Add rigid body support to FlexExtensions
+- Add rigid body SDF collision support
+- Add position level friction
+- Static triangle grid now created on the GPU, see flexSetTriangles
+- Unify triangle collision with rest of the pipline
+- Exposed a new parameter to run a second collision pass against triangle meshes, see FlexParam::mEnableCCD
+- Optimized rigid body solve using CUB parallel reductions
+- Fix for solve springs when some particles have infinite mass
+- Reduce allocations in flexSetConvexes
+- Fix plastic deformation for rigids
+- Switch to /MT for FlexExtensions library
+
+0.1.0
+-----
+
+Initial release

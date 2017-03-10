@@ -1,0 +1,68 @@
+a.headerlink {
+    color: #ffffff;
+    font-size: 0.8em;
+    padding: 0 4px 0 4px;
+    text-decoration: none;
+}
+
+a.headerlink:hover {
+    background-color: #ffffff;
+    color: #c60f0f;
+}
+
+#sidebar_toc ul {
+    list-style-type: none;
+    padding-left: 10px;
+}
+
+.toc_handle {
+    background         : transparent
+    url(space.gif);
+    background-repeat  : no-repeat;
+    background-position: center bottom;
+    display   : block;
+    float     : left;
+    width     : 14px;
+    height    : 19px;
+}
+
+.toc_collapsed {
+    background         : transparent
+    url(expand.png);
+    background-repeat  : no-repeat;
+    background-position: center bottom;
+    cursor             : pointer;
+}
+
+.toc_expanded {
+    background         : transparent
+    url(collapse.png);
+    background-repeat  : no-repeat;
+    background-position: center bottom;
+    cursor             : pointer;
+}
+
+body {
+    -webkit-animation-duration: 0.1s;
+	-webkit-animation-name: fontfix;
+	-webkit-animation-iteration-count: 1;
+	-webkit-animation-timing-function: linear;
+	-webkit-animation-delay: 0.5s;
+}
+
+@-webkit-keyframes fontfix{
+	from{ 	opacity: 1; }
+	to{	opacity: 1; }
+}
+
+img.floatleft{
+  float: left
+}
+
+img.floatright{
+  float:right
+}
+
+img.floatcenter{
+  float:center
+}

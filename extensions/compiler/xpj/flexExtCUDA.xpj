@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<XPJ version="4">
+
+	<template filename="../../../common.xpjt"/>
+
+	<Project name="flexExtCUDA">
+
+		<!-- depends on flex solver project -->
+		<Conditional value="${config}" match="internal">
+			<Import file="../../../src/compiler/xpj/flexCUDA.xpj" />
+		</Conditional>
+
+		<Export platforms="Win32 Win64">../${xpj:TOOL}${xpj:PLATFORM}</Export>
+		<Export platform="android{x}" tool="make">../makeandroid</Export>
+		<Export platform="Linux64" tool="make">../makelinux64</Export>
+
+		<Target name="flexExtCUDA">
+
+			<Var name="ProjectRoot" value="../../.." />
+			
+			<!-- Windows -->
+
+			<Config name="default" type="dll" platforms="Win32 Win64">
+
+				<apply-template name="windows-common"/>				
+
+				<OutDir platform="Win32">../../../bin/win32/</OutDir>
+				<OutDir platform="Win64">../../../bin/win64/</OutDir>
+
+				<Preprocessor type="define">
+					_CONSOLE 
+					WIN32
+				</Preprocessor>
+
+				<WarningLevel>3</WarningLevel>
+				<GenerateDebugInformation>true</GenerateDebugInformation>
+				<CharacterSet>MultiByte</CharacterSet>
+				
+				<SearchPaths type="header">
+					..\..\..\..\..
+				</SearchPaths>
+
+				<Libraries>
+				cudart.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib
+				</Libraries>
+				
+			</Config>
+
+			<Config name="debug" type="dll" platforms="Win32 Win64">
+
+				<apply-template name="windows-common"/>				
+
+				<OutFile platform="Win32">NvFlexExtDebugCUDA_x86.dll</OutFile>
+				<OutFile platform="Win64">NvFlexExtDebugCUDA_x64.dll</OutFile>
+
+				<IntDir>./build/${xpj:PLATFORM}/debug/</IntDir>
+
+				<Preprocessor type="define">
+					_DEBUG
+				</Preprocessor>
+				<Preprocessor type="define">
+					_ITERATOR_DEBUG_LEVEL=0
+				</Preprocessor>
+				<RuntimeLibrary>MTd</RuntimeLibrary>
+				<GenerateDebugInformation>true</GenerateDebugInformation>
+				<FloatingPointModel>Precise</FloatingPointModel>
+				<ExportLibrary platform="Win32">..\..\..\lib\win32\NvFlexExtDebugCUDA_x86.lib</ExportLibrary>
+				<ExportLibrary platform="Win64">..\..\..\lib\win64\NvFlexExtDebugCUDA_x64.lib</ExportLibrary>
+
+				<FileTemplate platform="Win32" name="cuda" command="&quot;${user:CUDA_PATH}\bin\nvcc.exe&quot; -g -G --compiler-bindir=&quot;$(VCInstallDir)bin&quot; --compiler-options=/MTd,/Zi -I&quot;..\..\..&quot; -D_ITERATOR_DEBUG_LEVEL=0 -DCUDA -m32 -arch=sm_30 -prec-div=false -prec-sqrt=false -ftz=true -use_fast_math -c %s -o %o" buildtype="CustomBuild" filetype="cuda" description="Building %(Identity)" />
+				<FileTemplate platform="Win64" name="cuda" command="&quot;${user:CUDA_PATH}\bin\nvcc.exe&quot; -g -G --compiler-bindir=&quot;$(VCInstallDir)bin&quot; --compiler-options=/MTd,/Zi -I&quot;..\..\..&quot; -D_ITERATOR_DEBUG_LEVEL=0 -DCUDA -arch=sm_30 -prec-div=false -prec-sqrt=false -ftz=true -use_fast_math -c %s -o %o" buildtype="CustomBuild" filetype="cuda" description="Building %(Identity)" />
+
+				<Libraries platforms="Win32">
+					${user:ProjectRoot}/lib/win32/NvFlexDebugCUDA_x86.lib
+				</Libraries>
+
+				<Libraries platforms="Win64">
+					${user:ProjectRoot}/lib/win64/NvFlexDebugCUDA_x64.lib
+				</Libraries>
+
+			</Config>
+
+			<Config name="release" type="dll" platforms="Win32 Win64">
+
+				<apply-template name="windows-common"/>				
+
+				<OutFile platform="Win32">NvFlexExtReleaseCUDA_x86.dll</OutFile>
+				<OutFile platform="Win64">NvFlexExtReleaseCUDA_x64.dll</OutFile>
+
+				<IntDir>./build/${xpj:PLATFORM}/release/</IntDir>
+
+				<Preprocessor type="define">
+					NDEBUG
+				</Preprocessor>
+				<RuntimeLibrary>MT</RuntimeLibrary>
+				<WholeProgramOptimization>1</WholeProgramOptimization>
+				<Optimization>3</Optimization>
+				<EnableIntrinsicFunctions>true</EnableIntrinsicFunctions>
+				<BufferSecurityCheck>false</BufferSecurityCheck>
+				<EnableFunctionLevelLinking>true</EnableFunctionLevelLinking>
+				<EnableEnhancedInstructionSet>2</EnableEnhancedInstructionSet>
+				<FloatingPointModel>Fast</FloatingPointModel>
+
+				<ExportLibrary platform="Win32">..\..\..\lib\win32\NvFlexExtReleaseCUDA_x86.lib</ExportLibrary>
+				<ExportLibrary platform="Win64">..\..\..\lib\win64\NvFlexExtReleaseCUDA_x64.lib</ExportLibrary>
+
+				<FileTemplate platform="Win32" name="cuda" command="&quot;${user:CUDA_PATH}\bin\nvcc.exe&quot; -O3 --compiler-bindir=&quot;$(VCInstallDir)bin&quot;  --compiler-options=/MT,/Zi -I&quot;..\..\..&quot; -D_ITERATOR_DEBUG_LEVEL=0 -DNDEBUG -DCUDA -m32 -arch=sm_30 -prec-div=false -prec-sqrt=false -ftz=true -use_fast_math -c %s -o %o" buildtype="CustomBuild" filetype="cuda" description="Building %(Identity)" />
+				<FileTemplate platform="Win64" name="cuda" command="&quot;${user:CUDA_PATH}\bin\nvcc.exe&quot; -O3 --compiler-bindir=&quot;$(VCInstallDir)bin&quot;  --compiler-options=/MT,/Zi -I&quot;..\..\..&quot; -D_ITERATOR_DEBUG_LEVEL=0 -DNDEBUG -DCUDA -arch=sm_30 -prec-div=false -prec-sqrt=false -ftz=true -use_fast_math -c %s -o %o" buildtype="CustomBuild" filetype="cuda" description="Building %(Identity)" />
+
+				<Libraries platforms="Win32">
+					${user:ProjectRoot}/lib/win32/NvFlexReleaseCUDA_x86.lib
+				</Libraries>
+
+				<Libraries platforms="Win64">
+					${user:ProjectRoot}/lib/win64/NvFlexReleaseCUDA_x64.lib
+				</Libraries>
+
+			</Config>
+
+			<!-- Android -->
+
+			<Config name="default" type="lib" platforms="android{x}">
+
+				<apply-template name="android-common"/>
+
+				<FileTemplate name="cuda" command='${user:NVCC} ${user:NVCCInclude} --compile "%s" -o "%o"' buildtype="CustomBuild" />
+
+				<OutDir platforms="android{x}" tool="make">${user:ProjectRoot}/lib/android</OutDir>
+
+				<Preprocessor type="define" platform="android{x}">
+					android 
+					ANDROID=1
+					ANDROID_PLAT=1
+					DISABLE_IMPORTGL
+				</Preprocessor>
+
+				<CFlags tool="make">
+					-Wall -std=c++11 -fpermissive -fno-strict-aliasing -fno-rtti -fno-exceptions
+				</CFlags>
+
+			</Config>
+
+			<Config name="release" type="lib" platforms="android{x}">
+				<cflags> -O3 -ffast-math </cflags>
+				<OutFile>libflexExt_cuda_release_armv7l.a</OutFile>
+
+				<Libraries>
+					${user:ProjectRoot}/lib/android/libNvFlexRelease_armv7l.a
+				</Libraries>
+
+			</Config>
+
+			<Config name="debug" type="lib" platforms="android{x}">
+				<cflags> -g -O0 </cflags>
+				<OutFile>libflexExt_cuda_debug_armv7l.a</OutFile>
+
+				<Libraries>
+					${user:ProjectRoot}/lib/android/libNvFlexDebug_armv7l.a
+				</Libraries>
+
+			</Config>
+
+
+			<!-- Linux -->
+			   
+			<Config name="default" type="lib" platforms="linux64">
+				
+				<apply-template name="linux-common"/>				
+
+				<Var name="Cub" value="${user:External}/cub-1.3.2"/>
+				<var name="GCC" value="g++"/>
+				<var name="NVCC" value='${user:CUDA_PATH}/bin/nvcc -O3 -g -arch=sm_30 -m64 -Xcompiler -fPIC -D_FORCE_INLINES'/>
+				<var name="NVCCInclude" value=' -I${user:ProjectRoot} -I${user:External} -I${user:CUDA_PATH}/include -I${user:Cub} '/>
+			
+				<FileTemplate name="cuda" command='${user:NVCC} ${user:NVCCInclude} --compile "%s" -o "%o"' buildtype="CustomBuild"/>
+
+				<OutDir platforms="linux64" tool="make">${user:ProjectRoot}/lib/linux64</OutDir>
+
+				<SearchPaths type="header" tool="make">
+					"${user:ProjectRoot}"
+					"${user:External}/freeglut/include"
+				</SearchPaths>
+
+				<CFlags tool="make">
+					-Wall -std=c++0x -fPIC -fpermissive -fno-strict-aliasing
+				</CFlags>
+			</Config>      
+
+			<Config name="release" type="lib" platforms="linux64">
+				<cflags> -O3 -ffast-math -DNDEBUG</cflags>
+		        <OutFile>NvFlexExtReleaseCUDA_x64.a</OutFile>
+					
+				<Libraries>
+					${user:ProjectRoot}/lib/linux64/NvFlexReleaseCUDA_x64.a
+				</Libraries>
+
+			</Config>
+			
+			<Config name="debug" type="lib" platforms="linux64">
+				<cflags> -g -O0  </cflags>
+		        <OutFile>NvFlexExtDebugCUDA_x64.a</OutFile>
+
+				<Libraries>
+					${user:ProjectRoot}/lib/linux64/NvFlexDebugCUDA_x64.a
+				</Libraries>
+			</Config>
+
+			<!-- Source -->
+			
+			<Files name="src" type="source" root="${user:ProjectRoot}/extensions">
+				*.cpp *.h
+			</Files>
+
+			<Files name="cuda" type="source" root="${user:ProjectRoot}/extensions/cuda" template="cuda">
+				*.cu
+			</Files>		
+			
+			<Files name="include" type="source" root="${user:ProjectRoot}/include">
+				flexExt.h
+			</Files>
+
+			<Files name="core" type="source" root="${user:ProjectRoot}/core">
+				sdf.cpp
+				voxelize.cpp
+				maths.cpp
+				aabbtree.cpp
+			</Files>
+
+			<Conditional value="${config}" match="internal">
+				<Dependencies>
+					flexCUDA
+				</Dependencies>
+			</Conditional>
+
+		</Target>
+	</Project>
+
+</XPJ>

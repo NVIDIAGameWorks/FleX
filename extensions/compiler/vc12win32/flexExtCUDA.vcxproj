@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup Label="ProjectConfigurations">
+		<ProjectConfiguration Include="debug|Win32">
+			<Configuration>debug</Configuration>
+			<Platform>Win32</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="release|Win32">
+			<Configuration>release</Configuration>
+			<Platform>Win32</Platform>
+		</ProjectConfiguration>
+	</ItemGroup>
+	<PropertyGroup Label="Globals">
+		<ProjectGuid>{FD4C9C06-7BEC-CDF8-C631-CD32A428A280}</ProjectGuid>
+		<RootNamespace>flexExtCUDA</RootNamespace>
+	</PropertyGroup>
+	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug|Win32'" Label="Configuration">
+		<ConfigurationType>DynamicLibrary</ConfigurationType>
+		<PlatformToolset>v120</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|Win32'" Label="Configuration">
+		<ConfigurationType>DynamicLibrary</ConfigurationType>
+		<PlatformToolset>v120</PlatformToolset>
+		<WholeProgramOptimization>true</WholeProgramOptimization>
+	</PropertyGroup>
+	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+	<ImportGroup Label="ExtensionSettings">
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='release|Win32'">
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">
+		<OutDir>./../../../bin/win32\</OutDir>
+		<IntDir>./build/win32/debug\</IntDir>
+		<TargetExt>.dll</TargetExt>
+		<TargetName>NvFlexExtDebugCUDA_x86</TargetName>
+		<CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+		<CodeAnalysisRules />
+		<CodeAnalysisRuleAssemblies />
+		<SkipCopyingSymbolsToOutputDirectory>true</SkipCopyingSymbolsToOutputDirectory>
+	</PropertyGroup>
+	<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">
+		<ClCompile>
+			<FloatingPointModel>Precise</FloatingPointModel>
+			<AdditionalOptions> /d2Zi+</AdditionalOptions>
+			<Optimization>Disabled</Optimization>
+			<AdditionalIncludeDirectories>$(CUDA_PATH)/include;$(CUDA_PATH)/extras/cupti/include;./../../../../..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+			<PreprocessorDefinitions>_CONSOLE;WIN32;_DEBUG;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+			<WarningLevel>Level3</WarningLevel>
+			<RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+			<PrecompiledHeader>NotUsing</PrecompiledHeader>
+			<PrecompiledHeaderFile></PrecompiledHeaderFile>
+		</ClCompile>
+		<Link>
+			<AdditionalDependencies>cudart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;./../../../lib/win32/NvFlexDebugCUDA_x86.lib;%(AdditionalDependencies)</AdditionalDependencies>
+			<OutputFile>$(OutDir)NvFlexExtDebugCUDA_x86.dll</OutputFile>
+			<AdditionalLibraryDirectories>$(CUDA_PATH)/lib/win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+			<ProgramDatabaseFile>$(OutDir)/NvFlexExtDebugCUDA_x86.dll.pdb</ProgramDatabaseFile>
+			<SubSystem>Console</SubSystem>
+			<ImportLibrary>./../../../lib/win32/NvFlexExtDebugCUDA_x86.lib</ImportLibrary>
+			<GenerateDebugInformation>true</GenerateDebugInformation>
+			<TargetMachine>MachineX86</TargetMachine>
+		</Link>
+		<ResourceCompile>
+		</ResourceCompile>
+		<ProjectReference>
+		</ProjectReference>
+	</ItemDefinitionGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|Win32'">
+		<OutDir>./../../../bin/win32\</OutDir>
+		<IntDir>./build/win32/release\</IntDir>
+		<TargetExt>.dll</TargetExt>
+		<TargetName>NvFlexExtReleaseCUDA_x86</TargetName>
+		<CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+		<CodeAnalysisRules />
+		<CodeAnalysisRuleAssemblies />
+		<SkipCopyingSymbolsToOutputDirectory>true</SkipCopyingSymbolsToOutputDirectory>
+	</PropertyGroup>
+	<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='release|Win32'">
+		<ClCompile>
+			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+			<IntrinsicFunctions>true</IntrinsicFunctions>
+			<FunctionLevelLinking>true</FunctionLevelLinking>
+			<BufferSecurityCheck>false</BufferSecurityCheck>
+			<FloatingPointModel>Fast</FloatingPointModel>
+			<AdditionalOptions> /d2Zi+</AdditionalOptions>
+			<Optimization>Full</Optimization>
+			<AdditionalIncludeDirectories>$(CUDA_PATH)/include;$(CUDA_PATH)/extras/cupti/include;./../../../../..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+			<PreprocessorDefinitions>_CONSOLE;WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+			<WarningLevel>Level3</WarningLevel>
+			<RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+			<PrecompiledHeader>NotUsing</PrecompiledHeader>
+			<PrecompiledHeaderFile></PrecompiledHeaderFile>
+		</ClCompile>
+		<Link>
+			<AdditionalDependencies>cudart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;./../../../lib/win32/NvFlexReleaseCUDA_x86.lib;%(AdditionalDependencies)</AdditionalDependencies>
+			<OutputFile>$(OutDir)NvFlexExtReleaseCUDA_x86.dll</OutputFile>
+			<AdditionalLibraryDirectories>$(CUDA_PATH)/lib/win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+			<ProgramDatabaseFile>$(OutDir)/NvFlexExtReleaseCUDA_x86.dll.pdb</ProgramDatabaseFile>
+			<SubSystem>Console</SubSystem>
+			<ImportLibrary>./../../../lib/win32/NvFlexExtReleaseCUDA_x86.lib</ImportLibrary>
+			<GenerateDebugInformation>true</GenerateDebugInformation>
+			<TargetMachine>MachineX86</TargetMachine>
+		</Link>
+		<ResourceCompile>
+		</ResourceCompile>
+		<ProjectReference>
+		</ProjectReference>
+	</ItemDefinitionGroup>
+	<ItemGroup>
+		<ClCompile Include="..\..\flexExtCloth.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\flexExtContainer.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\flexExtMovingFrame.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\flexExtRigid.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\flexExtSoft.cpp">
+		</ClCompile>
+	</ItemGroup>
+	<ItemGroup>
+		<CustomBuild Include="..\..\cuda\flexExt.cu">
+			<FileType Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">cuda</FileType>
+			<Command Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">"$(CUDA_PATH)\bin\nvcc.exe" -g -G --compiler-bindir="$(VCInstallDir)bin" --compiler-options=/MTd,/Zi -I"..\..\.." -D_ITERATOR_DEBUG_LEVEL=0 -DCUDA -m32 -arch=sm_30 -prec-div=false -prec-sqrt=false -ftz=true -use_fast_math -c ..\..\cuda\flexExt.cu -o ./Win32/flexExtCUDA/debug/cuda/flexExt.obj</Command>
+			<Message Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Building %(Identity)</Message>
+			<Outputs Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">./Win32/flexExtCUDA/debug/cuda/flexExt.obj;</Outputs>
+			<FileType Condition="'$(Configuration)|$(Platform)'=='release|Win32'">cuda</FileType>
+			<Command Condition="'$(Configuration)|$(Platform)'=='release|Win32'">"$(CUDA_PATH)\bin\nvcc.exe" -O3 --compiler-bindir="$(VCInstallDir)bin"  --compiler-options=/MT,/Zi -I"..\..\.." -D_ITERATOR_DEBUG_LEVEL=0 -DNDEBUG -DCUDA -m32 -arch=sm_30 -prec-div=false -prec-sqrt=false -ftz=true -use_fast_math -c ..\..\cuda\flexExt.cu -o ./Win32/flexExtCUDA/release/cuda/flexExt.obj</Command>
+			<Message Condition="'$(Configuration)|$(Platform)'=='release|Win32'">Building %(Identity)</Message>
+			<Outputs Condition="'$(Configuration)|$(Platform)'=='release|Win32'">./Win32/flexExtCUDA/release/cuda/flexExt.obj;</Outputs>
+		</CustomBuild>
+	</ItemGroup>
+	<ItemGroup>
+		<ClCompile Include="..\..\..\core\sdf.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\..\core\voxelize.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\..\core\maths.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\..\core\aabbtree.cpp">
+		</ClCompile>
+	</ItemGroup>
+	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+	<ImportGroup Label="ExtensionTargets"></ImportGroup>
+</Project>

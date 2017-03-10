@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "flexExtCUDA", "./flexExtCUDA.vcxproj", "{FD4C9C06-7BEC-CDF8-C631-CD32A428A280}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		debug|x64 = debug|x64
+		release|x64 = release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FD4C9C06-7BEC-CDF8-C631-CD32A428A280}.debug|x64.ActiveCfg = debug|x64
+		{FD4C9C06-7BEC-CDF8-C631-CD32A428A280}.debug|x64.Build.0 = debug|x64
+		{FD4C9C06-7BEC-CDF8-C631-CD32A428A280}.release|x64.ActiveCfg = release|x64
+		{FD4C9C06-7BEC-CDF8-C631-CD32A428A280}.release|x64.Build.0 = release|x64
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddins) = postSolution
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,267 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="x-ua-compatible" content="IE=Edge"/>
+    
+    <title>NVIDIA Flex &mdash; NVIDIA Flex 1.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/breathe.css" type="text/css" />
+    <link rel="stylesheet" href="_static/application.css" type="text/css" />
+    <link rel="stylesheet" href="_static/styleguide.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/bootstrap.js"></script>
+    <script type="text/javascript" src="_static/jquery.cookie.js"></script>
+    <script type="text/javascript" src="_static/jquery.storageapi.js"></script>
+    <link rel="top" title="NVIDIA Flex 1.1.0 documentation" href="#" />
+    <link rel="next" title="Manual" href="manual.html" /> 
+  </head>
+  <body>
+<nav class="navbar navbar-inverse navbar-default">
+  <div class="row">
+      <div class="navbar-brand">
+             <img class="logo" src="_static/developerzone_gameworks_logo.png" alt="Logo"/>
+      </div>
+<div id="searchbox" style="display: none; float:right; padding-top:4px; padding-right:4px">
+    <form class="search form-inline" action="search.html" method="get">
+      <div class="form-group">
+      <input type="text" name="q" class="form-control" />
+      <input type="submit" value="Search" class="btn btn-primary" />
+      </div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  </div>
+</nav>
+<div class="masthead">
+    <div class="row">
+      <ul class="breadcrumb">
+        <li><a href="#">NVIDIA Flex 1.1.0 documentation</a></li> 
+      </ul>
+    </div>
+</div>
+<div class="row">
+  <div class="col-md-3 bs-sidenav" style="white-space: nowrap; overflow: auto;">
+<div class="bs-sidebar">
+  <div id="sidebar_toc">
+  <h4>Table Of Contents</h4>
+  <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="manual.html">Manual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="manual.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manual.html#library-design">Library Design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#quick-start">Quick Start</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="manual.html#buffers">Buffers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manual.html#particles">Particles</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#radius">Radius</a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#phase">Phase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#active-set">Active Set</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="manual.html#constraints">Constraints</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#fluids">Fluids</a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#springs">Springs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#cloth">Cloth</a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#inflatables">Inflatables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#rigid-bodies">Rigid Bodies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#soft-bodies">Soft Bodies</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="manual.html#solver">Solver</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#time-stepping">Time Stepping</a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#relaxation">Relaxation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="manual.html#collision">Collision</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#spheres">Spheres</a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#capsules">Capsules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#triangle-meshes">Triangle Meshes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#convex-meshes">Convex Meshes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#signed-distance-fields">Signed Distance Fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#planes">Planes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#margins">Margins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#priority">Priority</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="manual.html#diffuse-particles">Diffuse Particles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manual.html#threading">Threading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manual.html#profiling">Profiling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manual.html#limitations-known-issues">Limitations / Known Issues</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manual.html#acknowledgments">Acknowledgments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manual.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="releasenotes.html">Release Notes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="releasenotes.html#id1">1.1.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releasenotes.html#id2">1.0.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releasenotes.html#id3">0.9.5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releasenotes.html#id4">0.9.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releasenotes.html#id5">0.8.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releasenotes.html#id6">0.2.5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releasenotes.html#id7">0.2.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releasenotes.html#id8">0.2.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releasenotes.html#id9">0.2.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releasenotes.html#id10">0.2.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releasenotes.html#id11">0.1.0</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="manual.html"
+                        title="next chapter">Manual</a></p>
+<div id="searchbox" style="display: none">
+  <h4>Quick search</h4>
+    <form class="search form-inline" action="search.html" method="get">
+      <div class="form-group">
+      <input type="text" name="q" class="form-control" />
+      <input type="submit" value="Search" class="btn btn-primary" />
+      </div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+  </div>
+    <div class="document col-md-8">
+          <div class="body">
+            
+  <div class="toctree-wrapper compound">
+</div>
+<div class="section" id="productname">
+<h1>NVIDIA Flex<a class="headerlink" href="#productname" title="Permalink to this headline">¶</a></h1>
+<p>Flex is a GPU-based particle simulation library designed for real-time applications. It provides a unified interface that is capable of simulating fluids, clothing, solids, ropes, and more. See the <a class="reference internal" href="releasenotes.html#releasenotes"><em>Release Notes</em></a> for the latest updates.</p>
+<p>Download the latest Flex release from the <a class="reference external" href="http://developer.nvidia.com/physx-flex">product home page</a> on <a class="reference external" href="http://developer.nvidia.com">NVIDIA Developer</a>.</p>
+<div class="section" id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
+<p>Please see the <a class="reference internal" href="manual.html#manual"><em>Manual</em></a> included in this release package for more information on
+the solver API and usage.</p>
+<p>Doxygen generated API documentation is available here:</p>
+<ul class="simple">
+<li><a class="reference external" href="_static/api/_nv_flex_8h.html">Core API Reference</a></li>
+<li><a class="reference external" href="_static/api/_nv_flex_ext_8h.html">Extensions API Reference</a></li>
+<li><a class="reference external" href="_static/api/_nv_flex_device_8h.html">Device API Reference</a></li>
+</ul>
+</div>
+<div class="section" id="supported-platforms">
+<h2>Supported Platforms<a class="headerlink" href="#supported-platforms" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Windows 32/64 bit</li>
+<li>Linux 64 bit (tested with Ubuntu 14.04 LTS)</li>
+</ul>
+</div>
+<div class="section" id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+<p>A D3D11 capable graphics card with the following driver versions:</p>
+<ul class="simple">
+<li>NVIDIA: GeForce Game Ready Driver 372.90 or above</li>
+<li>AMD: Radeon Software Version 16.9.1 or above</li>
+</ul>
+<p>To build the demo at least one of the following is required:</p>
+<ul class="simple">
+<li>Microsoft Visual Studio 2013</li>
+<li>Microsoft Visual Studio 2015</li>
+<li>g++ 4.6.3 or higher</li>
+<li>CUDA 8.0.44 toolkit</li>
+<li>DirectX 11/12 SDK</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="col-md-1"></div>
+</div>
+<div class="masthead">
+    <div class="row">
+      <ul class="breadcrumb">
+        <li><a href="#">NVIDIA Flex 1.1.0 documentation</a></li> 
+      </ul>
+    </div>
+</div>
+
+<footer>
+    <div class="footer-boilerplate">
+        <div class="row">
+            <div class="boilerplate">
+                Copyright &copy; 2014, NVIDIA Corporation &nbsp; | &nbsp; <a href="http://www.nvidia.com/object/about-nvidia.html" onclick="s_objectID=&quot;http://www.nvidia.com/object/about-nvidia.html_1&quot;;return this.s_oc?this.s_oc(e):true">About NVIDIA </a>&nbsp; | &nbsp; <a href="http://www.nvidia.com/object/legal_info.html" onclick="s_objectID=&quot;http://www.nvidia.com/object/legal_info.html_1&quot;;return this.s_oc?this.s_oc(e):true">Legal Information </a>&nbsp; | &nbsp; <a href="http://www.nvidia.com/object/privacy_policy.html" onclick="s_objectID=&quot;http://www.nvidia.com/object/privacy_policy.html_1&quot;;return this.s_oc?this.s_oc(e):true">Privacy Policy </a>
+            </div>
+        </div>
+    </div>
+</div>
+</footer>
+<script>
+var treestatename = 'GWDocsTreeState';
+var protocol = location.href.split('/')[0].toLowerCase();
+var storage;
+if (protocol.substring(0,4) == 'http') {
+  storage = $.cookieStorage;
+  storage.setPath('/');
+} else {
+  storage = $.localStorage;
+}
+
+if (storage.isEmpty(treestatename)) {
+  storage.set(treestatename, {});
+}
+
+var treestate = storage.get(treestatename);
+
+$.each($("#sidebar_toc ul li"), toc_walker);
+
+function toc_walker(key, value) {
+    var handleSpan = $("<span></span>")
+        .addClass("toc_handle").prependTo(value);
+    handleSpan.attr("id", $(value).closest("div").attr("id") + "." + key);
+
+    if($(value).has("ul li").size() > 0) {
+        var id = handleSpan.attr("id");
+        if (!(id in treestate)) {
+          treestate[id] = false;
+        }
+        handleSpan.addClass("toc_expanded").click(function() {
+            $(this).toggleClass("toc_expanded toc_collapsed").siblings("ul").toggle();
+            treestate[$(this).attr('id')] = $(this).hasClass('toc_expanded');
+            storage.set(treestatename, treestate);
+        });
+        if(!($(this).hasClass('current') || treestate[id])) {
+            handleSpan.click();
+        }
+        if($(this).hasClass('current')) {
+            treestate[handleSpan.attr('id')] = handleSpan.hasClass('toc_expanded');
+            storage.set(treestatename, treestate);
+        }
+    }
+}
+</script>
+  </body>
+</html>

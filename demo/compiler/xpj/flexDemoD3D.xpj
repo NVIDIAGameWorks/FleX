@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<XPJ version="4">
+
+  <template filename="../../../common.xpjt"/>
+
+  <Project name="flexDemoD3D">
+
+    <Conditional value="${config}" match="internal">
+      <Import file="../../../src/device/compiler/xpj/flexDevice.xpj" />     
+      <Import file="../../../src/compiler/xpj/flexD3D.xpj" />
+    </Conditional>
+
+    <Import file="../../../extensions/compiler/xpj/flexExtD3D.xpj" />
+ 
+    <Export platforms="Win32 Win64">../${xpj:TOOL}${xpj:PLATFORM}</Export>
+
+    <Var name="ProjectRoot" value="../../.."/>
+
+    <Target name="flexDemoD3D">
+
+      <!-- Windows -->
+
+      <Config name="default" type="console" platforms="Win32 Win64">
+
+        <apply-template name="windows-common"/>
+
+        <OutDir platform="Win32">${user:ProjectRoot}/bin/win32/</OutDir>
+        <OutDir platform="Win64">${user:ProjectRoot}/bin/win64/</OutDir>
+        <DebugWorkingDir>$(OutputPath)</DebugWorkingDir>
+
+        <Preprocessor type="define">
+          _CONSOLE
+          WIN32
+          _CRT_SECURE_NO_WARNINGS
+          FLEX_DX
+        </Preprocessor>
+
+        <WarningLevel>3</WarningLevel>
+        <GenerateDebugInformation>true</GenerateDebugInformation>
+
+        <CharacterSet>MultiByte</CharacterSet>
+
+        <SearchPaths type="header">
+      		${user:ProjectRoot}
+      		${user:ProjectRoot}\demo
+      		${user:ProjectRoot}\demo\d3d11
+      		${user:ProjectRoot}\external\SDL2-2.0.4\include
+        </SearchPaths>
+
+        <Libraries>
+          kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib
+        </Libraries>
+		
+		<Libraries platforms="Win32">
+          ${user:ProjectRoot}/external/SDL2-2.0.4/lib/x86/SDL2.lib
+          ${user:ProjectRoot}/external/SDL2-2.0.4/lib/x86/SDL2main.lib
+        </Libraries>
+        <Libraries platforms="Win64">
+          ${user:ProjectRoot}/external/SDL2-2.0.4/lib/x64/SDL2.lib
+          ${user:ProjectRoot}/external/SDL2-2.0.4/lib/x64/SDL2main.lib
+        </Libraries>
+
+      </Config>
+
+      <Config name="debug" type="console" platforms="Win32 Win64">
+        <OutFile platform="Win32">NvFlexDemoDebugD3D_x86.exe</OutFile>
+        <OutFile platform="Win64">NvFlexDemoDebugD3D_x64.exe</OutFile>
+
+        <IntDir>./build/${xpj:PLATFORM}/DX/debug/</IntDir>
+
+        <Preprocessor type="define" platforms="Win32">
+          _DEBUG
+          _ITERATOR_DEBUG_LEVEL=0
+          FLEX_DIRECT_COMPUTE
+        </Preprocessor>
+        <Preprocessor type="define" platforms="Win64">
+          _DEBUG
+          _ITERATOR_DEBUG_LEVEL=0
+        </Preprocessor>
+        <RuntimeLibrary>MTd</RuntimeLibrary>
+        <GenerateDebugInformation>true</GenerateDebugInformation>
+        <FloatingPointModel>Precise</FloatingPointModel>
+
+        <Libraries platforms="Win32">
+          ${user:ProjectRoot}/lib/win32/NvFlexDebugD3D_x86.lib
+          ${user:ProjectRoot}/lib/win32/NvFlexExtDebugD3D_x86.lib
+          ${user:ProjectRoot}/external/SDL2-2.0.4/lib/x86/SDL2.lib
+          ${user:ProjectRoot}/external/SDL2-2.0.4/lib/x86/SDL2main.lib
+          ${user:ProjectRoot}/external/glew/lib/win32/glew32.lib
+        </Libraries>
+        <Libraries platforms="Win64">
+          ${user:ProjectRoot}/lib/win64/NvFlexDebugD3D_x64.lib
+          ${user:ProjectRoot}/lib/win64/NvFlexExtDebugD3D_x64.lib
+          ${user:ProjectRoot}/external/SDL2-2.0.4/lib/x64/SDL2.lib
+          ${user:ProjectRoot}/external/SDL2-2.0.4/lib/x64/SDL2main.lib
+          ${user:ProjectRoot}/external/glew/lib/x64/glew32.lib
+        </Libraries>
+
+      </Config>
+
+      <Config name="release" type="console" platforms="Win32 Win64">
+        <OutFile platform="Win32">NvFlexDemoReleaseD3D_x86.exe</OutFile>
+        <OutFile platform="Win64">NvFlexDemoReleaseD3D_x64.exe</OutFile>
+
+        <IntDir>./build/${xpj:PLATFORM}/D3D/demo/release/</IntDir>
+
+        <Preprocessor type="define"  platforms="Win32">
+          NDEBUG
+        </Preprocessor>
+        <Preprocessor type="define"  platforms="Win64">
+          NDEBUG
+        </Preprocessor>
+        <RuntimeLibrary>MT</RuntimeLibrary>
+        <WholeProgramOptimization>1</WholeProgramOptimization>
+        <Optimization>3</Optimization>
+        <EnableIntrinsicFunctions>true</EnableIntrinsicFunctions>
+        <BufferSecurityCheck>false</BufferSecurityCheck>
+        <EnableFunctionLevelLinking>true</EnableFunctionLevelLinking>
+        <FloatingPointModel>Fast</FloatingPointModel>
+
+        <Libraries platforms="Win32">
+          ${user:ProjectRoot}/lib/win32/NvFlexReleaseD3D_x86.lib
+          ${user:ProjectRoot}/lib/win32/NvFlexExtReleaseD3D_x86.lib
+          ${user:ProjectRoot}/external/SDL2-2.0.4/lib/x86/SDL2.lib
+          ${user:ProjectRoot}/external/SDL2-2.0.4/lib/x86/SDL2main.lib
+          ${user:ProjectRoot}/external/glew/lib/win32/glew32.lib
+        </Libraries>
+        <Libraries platforms="Win64">
+          ${user:ProjectRoot}/lib/win64/NvFlexReleaseD3D_x64.lib
+          ${user:ProjectRoot}/lib/win64/NvFlexExtReleaseD3D_x64.lib
+          ${user:ProjectRoot}/external/SDL2-2.0.4/lib/x64/SDL2.lib
+          ${user:ProjectRoot}/external/SDL2-2.0.4/lib/x64/SDL2main.lib
+          ${user:ProjectRoot}/external/glew/lib/x64/glew32.lib
+        </Libraries>
+
+      </Config>
+
+      <!-- Common Source -->
+
+      <Files name="demo" type="source" root="${user:ProjectRoot}/demo">
+        *.cpp *.h
+        scenes/*.h
+      </Files>
+
+      <Files name="include" type="source" root="${user:ProjectRoot}/include">
+        *.h
+      </Files> 
+
+      <Files name="core" type="source" root="${user:ProjectRoot}/core">
+        *.cpp *.h
+      </Files>
+      
+      <Dependencies>
+         flexD3D
+         flexExtD3D
+       </Dependencies>
+	  
+	  <Files name="d3d11" type="source" root="${user:ProjectRoot}/demo/d3d11">
+        *.h
+        *.cpp
+      </Files>
+	  
+	  
+	  <HLSL Configurations="release" DisableOptim="No" Debug="No" ShaderModel="5.0" Platforms="Win32 Win64" ObjectFileOutput=" " WarningAsErrors="false" OutputHeaderFileName="${user:ProjectRoot}/demo/d3d11/shaders/%(Filename).hlsl.h">
+
+        <File  ShaderType="Vertex" EntryPoint="debugLineVS"> "${user:ProjectRoot}/demo/d3d11/shaders/debugLineVS.hlsl" </File>
+        <File  ShaderType="Pixel" EntryPoint="debugLinePS"> "${user:ProjectRoot}/demo/d3d11/shaders/debugLinePS.hlsl" </File>      
+
+        <File  ShaderType="Pixel" EntryPoint="imguiPS"> "${user:ProjectRoot}/demo/d3d11/shaders/imguiPS.hlsl" </File>
+        <File  ShaderType="Vertex" EntryPoint="imguiVS"> "${user:ProjectRoot}/demo/d3d11/shaders/imguiVS.hlsl" </File>
+
+        <File  ShaderType="Pixel" EntryPoint="meshPS"> "${user:ProjectRoot}/demo/d3d11/shaders/meshPS.hlsl" </File>
+        <File  ShaderType="Pixel" EntryPoint="meshPS_Shadow"> "${user:ProjectRoot}/demo/d3d11/shaders/meshShadowPS.hlsl" </File>        
+        <File  ShaderType="Vertex" EntryPoint="meshVS"> "${user:ProjectRoot}/demo/d3d11/shaders/meshVS.hlsl" </File>
+
+        <File  ShaderType="Vertex" EntryPoint="pointVS"> "${user:ProjectRoot}/demo/d3d11/shaders/pointVS.hlsl" </File>
+        <File  ShaderType="Geometry" EntryPoint="pointGS"> "${user:ProjectRoot}/demo/d3d11/shaders/pointGS.hlsl" </File>
+        <File  ShaderType="Pixel" EntryPoint="pointPS"> "${user:ProjectRoot}/demo/d3d11/shaders/pointPS.hlsl" </File>
+
+        <File  ShaderType="Vertex" EntryPoint="diffuseVS"> "${user:ProjectRoot}/demo/d3d11/shaders/diffuseVS.hlsl" </File>
+        <File  ShaderType="Geometry" EntryPoint="diffuseGS"> "${user:ProjectRoot}/demo/d3d11/shaders/diffuseGS.hlsl" </File>
+        <File  ShaderType="Pixel" EntryPoint="diffusePS"> "${user:ProjectRoot}/demo/d3d11/shaders/diffusePS.hlsl" </File>
+
+        <File  ShaderType="Vertex" EntryPoint="ellipsoidDepthVS"> "${user:ProjectRoot}/demo/d3d11/shaders/ellipsoidDepthVS.hlsl" </File>
+        <File  ShaderType="Geometry" EntryPoint="ellipsoidDepthGS"> "${user:ProjectRoot}/demo/d3d11/shaders/ellipsoidDepthGS.hlsl" </File>
+        <File  ShaderType="Pixel" EntryPoint="ellipsoidDepthPS"> "${user:ProjectRoot}/demo/d3d11/shaders/ellipsoidDepthPS.hlsl" </File>
+
+        <File  ShaderType="Vertex" EntryPoint="passThroughVS"> "${user:ProjectRoot}/demo/d3d11/shaders/passThroughVS.hlsl" </File>
+        <File  ShaderType="Pixel" EntryPoint="blurDepthPS"> "${user:ProjectRoot}/demo/d3d11/shaders/blurDepthPS.hlsl" </File>
+        <File  ShaderType="Pixel" EntryPoint="compositePS"> "${user:ProjectRoot}/demo/d3d11/shaders/compositePS.hlsl" </File>
+
+      </HLSL>
+
+      <Dependencies>
+        flexExtD3D
+      </Dependencies>
+
+      <Conditional value="${config}" match="internal">
+        <Dependencies>
+          flexD3D
+          flexDevice
+        </Dependencies>
+      </Conditional>
+
+    </Target>
+  </Project>
+</XPJ>

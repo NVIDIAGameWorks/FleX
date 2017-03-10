@@ -1,0 +1,67 @@
+body {
+	width: 800px;
+}
+
+body, table, div, p, dl, li{
+	font-size: 11pt;
+	line-height: 1.4;
+}
+
+h1, h2, h3 {
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: rgb(238, 238, 238);
+  line-height: 1.4;
+}
+
+a {
+	font-weight: normal;
+	text-decoration: none;
+}
+
+.caption {
+font-weight: bold;
+margin-bottom: 2em;
+}
+
+.doxtable {
+	width: 80%;
+	table-layout: fixed;
+}
+
+
+#projectlogo img {
+	width: 250px;
+}
+
+
+.fieldname {
+	font-weight: bold;
+	background-color: rgb(240, 240, 240);
+}
+
+.fieldtype {
+	background-color: rgb(230, 230, 230);
+}
+
+.fielddoc {
+	background-color: rgb(250, 250, 250);
+}
+
+
+li {
+	margin-bottom: 9pt;
+}
+
+.level1, .level2, .level3, .level4 {
+	margin-bottom: 0pt;
+}
+
+
+div.line {
+	font-family: courier, fixed;
+}
+
+div.image img { 
+    width:100%; 
+}

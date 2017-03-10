@@ -1,0 +1,15 @@
+# we do not store binary outputs in Flex
+
+# windows
+NvFlex*.pdb
+NvFlex*.exe
+NvFlex*.dll
+NvFlex*.lib
+
+# linux executables have no extension
+NvFlexDemoDebugCUDA_x64
+NvFlexDemoReleaseCUDA_x64
+NvFlex*.a
+
+# android
+*.apk

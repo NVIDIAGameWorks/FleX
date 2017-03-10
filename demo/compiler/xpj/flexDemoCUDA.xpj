@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<XPJ version="4">
+
+	<template filename="../../../common.xpjt"/>
+
+	<Project name="flexDemoCUDA">
+
+		<Conditional value="${config}" match="internal">
+			<Import file="../../../src/device/compiler/xpj/flexDevice.xpj" />			
+			<Import file="../../../src/compiler/xpj/flexCUDA.xpj" />			
+		</Conditional>
+
+		<Import file="../../../extensions/compiler/xpj/flexExtCUDA.xpj" />
+
+		<Export platforms="Win32 Win64">../${xpj:TOOL}${xpj:PLATFORM}</Export>
+		<Export platform="android{x}" tool="make">../makeandroid</Export>
+		<Export platform="Linux64" tool="make">../makelinux64</Export>
+	
+		<Var name="ProjectRoot" value="../../.."/>
+		
+		<Target name="flexDemoCUDA">
+
+			<!-- Windows -->
+
+			<Config name="default" type="console" platforms="Win32 Win64">
+				
+				<apply-template name="windows-common"/>				
+	
+				<OutDir platform="Win32">../../../bin/win32/</OutDir>
+				<OutDir platform="Win64">../../../bin/win64/</OutDir>
+				<DebugWorkingDir>$(OutputPath)</DebugWorkingDir>
+
+				<Preprocessor type="define">
+					_CONSOLE
+					WIN32
+					_CRT_SECURE_NO_WARNINGS
+				</Preprocessor>
+
+				<WarningLevel>3</WarningLevel>
+				<GenerateDebugInformation>true</GenerateDebugInformation>
+
+				<CharacterSet>MultiByte</CharacterSet>
+				
+				<SearchPaths type="header">
+					..\..\..\..\..
+				</SearchPaths>
+
+				<Libraries>
+					cudart.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib
+				</Libraries>
+				
+			</Config>
+
+			<Config name="debug" type="console" platforms="Win32 Win64">
+				<OutFile platform="Win32">NvFlexDemoDebugCUDA_x86.exe</OutFile>
+				<OutFile platform="Win64">NvFlexDemoDebugCUDA_x64.exe</OutFile>
+
+				<IntDir>./build/${xpj:PLATFORM}/debug/</IntDir>
+
+				<Preprocessor type="define">
+					_DEBUG
+				</Preprocessor>
+				<Preprocessor type="define">
+					_ITERATOR_DEBUG_LEVEL=0
+				</Preprocessor>
+				<RuntimeLibrary>MTd</RuntimeLibrary>
+				<GenerateDebugInformation>true</GenerateDebugInformation>
+				<FloatingPointModel>Precise</FloatingPointModel>
+
+				<Libraries platforms="Win32">
+					../../../lib/win32/NvFlexDebugCUDA_x86.lib
+					../../../lib/win32/NvFlexExtDebugCUDA_x86.lib
+					../../../lib/win32/NvFlexDeviceDebug_x86.lib
+					../../../external/SDL2-2.0.4/lib/x86/SDL2.lib
+					../../../external/SDL2-2.0.4/lib/x86/SDL2main.lib
+					../../../external/glew/lib/win32/glew32.lib
+				</Libraries>
+				<Libraries platforms="Win64">
+					../../../lib/win64/NvFlexDebugCUDA_x64.lib
+					../../../lib/win64/NvFlexExtDebugCUDA_x64.lib
+					../../../lib/win64/NvFlexDeviceDebug_x64.lib
+					../../../external/SDL2-2.0.4/lib/x64/SDL2.lib
+					../../../external/SDL2-2.0.4/lib/x64/SDL2main.lib
+					../../../external/glew/lib/x64/glew32.lib
+				</Libraries>
+			
+			</Config>
+
+			<Config name="release" type="console" platforms="Win32 Win64">
+				<OutFile platform="Win32">NvFlexDemoReleaseCUDA_x86.exe</OutFile>
+				<OutFile platform="Win64">NvFlexDemoReleaseCUDA_x64.exe</OutFile>
+
+				<IntDir>./build/${xpj:PLATFORM}/release/</IntDir>
+
+				<Preprocessor type="define">
+					NDEBUG
+				</Preprocessor>
+				<RuntimeLibrary>MT</RuntimeLibrary>
+				<WholeProgramOptimization>1</WholeProgramOptimization>
+				<Optimization>3</Optimization>
+				<EnableIntrinsicFunctions>true</EnableIntrinsicFunctions>
+				<BufferSecurityCheck>false</BufferSecurityCheck>
+				<EnableFunctionLevelLinking>true</EnableFunctionLevelLinking>
+				<EnableEnhancedInstructionSet>2</EnableEnhancedInstructionSet>
+				<FloatingPointModel>Fast</FloatingPointModel>
+
+				<Libraries platforms="Win32">
+					../../../lib/win32/NvFlexReleaseCUDA_x86.lib
+					../../../lib/win32/NvFlexExtReleaseCUDA_x86.lib
+					../../../lib/win32/NvFlexDeviceRelease_x86.lib
+					../../../external/SDL2-2.0.4/lib/x86/SDL2.lib
+					../../../external/SDL2-2.0.4/lib/x86/SDL2main.lib
+					../../../external/glew/lib/win32/glew32.lib
+				</Libraries>
+				<Libraries platforms="Win64">
+					../../../lib/win64/NvFlexReleaseCUDA_x64.lib
+					../../../lib/win64/NvFlexExtReleaseCUDA_x64.lib
+					../../../lib/win64/NvFlexDeviceRelease_x64.lib
+					../../../external/SDL2-2.0.4/lib/x64/SDL2.lib
+					../../../external/SDL2-2.0.4/lib/x64/SDL2main.lib
+					../../../external/glew/lib/x64/glew32.lib					
+				</Libraries>
+
+			</Config>
+
+
+			<!-- Android -->
+
+			<Config name="default" type="app" platforms="android{x}">
+
+				<apply-template name="android-common"/>				
+
+				<OutDir tool="make">${user:ProjectRoot}/demo/compiler/android/flex_project/libs/armeabi-v7a</OutDir>
+
+				<Preprocessor type="define">
+					android
+					ANDROID=1
+					ANDROID_PLAT=1
+					DISABLE_IMPORTGL
+				</Preprocessor>
+
+				<SearchPaths type="header" tool="make">
+					"${user:ProjectRoot}"
+					"${user:ProjectRoot}/external/egl_setup"
+					"${user:ProjectRoot}/external/regal_static/include"
+				</SearchPaths>
+
+				<SearchPaths type="library" tool="make">
+					"${user:ProjectRoot}/external/regal_static/lib/armeabi-v7a"
+					"${user:ProjectRoot}/lib/android"
+				</SearchPaths>
+
+				<Libraries>
+					android stdc++ c m log dl EGL gomp cudart_static Regal_static
+				</Libraries>
+
+				<Libraries tool="make">
+					stlport_static
+				</Libraries>
+
+				<ExceptionHandling>True</ExceptionHandling>
+				<RuntimeTypeInfo>True</RuntimeTypeInfo>
+
+				<CFlags>
+					-std=c++11 -fno-exceptions -fno-rtti
+				</CFlags>
+
+				<CFlags tool="make">
+					-fpic -fPIC -ffunction-sections -funwind-tables -fstack-protector -no-canonical-prefixes -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3-d16 -O2 -g -fomit-frame-pointer -fstrict-aliasing -funswitch-loops -finline-limit=300
+				</CFlags>
+
+				<LFlags tool="make">
+					--sysroot=${NDK_ROOT}/${NDK_VERSION}/platforms/android-15/arch-arm -shared -Wl,--no-undefined
+				</LFlags>
+
+				<AndroidAPILevel>15</AndroidAPILevel>
+				<AntBuildDirectory>
+					${user:ProjectRoot}/demo/compiler/android/flex_project
+				</AntBuildDirectory>
+				<AntJavaSourceDir>
+					${user:ProjectRoot}/demo/compiler/android/src
+				</AntJavaSourceDir>
+
+			</Config>
+
+			<Configuration name="release" platforms="android{x}">
+				<OutFile>libflexDemo.so</OutFile>
+
+				<Preprocessor type="define">
+					NDEBUG
+				</Preprocessor>
+
+				<AntBuildType>debug</AntBuildType>
+
+				<Libraries>
+					NvFlexRelease_armv7l
+					NvFlexExtRelease_armv7l
+				</Libraries>
+
+			</Configuration>
+
+			<!-- Linux -->
+
+			<Config name="default" type="console" platforms="linux64">
+
+				<apply-template name="linux-common"/>
+
+				<Var name="Cub" value="${user:External}/cub-1.3.2"/>
+				<var name="GCC" value="g++"/>
+
+				<OutDir platforms="linux64" tool="make">${user:ProjectRoot}/bin/linux64</OutDir>
+
+				<SearchPaths type="header" tool="make">
+					"${user:ProjectRoot}"
+				</SearchPaths>
+
+				<CFlags tool="make">
+					-Wall -std=c++0x -fPIC -fpermissive -fno-strict-aliasing
+				</CFlags>
+
+				<LFlags>
+					-g -L${user:External}/glew/lib/linux -L/usr/lib -L"../../../lib/linux64" -L${user:External}/SDL2-2.0.4/lib/x64/ -L${user:CUDA_PATH}/lib64 -lGL -lglut -lGLU -lGLEW -lcudart_static -ldl
+				</LFlags>
+				
+			</Config>      
+
+			<Config name="release" type="console" platforms="linux64">
+				<Libraries>
+					:NvFlexReleaseCUDA_x64.a
+					:NvFlexExtReleaseCUDA_x64.a
+					:libSDL2.a
+					:libSDL2main.a
+				</Libraries>
+
+				<cflags>-O3 -ffast-math -DNDEBUG</cflags>
+		        <OutFile>NvFlexDemoReleaseCUDA_x64</OutFile>
+			</Config>
+			
+			<Config name="debug" type="console" platforms="linux64">
+				<Libraries>
+					:NvFlexDebugCUDA_x64.a
+					:NvFlexExtDebugCUDA_x64.a
+					:libSDL2.a
+					:libSDL2main.a
+				</Libraries>
+
+				<cflags> -g -O0</cflags>
+		        <OutFile>NvFlexDemoDebugCUDA_x64</OutFile>
+			</Config>
+						
+			<!-- Common Source -->
+			
+			<Files name="demo" type="source" root="${user:ProjectRoot}/demo">
+				*.cpp *.h
+				scenes/*.h
+			</Files>
+
+			<Files name="opengl" type="source" root="${user:ProjectRoot}/demo/opengl">
+				*.cpp *.h
+			</Files>
+
+			<Files name="include" type="source" root="${user:ProjectRoot}/include">
+				*.h
+			</Files>
+
+			<Files name="core" type="source" root="${user:ProjectRoot}/core">
+				*.cpp *.h
+			</Files>
+			
+			<!-- Android Source -->
+
+			<Files name="egl_setup" root="${user:ProjectRoot}/external/egl_setup" platform="android{x}">
+				*.cpp 
+				*.h              
+			</Files>			
+
+			<Files name="android" root="${user:ProjectRoot}/demo/android" platform="android{x}">
+				*.cpp 
+				*.c
+				*.h              
+			</Files>
+
+			<Dependencies>
+				flexExtCUDA
+			</Dependencies>
+			
+			<Conditional value="${config}" match="internal">
+				<Dependencies>
+					flexCUDA
+					flexDevice
+				</Dependencies>
+			</Conditional>
+
+		</Target>
+	</Project>
+
+</XPJ>

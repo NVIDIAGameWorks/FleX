@@ -1,0 +1,33 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "flexDemoD3D", "./flexDemoD3D.vcxproj", "{EF4EDDD8-2620-47AA-E75D-4C682C276C02}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9B42889D-2F0D-0378-E87E-82C8D918DB4D} = {9B42889D-2F0D-0378-E87E-82C8D918DB4D}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "flexExtD3D", "./../../../extensions/compiler/vc12win64/flexExtD3D.vcxproj", "{9B42889D-2F0D-0378-E87E-82C8D918DB4D}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		debug|x64 = debug|x64
+		release|x64 = release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EF4EDDD8-2620-47AA-E75D-4C682C276C02}.debug|x64.ActiveCfg = debug|x64
+		{EF4EDDD8-2620-47AA-E75D-4C682C276C02}.debug|x64.Build.0 = debug|x64
+		{EF4EDDD8-2620-47AA-E75D-4C682C276C02}.release|x64.ActiveCfg = release|x64
+		{EF4EDDD8-2620-47AA-E75D-4C682C276C02}.release|x64.Build.0 = release|x64
+		{9B42889D-2F0D-0378-E87E-82C8D918DB4D}.debug|x64.ActiveCfg = debug|x64
+		{9B42889D-2F0D-0378-E87E-82C8D918DB4D}.debug|x64.Build.0 = debug|x64
+		{9B42889D-2F0D-0378-E87E-82C8D918DB4D}.release|x64.ActiveCfg = release|x64
+		{9B42889D-2F0D-0378-E87E-82C8D918DB4D}.release|x64.Build.0 = release|x64
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddins) = postSolution
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+	EndGlobalSection
+EndGlobal

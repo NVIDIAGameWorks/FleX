@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup Label="ProjectConfigurations">
+		<ProjectConfiguration Include="debug|x64">
+			<Configuration>debug</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="release|x64">
+			<Configuration>release</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+	</ItemGroup>
+	<PropertyGroup Label="Globals">
+		<ProjectGuid>{9B42889D-2F0D-0378-E87E-82C8D918DB4D}</ProjectGuid>
+		<RootNamespace>flexExtD3D</RootNamespace>
+	</PropertyGroup>
+	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug|x64'" Label="Configuration">
+		<ConfigurationType>DynamicLibrary</ConfigurationType>
+		<PlatformToolset>v120</PlatformToolset>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|x64'" Label="Configuration">
+		<ConfigurationType>DynamicLibrary</ConfigurationType>
+		<PlatformToolset>v120</PlatformToolset>
+		<WholeProgramOptimization>true</WholeProgramOptimization>
+	</PropertyGroup>
+	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+	<ImportGroup Label="ExtensionSettings">
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='debug|x64'">
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='release|x64'">
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+	</ImportGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug|x64'">
+		<OutDir>./../../../bin/win64\</OutDir>
+		<IntDir>./build/win64/DX/debug\</IntDir>
+		<TargetExt>.dll</TargetExt>
+		<TargetName>NvFlexExtDebugD3D_x64</TargetName>
+		<CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+		<CodeAnalysisRules />
+		<CodeAnalysisRuleAssemblies />
+		<SkipCopyingSymbolsToOutputDirectory>true</SkipCopyingSymbolsToOutputDirectory>
+	</PropertyGroup>
+	<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug|x64'">
+		<ClCompile>
+			<FloatingPointModel>Precise</FloatingPointModel>
+			<AdditionalOptions> /d2Zi+</AdditionalOptions>
+			<Optimization>Disabled</Optimization>
+			<AdditionalIncludeDirectories>./../../../../..;./../../..;./../../../external/D3D11/include;./../../../external/D3D12/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+			<PreprocessorDefinitions>_CONSOLE;WIN32;_DEBUG;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+			<WarningLevel>Level3</WarningLevel>
+			<RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+			<PrecompiledHeader>NotUsing</PrecompiledHeader>
+			<PrecompiledHeaderFile></PrecompiledHeaderFile>
+		</ClCompile>
+		<Link>
+			<AdditionalOptions>/DELAYLOAD:d3d11.dll /DELAYLOAD:d3d12.dll</AdditionalOptions>
+			<AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;delayimp.lib;./../../../lib/win64/NvFlexDebugD3D_x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+			<OutputFile>$(OutDir)NvFlexExtDebugD3D_x64.dll</OutputFile>
+			<AdditionalLibraryDirectories>./../../../external/D3D11/libs/x64;./../../../external/D3D12/libs/x64;./../../../lib/win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+			<ProgramDatabaseFile>$(OutDir)/NvFlexExtDebugD3D_x64.dll.pdb</ProgramDatabaseFile>
+			<SubSystem>Console</SubSystem>
+			<ImportLibrary>./../../../lib/win64/NvFlexExtDebugD3D_x64.lib</ImportLibrary>
+			<GenerateDebugInformation>true</GenerateDebugInformation>
+			<TargetMachine>MachineX64</TargetMachine>
+		</Link>
+		<ResourceCompile>
+		</ResourceCompile>
+		<ProjectReference>
+		</ProjectReference>
+	</ItemDefinitionGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|x64'">
+		<OutDir>./../../../bin/win64\</OutDir>
+		<IntDir>./build/win64/DX/release\</IntDir>
+		<TargetExt>.dll</TargetExt>
+		<TargetName>NvFlexExtReleaseD3D_x64</TargetName>
+		<CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+		<CodeAnalysisRules />
+		<CodeAnalysisRuleAssemblies />
+		<SkipCopyingSymbolsToOutputDirectory>true</SkipCopyingSymbolsToOutputDirectory>
+	</PropertyGroup>
+	<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='release|x64'">
+		<ClCompile>
+			<IntrinsicFunctions>true</IntrinsicFunctions>
+			<FunctionLevelLinking>true</FunctionLevelLinking>
+			<BufferSecurityCheck>false</BufferSecurityCheck>
+			<FloatingPointModel>Fast</FloatingPointModel>
+			<AdditionalOptions> /d2Zi+</AdditionalOptions>
+			<Optimization>Full</Optimization>
+			<AdditionalIncludeDirectories>./../../../../..;./../../..;./../../../external/D3D11/include;./../../../external/D3D12/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+			<PreprocessorDefinitions>_CONSOLE;WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+			<WarningLevel>Level3</WarningLevel>
+			<RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+			<PrecompiledHeader>NotUsing</PrecompiledHeader>
+			<PrecompiledHeaderFile></PrecompiledHeaderFile>
+		</ClCompile>
+		<Link>
+			<AdditionalOptions>/DELAYLOAD:d3d11.dll /DELAYLOAD:d3d12.dll</AdditionalOptions>
+			<AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;delayimp.lib;./../../../lib/win64/NvFlexReleaseD3D_x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+			<OutputFile>$(OutDir)NvFlexExtReleaseD3D_x64.dll</OutputFile>
+			<AdditionalLibraryDirectories>./../../../external/D3D11/libs/x64;./../../../external/D3D12/libs/x64;./../../../lib/win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+			<ProgramDatabaseFile>$(OutDir)/NvFlexExtReleaseD3D_x64.dll.pdb</ProgramDatabaseFile>
+			<SubSystem>Console</SubSystem>
+			<ImportLibrary>./../../../lib/win64/NvFlexExtReleaseD3D_x64.lib</ImportLibrary>
+			<GenerateDebugInformation>true</GenerateDebugInformation>
+			<TargetMachine>MachineX64</TargetMachine>
+		</Link>
+		<ResourceCompile>
+		</ResourceCompile>
+		<ProjectReference>
+		</ProjectReference>
+	</ItemDefinitionGroup>
+	<ItemGroup>
+		<ClCompile Include="..\..\..\core\sdf.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\..\core\voxelize.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\..\core\maths.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\..\core\aabbtree.cpp">
+		</ClCompile>
+	</ItemGroup>
+	<ItemGroup>
+		<ClCompile Include="..\..\dx\flexExt.cpp">
+		</ClCompile>
+		<None Include="..\..\dx\flexExt.hlsl">
+		</None>
+		<ClInclude Include="..\..\dx\flexExt_dx_common.h">
+		</ClInclude>
+		<ClCompile Include="..\..\flexExtCloth.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\flexExtRigid.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\flexExtSoft.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\flexExtMovingFrame.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\flexExtContainer.cpp">
+		</ClCompile>
+	</ItemGroup>
+	<ItemGroup>
+		<FxCompile Include="./../../dx/shaders/flexExt.UpdateForceFields.hlsl">
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|x64'">Compute</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|x64'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|x64'">UpdateForceFields::execute</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</TreatWarningAsError>
+			<VariableName Condition="'$(Configuration)|$(Platform)'=='debug|x64'">g_flexExt_UpdateForceFields</VariableName>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../extensions/dx/shaders/%(Filename).h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'"> </ObjectFileOutput>
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|x64'">Compute</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|x64'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|x64'">UpdateForceFields::execute</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</TreatWarningAsError>
+			<VariableName Condition="'$(Configuration)|$(Platform)'=='release|x64'">g_flexExt_UpdateForceFields</VariableName>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../extensions/dx/shaders/%(Filename).h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'"> </ObjectFileOutput>
+		</FxCompile>
+	</ItemGroup>
+	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+	<ImportGroup Label="ExtensionTargets"></ImportGroup>
+</Project>

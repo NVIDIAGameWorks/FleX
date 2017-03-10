@@ -1,0 +1,410 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="x-ua-compatible" content="IE=Edge"/>
+    
+    <title>Release Notes &mdash; NVIDIA Flex 1.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/breathe.css" type="text/css" />
+    <link rel="stylesheet" href="_static/application.css" type="text/css" />
+    <link rel="stylesheet" href="_static/styleguide.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/bootstrap.js"></script>
+    <script type="text/javascript" src="_static/jquery.cookie.js"></script>
+    <script type="text/javascript" src="_static/jquery.storageapi.js"></script>
+    <link rel="top" title="NVIDIA Flex 1.1.0 documentation" href="index.html" />
+    <link rel="prev" title="Manual" href="manual.html" /> 
+  </head>
+  <body>
+<nav class="navbar navbar-inverse navbar-default">
+  <div class="row">
+      <div class="navbar-brand">
+             <img class="logo" src="_static/developerzone_gameworks_logo.png" alt="Logo"/>
+      </div>
+<div id="searchbox" style="display: none; float:right; padding-top:4px; padding-right:4px">
+    <form class="search form-inline" action="search.html" method="get">
+      <div class="form-group">
+      <input type="text" name="q" class="form-control" />
+      <input type="submit" value="Search" class="btn btn-primary" />
+      </div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  </div>
+</nav>
+<div class="masthead">
+    <div class="row">
+      <ul class="breadcrumb">
+        <li><a href="index.html">NVIDIA Flex 1.1.0 documentation</a></li> 
+      </ul>
+    </div>
+</div>
+<div class="row">
+  <div class="col-md-3 bs-sidenav" style="white-space: nowrap; overflow: auto;">
+<div class="bs-sidebar">
+  <div id="sidebar_toc">
+  <h4>Table Of Contents</h4>
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="manual.html">Manual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="manual.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manual.html#library-design">Library Design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#quick-start">Quick Start</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="manual.html#buffers">Buffers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manual.html#particles">Particles</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#radius">Radius</a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#phase">Phase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#active-set">Active Set</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="manual.html#constraints">Constraints</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#fluids">Fluids</a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#springs">Springs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#cloth">Cloth</a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#inflatables">Inflatables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#rigid-bodies">Rigid Bodies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#soft-bodies">Soft Bodies</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="manual.html#solver">Solver</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#time-stepping">Time Stepping</a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#relaxation">Relaxation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="manual.html#collision">Collision</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#spheres">Spheres</a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#capsules">Capsules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#triangle-meshes">Triangle Meshes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#convex-meshes">Convex Meshes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#signed-distance-fields">Signed Distance Fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#planes">Planes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#margins">Margins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="manual.html#priority">Priority</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="manual.html#diffuse-particles">Diffuse Particles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manual.html#threading">Threading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manual.html#profiling">Profiling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manual.html#limitations-known-issues">Limitations / Known Issues</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manual.html#acknowledgments">Acknowledgments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manual.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Release Notes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">1.1.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">1.0.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">0.9.5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">0.9.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id5">0.8.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id6">0.2.5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id7">0.2.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id8">0.2.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id9">0.2.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id10">0.2.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id11">0.1.0</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="manual.html"
+                        title="previous chapter">Manual</a></p>
+<div id="searchbox" style="display: none">
+  <h4>Quick search</h4>
+    <form class="search form-inline" action="search.html" method="get">
+      <div class="form-group">
+      <input type="text" name="q" class="form-control" />
+      <input type="submit" value="Search" class="btn btn-primary" />
+      </div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+</div>
+  </div>
+    <div class="document col-md-8">
+          <div class="body">
+            
+  <div class="section" id="release-notes">
+<span id="releasenotes"></span><h1>Release Notes<a class="headerlink" href="#release-notes" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2>1.1.0<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>New API style, for consistency with other products the API has now an NvFlex prefix, and follows a naming convention similar to PhysX</li>
+<li>Add support for DirectX, in addition to CUDA there is now a cross platform DirectX 11 and 12 version of the Flex libraries that Windows applications can link against</li>
+<li>Add support for max acceleration clamping, see NvFlexParams::mMaxAcceleration, can be useful to reduce popping with fast moving kinematic shapes and large interpenetration</li>
+<li>Add support to querying compute device, see NvFlexGetDeviceName()</li>
+<li>Add support for flushing compute queue, see NvFlexFlush()</li>
+<li>Add support for multiple library instances, NvFlexInit() now returns a library which is bound to a single compute device</li>
+<li>Add support for local space particle simulation, see NvFlexExtMovingFrameInit() and two new local space fluid and cloth demos</li>
+<li>Add support for CUDA 8.0.44</li>
+<li>Remove NvFlexError enum, errors will be reported through the NvFlexErrorCallback passed to NvFlexInit()</li>
+<li>Remove NvFlexMemory enum, users should use the new NvFlexBufferType</li>
+<li>Fix bug in inflatable constraint solver that could cause some shapes to generate NaNs</li>
+<li>Fix for SDF contact generation when the particle lies completely outside volume, fixes a problem with ghost contacts</li>
+<li>Fix for friction being incorrectly applied on trigger shapes</li>
+<li>Fix for multi-phase fluid cohesion not working correctly, re-enable Rayleigh-Taylor instability test</li>
+<li>Fix bug with public projects that referenced internal CUDA paths</li>
+<li>Fix for calling NvFlexSetInflatables() with a count of zero</li>
+<li>Fix for buoyancy parameter</li>
+<li>Fix for bug in BVH builder that could cause missed collisions</li>
+<li>New optional NvFlexDevice library for handling GPU selection and initialization in CUDA</li>
+<li>New buffer based API, all data must now be passed to Flex through FlexBuffers created through NvFlexAllocBuffer()</li>
+<li>New stable shape matching code for more robust and efficient soft bodies, removes need for NvFlexParams::mInertiaBias</li>
+<li>New collision shape API supports instancing of convex meshes and a much simplified API, see NvFlexSetShapes()</li>
+<li>Improvements to collision detection for moving shapes, Flex will now perform a CCD check also taking into account the shape trajectory using the prev/current transforms of each shape</li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h2>1.0.0<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Added support for reporting collision shape ids, and trigger volume shapes, see flexGetContacts()</li>
+<li>Optimizations to host code performance</li>
+<li>Fix for potential memory leak in SDF object destruction</li>
+<li>Fix for potentially missed collisions during convex shape CCD</li>
+<li>Fix for incorrect bounds computation during flexSetShapes() (if not specified by user)</li>
+<li>Fix for initial shape translations being incorrect when using a transform with flexExtCreateInstance()</li>
+<li>Move flexExt.h header to the /include folder</li>
+</ul>
+</div>
+<div class="section" id="id3">
+<h2>0.9.5<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Fix for NaNs being generated during shape matching with plastic deformation enabled</li>
+<li>Fix for bug that could lead to translational drifting of shape matched rigid bodies</li>
+<li>Fix for incorrect interaction of restitution and friction when using the collision margin parameters</li>
+<li>New geometry instancing API for specifying collision shapes, adds support for transformed triangle meshes and signed distance fields, see flexSetShapes()</li>
+<li>New BVH based collision detection improves performance for scenes with large triangle meshes</li>
+<li>New mesh tearing API, see flexExtTearClothMesh()</li>
+<li>New CCD collision detection for particle versus convex shape, helps reduce tunneling with thin convexes</li>
+<li>Performance improvements for soft body cooking times in flexExtCreateSoftFromMesh()</li>
+<li>Exposed intertial bias for shape matching constraints, see FlexParams::mInertiaBias</li>
+<li>Exposed parameter to control the lifetime of diffuse particles, see FlexParams::mDiffuseLifetime</li>
+</ul>
+</div>
+<div class="section" id="id4">
+<h2>0.9.0<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Added support for soft bodies, particles can now belong to multiple shape-matching clusters used to drive linear blend skinning</li>
+<li>Added support for particle rest positions that can be used to filter collisions between particles that touch in their rest pose, see flexSetRestPositions()</li>
+<li>Added support for spheres and capsules as collision shapes, renamed flexSetConvexes() to flexSetShapes()</li>
+<li>Added support for user callbacks, these can be used to implement custom constraints, force fields, etc. See flexRegisterSolverCallback()</li>
+<li>Added support for the NVIDIA control panel, Flex will now use the selected PhysX device if desired, see flexInit() for details</li>
+<li>Added support for Android platforms</li>
+<li>Added flexGetParams() method to retrieve default values and set defaults to sensible values</li>
+<li>Improved shape-matching algorithm with better inversion handling</li>
+<li>Optimizations for flexSetTriangles(), users can now pass the triangle bounds to avoid having them re-calculated explicitly</li>
+<li>Rigid constraints now use quaternions as their orientation representation, see flexSetRigids() and flexGetRigidTransforms()</li>
+<li>Exposed anisotropy min/max clamping for better control of particle fluid rendering, see FlexParams::mAnisotropyMin and FlexParams::mAnisotropyMax</li>
+<li>Fix for smooth particles not being generated if anisotropy was not enabled</li>
+<li>Fix for demo mouse picking</li>
+<li>Fix for flexGetContacts() returning incorrect values, added contact visualization to the demo app</li>
+<li>Fix for bug in flexGetBounds() which meant it could return bounds with one frame delay, users should now synchronize the flexGetBounds() call like other query methods</li>
+<li>Fix whitespace on flex.h to play nice with Github&#8217;s code view</li>
+<li>Fix for triangle mesh collision when particle moves in the plane of the triangle incorrectly reporting contact</li>
+<li>Fix leak when destroying solver</li>
+<li>Fix for incomplete initialization of FlexExtAssets in the extension creation methods</li>
+<li>Rename FlexParams::mMaxVelocity -&gt; FlexParams::mMaxSpeed</li>
+</ul>
+</div>
+<div class="section" id="id5">
+<h2>0.8.0<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Upgrade to CUDA 7.0</li>
+<li>Linux binaries are now compiled with -fPIC</li>
+<li>Fix for extensions library not writing velocities correctly</li>
+<li>Fix for memory leak when using moving convex shapes</li>
+<li>Optimizations for inflatable constraints to reduce number of kernel launches</li>
+<li>Added option to control the max number of neighbors stored per-particle, this can reduce memory usage, see flexCreateSolver()</li>
+</ul>
+</div>
+<div class="section" id="id6">
+<h2>0.2.5<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Fix for vertex normal calculation when using sparse active particle set</li>
+<li>Fix for division by zero in rest density calculation when fluid rest distance was 0.0</li>
+<li>Fix for infinite mass particles being moved by kinematic objects</li>
+<li>Added CUDA force fields to extensions library, see flexExtSetForceFields()</li>
+<li>Added particle contact reporting API, see flexGetContacts()</li>
+<li>Added early out to avoid Laplacian smoothing and anisotropy calculation if not using them</li>
+<li>Added global damping parameter to model viscous drag on particles (not just cloth), see FlexParams::mDamping</li>
+<li>Added user manual in pdf and chm formats</li>
+<li>Made enum names consistent, eFlexHost -&gt; eFlexMemoryHost</li>
+<li>Upgraded to CUB 1.3.2</li>
+<li>Extended particle phase parameters to allow fine grained control over self-collision and fluid properties, see flexMakePhase()</li>
+</ul>
+</div>
+<div class="section" id="id7">
+<h2>0.2.3<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Switched to bindless textures, 50% reduction in CPU usage, because of this change Flex now requires an SM3.0 or above GPU</li>
+<li>Optimized convex grid rasterization by assigning 4 warps/shape, reduces time from 1ms-&gt;0.25ms for large shapes</li>
+<li>Added error mesasge callback, see flexInit()</li>
+<li>Added flexSetFence()/flexWaitFence() for more fine grained synchronization with Flex GPU work, flexSynchronize() has been removed</li>
+<li>Added static/dynamic flags for convex shapes to allow prioritising static contacts over dynamic, can be useful to prevent tunnelling through thin shapes</li>
+<li>Added local/global relaxation to improve convergence for some scenes (see FlexParams::eRelaxationMode)</li>
+<li>Removed flexGetVorticities(), allows optimizations for vorticity confinement calculation</li>
+<li>Fix for flexSetSprings(), flexSetTriangles(), and flexSetConvexes() reallocing more often than necessary</li>
+<li>Fix for flexGetDensities(), and flexGetAnisotropy() not returning the full particle array if using sparse active set</li>
+<li>Fix for memory leak when instance creation fails in flexExtCreateInstance()</li>
+<li>Fix for memory leak when setting rigid bodies multiple times</li>
+<li>Fix for potential GPU crash when using plastic deformation on rigid bodies</li>
+<li>Smooth vertex normals are now computed for particles belonging to dynamic triangles (cloth), they can be retrieved via flexGetNormals()</li>
+<li>Optimized CompactObjects in flexExtPushToDevice()</li>
+<li>Made headers compile with /W4 on MSVC</li>
+<li>Added debug capture functionality</li>
+</ul>
+</div>
+<div class="section" id="id8">
+<h2>0.2.2<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Fix for infinite mass particles gaining velocity during collisions</li>
+<li>Fix bug with planar triangle mesh rasterization</li>
+<li>Fix for zero-length distance constraints</li>
+<li>Fix cloth drag and lift causing instability at high velocities</li>
+<li>Fix for convex grid perf. when there is a single large convex body</li>
+<li>Improved behaviour when particles are overconstrained (constraint averaging), can reduce jitter for pinned cloth</li>
+<li>Improved adhesion behaviour for fluids against solids</li>
+<li>Improved restitution behavior</li>
+<li>Improved fluid rendering performance by using a smaller bilateral filter kernel</li>
+<li>Change particle friction to be an absolute parameter instead of a multiplier on dynamic friction</li>
+<li>Change sort to use async device-device memcpys to avoid stalling host</li>
+<li>Exposed new parameter to control collision margin against shapes see FlexParams::mShapeCollisionMargin</li>
+<li>Warning fixes for Linux and Windows</li>
+<li>Fix z-precision rendering issues in demo</li>
+<li>Added &#8220;Ext&#8221; prefix to extensions types</li>
+<li>Clamp particle velocity to maximum user velocity before prediction step, improves behaviour when interacting with force fields</li>
+</ul>
+</div>
+<div class="section" id="id9">
+<h2>0.2.1<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Add support for lower dimensional particle rigid bodies (rods, planes)</li>
+<li>Allow specifying rigid rotations through the solver API</li>
+<li>Allow separate control of fluid and solid rest distances</li>
+<li>Add GUI to demo</li>
+</ul>
+</div>
+<div class="section" id="id10">
+<h2>0.2.0<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Fix for rest density calculation when number of neighbors &gt; than max</li>
+<li>Add support for async memory copies back to pinned host memory</li>
+<li>Add functions to allocate pinned host memory, see flexAlloc()</li>
+<li>Add rigid body support to FlexExtensions</li>
+<li>Add rigid body SDF collision support</li>
+<li>Add position level friction</li>
+<li>Static triangle grid now created on the GPU, see flexSetTriangles</li>
+<li>Unify triangle collision with rest of the pipline</li>
+<li>Exposed a new parameter to run a second collision pass against triangle meshes, see FlexParam::mEnableCCD</li>
+<li>Optimized rigid body solve using CUB parallel reductions</li>
+<li>Fix for solve springs when some particles have infinite mass</li>
+<li>Reduce allocations in flexSetConvexes</li>
+<li>Fix plastic deformation for rigids</li>
+<li>Switch to /MT for FlexExtensions library</li>
+</ul>
+</div>
+<div class="section" id="id11">
+<h2>0.1.0<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
+<p>Initial release</p>
+</div>
+</div>
+
+
+          </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="col-md-1"></div>
+</div>
+<div class="masthead">
+    <div class="row">
+      <ul class="breadcrumb">
+        <li><a href="index.html">NVIDIA Flex 1.1.0 documentation</a></li> 
+      </ul>
+    </div>
+</div>
+
+<footer>
+    <div class="footer-boilerplate">
+        <div class="row">
+            <div class="boilerplate">
+                Copyright &copy; 2014, NVIDIA Corporation &nbsp; | &nbsp; <a href="http://www.nvidia.com/object/about-nvidia.html" onclick="s_objectID=&quot;http://www.nvidia.com/object/about-nvidia.html_1&quot;;return this.s_oc?this.s_oc(e):true">About NVIDIA </a>&nbsp; | &nbsp; <a href="http://www.nvidia.com/object/legal_info.html" onclick="s_objectID=&quot;http://www.nvidia.com/object/legal_info.html_1&quot;;return this.s_oc?this.s_oc(e):true">Legal Information </a>&nbsp; | &nbsp; <a href="http://www.nvidia.com/object/privacy_policy.html" onclick="s_objectID=&quot;http://www.nvidia.com/object/privacy_policy.html_1&quot;;return this.s_oc?this.s_oc(e):true">Privacy Policy </a>
+            </div>
+        </div>
+    </div>
+</div>
+</footer>
+<script>
+var treestatename = 'GWDocsTreeState';
+var protocol = location.href.split('/')[0].toLowerCase();
+var storage;
+if (protocol.substring(0,4) == 'http') {
+  storage = $.cookieStorage;
+  storage.setPath('/');
+} else {
+  storage = $.localStorage;
+}
+
+if (storage.isEmpty(treestatename)) {
+  storage.set(treestatename, {});
+}
+
+var treestate = storage.get(treestatename);
+
+$.each($("#sidebar_toc ul li"), toc_walker);
+
+function toc_walker(key, value) {
+    var handleSpan = $("<span></span>")
+        .addClass("toc_handle").prependTo(value);
+    handleSpan.attr("id", $(value).closest("div").attr("id") + "." + key);
+
+    if($(value).has("ul li").size() > 0) {
+        var id = handleSpan.attr("id");
+        if (!(id in treestate)) {
+          treestate[id] = false;
+        }
+        handleSpan.addClass("toc_expanded").click(function() {
+            $(this).toggleClass("toc_expanded toc_collapsed").siblings("ul").toggle();
+            treestate[$(this).attr('id')] = $(this).hasClass('toc_expanded');
+            storage.set(treestatename, treestate);
+        });
+        if(!($(this).hasClass('current') || treestate[id])) {
+            handleSpan.click();
+        }
+        if($(this).hasClass('current')) {
+            treestate[handleSpan.attr('id')] = handleSpan.hasClass('toc_expanded');
+            storage.set(treestatename, treestate);
+        }
+    }
+}
+</script>
+  </body>
+</html>

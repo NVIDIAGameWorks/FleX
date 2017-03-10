@@ -1,0 +1,51 @@
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   Overview <self>
+   manual
+   releasenotes   
+
+|PRODUCTNAME| 
+======================================
+
+Flex is a GPU-based particle simulation library designed for real-time applications. It provides a unified interface that is capable of simulating fluids, clothing, solids, ropes, and more. See the :ref:`releasenotes` for the latest updates.
+
+Download the latest Flex release from the `product home page`_ on `NVIDIA Developer`_.
+
+Documentation
+-------------
+
+Please see the :ref:`Manual` included in this release package for more information on
+the solver API and usage.
+
+Doxygen generated API documentation is available here:
+
+* `Core API Reference <_static/api/_nv_flex_8h.html>`_
+
+* `Extensions API Reference <_static/api/_nv_flex_ext_8h.html>`_
+
+* `Device API Reference <_static/api/_nv_flex_device_8h.html>`_
+
+Supported Platforms
+-------------------
+
+* Windows 32/64 bit
+* Linux 64 bit (tested with Ubuntu 14.04 LTS)
+
+Requirements
+------------
+
+A D3D11 capable graphics card with the following driver versions:
+
+* NVIDIA: GeForce Game Ready Driver 372.90 or above
+* AMD: Radeon Software Version 16.9.1 or above
+
+To build the demo at least one of the following is required:
+
+* Microsoft Visual Studio 2013
+* Microsoft Visual Studio 2015
+* g++ 4.6.3 or higher
+* CUDA 8.0.44 toolkit
+* DirectX 11/12 SDK
+
