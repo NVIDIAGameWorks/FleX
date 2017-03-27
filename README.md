@@ -5,9 +5,9 @@ Flex is a particle-based simulation library designed for real-time applications.
 Please see the programmer's manual included in this release package for more information on
 the solver API and usage.
 
-The latest pre-built binary release can be found in on the NVIDIA Developer Zone:
+Note that the Flex binaries are not included in the repository directly. The latest pre-built binaries can be found in the releases section on Github:
 
-https://developer.nvidia.com/flex
+https://github.com/NVIDIAGameWorks/FleX/releases
 
 Supported Platforms
 -------------------
