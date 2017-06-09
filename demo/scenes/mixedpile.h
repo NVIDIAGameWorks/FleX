@@ -186,7 +186,6 @@ public:
 		g_params.shockPropagation = 0.0f;
 		g_params.restitution = 0.0f;
 		g_params.collisionDistance = g_params.radius*0.5f;
-		g_params.fluid = false;		
 		g_params.maxSpeed = 2.0f*g_params.radius*g_numSubsteps/g_dt;
 
 		// separte solid particle count
@@ -207,13 +206,13 @@ public:
 		g_emitters[0].mSpeed = (g_params.radius*0.5f/g_dt);
 		g_emitters[0].mSpeed = (g_params.radius/g_dt);
 
-		extern Colour gColors[];
-		gColors[0] = Colour(0.805f, 0.702f, 0.401f);		
+		extern Colour g_colors[];
+		g_colors[0] = Colour(0.805f, 0.702f, 0.401f);		
 	}
 
 	virtual void Update()
 	{
-		NvFlexSetInflatables(g_flex, &mTriOffset[0], &mTriCount[0], &mRestVolume[0], &mOverPressure[0], &mConstraintScale[0], mCloths.size(), eFlexMemoryHost);
+		NvFlexSetInflatables(g_solver, &mTriOffset[0], &mTriCount[0], &mRestVolume[0], &mOverPressure[0], &mConstraintScale[0], mCloths.size(), eFlexMemoryHost);
 	}
 	
 	int mHeight;

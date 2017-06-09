@@ -1,2 +1,8 @@
+# we do not store binary outputs in Flex
+
+# windows
+*.exp
+*.ilk
+
 # android
 *.apk

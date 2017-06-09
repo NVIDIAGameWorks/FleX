@@ -19,7 +19,7 @@ public:
 		CreateParticleShape(GetFilePathByPlatform("../../data/sandcastle.obj").c_str(), Vec3(-2.0f, -radius*0.15f, 0.0f), 4.0f, 0.0f, radius*1.0001f, 0.0f, 1.0f, false, 0.0f, NvFlexMakePhase(0, eNvFlexPhaseSelfCollide), false, 0.00f);
 
 		g_numSubsteps = 2;
-
+	
 		g_params.radius = radius;
 		g_params.staticFriction = 1.0f;
 		g_params.dynamicFriction = 0.5f;
@@ -37,9 +37,8 @@ public:
 		g_drawPoints = true;		
 		g_warmup = false;
 
-		// hack, change the color of phase 0 particles to 'sand'
-		extern Colour gColors[];
-		gColors[0] = Colour(0.805f, 0.702f, 0.401f);		
+		// hack, change the color of phase 0 particles to 'sand'		
+		g_colors[0] = Colour(0.805f, 0.702f, 0.401f);		
 	}
 
 	void Update()

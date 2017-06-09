@@ -175,7 +175,7 @@ void NvFlexExtSetForceFields(NvFlexExtForceFieldCallback* c, const NvFlexExtForc
 	if (numForceFields > 0)
 	{
 		// update staging buffer
-		void* dstPtr = c->mContext->mapUpload(c->mForceFieldsGpu);
+		void* dstPtr = c->mContext->map(c->mForceFieldsGpu, NvFlex::eMapWrite);
 		memcpy(dstPtr, forceFields, numForceFields*sizeof(NvFlexExtForceField));
 		c->mContext->unmap(c->mForceFieldsGpu);
 

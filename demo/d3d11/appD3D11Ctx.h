@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2017, NVIDIA CORPORATION.  All rights reserved.
+ * Copyright (c) 2014-2017, NVIDIA CORPORATION.  All rights reserved.
  *
  * NVIDIA CORPORATION and its licensors retain all intellectual property
  * and proprietary rights in and to this software, related documentation
@@ -10,44 +10,26 @@
 
 #pragma once
 
+#include "../d3d/appGraphCtx.h"
+
 #include <windows.h>
 #include <d3d11.h>
 
+struct AppGraphProfilerD3D11;
 
-template <class T>
-void inline COMRelease(T& t)
-{
-	if (t) t->Release();
-	t = nullptr;
-}
-
-template <class T>
-void inline COMRelease(T& t, UINT arraySize)
-{
-	for (UINT i = 0; i < arraySize; i++)
-	{
-		if (t[i]) t[i]->Release();
-		t[i] = nullptr;
-	}
-}
-
-
-
-struct SDL_Window;
-struct AppGraphProfiler;
-
-struct AppGraphCtx
+struct AppGraphCtxD3D11
 {
 	HWND                    m_hWnd = nullptr;
 
 	int m_winW = 0;
 	int m_winH = 0;
 	bool m_fullscreen = false;
+	bool m_valid = false;
 
 	size_t m_dedicatedVideoMemory = 0u;
 
 	// D3D11 objects
-	D3D11_VIEWPORT				m_viewport;
+	D3D11_VIEWPORT				m_viewport = {};
 	ID3D11Device*				m_device = nullptr;
 	ID3D11DeviceContext*		m_deviceContext = nullptr;
 	IDXGISwapChain*				m_swapChain = nullptr;
@@ -57,37 +39,43 @@ struct AppGraphCtx
 	ID3D11DepthStencilView*		m_dsv = nullptr;
 	ID3D11ShaderResourceView*	m_depthSRV = nullptr;
 	ID3D11DepthStencilState*	m_depthState = nullptr;
-	ID3D11BlendState*			m_blendState = nullptr;
+	
+	AppGraphProfilerD3D11* m_profiler = nullptr;
 
-	ID3D11Texture2D*			m_resolvedTarget = nullptr;
-	ID3D11ShaderResourceView*	m_resolvedTargetSRV = nullptr;
-
-	AppGraphProfiler* m_profiler = nullptr;
-
-	AppGraphCtx();
-	~AppGraphCtx();
+	AppGraphCtxD3D11();
+	~AppGraphCtxD3D11();
 };
 
-AppGraphCtx* AppGraphCtxCreate(int deviceID);
+inline AppGraphCtxD3D11* cast_to_AppGraphCtxD3D11(AppGraphCtx* appctx)
+{
+	return (AppGraphCtxD3D11*)(appctx);
+}
 
-void AppGraphCtxInitRenderTarget(AppGraphCtx* context, SDL_Window* window, bool fullscreen, int);
+inline AppGraphCtx* cast_from_AppGraphCtxD3D11(AppGraphCtxD3D11* appctx)
+{
+	return (AppGraphCtx*)(appctx);
+}
 
-void AppGraphCtxReleaseRenderTarget(AppGraphCtx* context);
+APP_GRAPH_CTX_API AppGraphCtx* AppGraphCtxCreateD3D11(int deviceID);
 
-void AppGraphCtxRelease(AppGraphCtx* context);
+APP_GRAPH_CTX_API bool AppGraphCtxUpdateSizeD3D11(AppGraphCtx* context, SDL_Window* window, bool fullscreen, int numMSAASamples);
 
-void AppGraphCtxFrameStart(AppGraphCtx* context, float clearColor[4]);
+APP_GRAPH_CTX_API void AppGraphCtxReleaseRenderTargetD3D11(AppGraphCtx* context);
 
-void AppGraphCtxFramePresent(AppGraphCtx* context, bool fullsync);
+APP_GRAPH_CTX_API void AppGraphCtxReleaseD3D11(AppGraphCtx* context);
 
-void AppGraphCtxResolveFrame(AppGraphCtx* context);
+APP_GRAPH_CTX_API void AppGraphCtxFrameStartD3D11(AppGraphCtx* context, AppGraphColor clearColor);
 
-void AppGraphCtxProfileEnable(AppGraphCtx* context, bool enabled);
+APP_GRAPH_CTX_API void AppGraphCtxFramePresentD3D11(AppGraphCtx* context, bool fullsync);
 
-void AppGraphCtxProfileBegin(AppGraphCtx* context, const char* label);
+APP_GRAPH_CTX_API void AppGraphCtxWaitForFramesD3D11(AppGraphCtx* context, unsigned int maxFramesInFlight);
 
-void AppGraphCtxProfileEnd(AppGraphCtx* context, const char* label);
+APP_GRAPH_CTX_API void AppGraphCtxProfileEnableD3D11(AppGraphCtx* context, bool enabled);
 
-bool AppGraphCtxProfileGet(AppGraphCtx* context, const char** plabel, float* cpuTime, float* gpuTime, int index);
+APP_GRAPH_CTX_API void AppGraphCtxProfileBeginD3D11(AppGraphCtx* context, const char* label);
 
-size_t AppGraphCtxDedicatedVideoMemory(AppGraphCtx* context);
+APP_GRAPH_CTX_API void AppGraphCtxProfileEndD3D11(AppGraphCtx* context, const char* label);
+
+APP_GRAPH_CTX_API bool AppGraphCtxProfileGetD3D11(AppGraphCtx* context, const char** plabel, float* cpuTime, float* gpuTime, int index);
+
+APP_GRAPH_CTX_API size_t AppGraphCtxDedicatedVideoMemoryD3D11(AppGraphCtx* context);

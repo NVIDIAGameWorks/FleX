@@ -34,7 +34,7 @@ public:
 		int gridz = mGridZ;
 
 		int clothIndex = 0;
-		int phase = NvFlexMakePhase(0, eNvFlexPhaseSelfCollide);
+		int phase = NvFlexMakePhase(0, eNvFlexPhaseSelfCollide | eNvFlexPhaseSelfCollideFilter);
 
 		for (int x=0; x < gridx; ++x)
 		{
@@ -48,6 +48,9 @@ public:
 				}
 			}
 		}
+
+		// only simple collision necessary
+		g_solverDesc.featureMode = eNvFlexFeatureModeSimpleSolids;
 
 		g_params.radius = radius*1.05f;
 		g_params.dynamicFriction = 0.25f;

@@ -18,6 +18,7 @@ enum NvFlexResult
 };
 
 typedef int NvFlexInt;
+typedef float NvFlexFloat;
 typedef unsigned int NvFlexUint;
 typedef unsigned long long NvFlexUint64;
 

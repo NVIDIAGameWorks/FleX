@@ -20,7 +20,7 @@
   <td id="projectlogo"><img alt="Logo" src="nvidia.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">FLEX
-   &#160;<span id="projectnumber">1.1.0</span>
+   &#160;<span id="projectnumber">1.2.0</span>
    </div>
   </td>
  </tr>
@@ -109,8 +109,8 @@ Functions</h2></td></tr>
 <tr class="separator:a5efc0113d5432eb959437e6e3a98cc5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad0a9c7e2f907e46b60f6bacf402987ce"><td class="memItemLeft" align="right" valign="top">NV_FLEX_API <a class="el" href="_nv_flex_ext_8h.html#struct_nv_flex_ext_asset">NvFlexExtAsset</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_flex_ext_8h.html#ad0a9c7e2f907e46b60f6bacf402987ce">NvFlexExtCreateRigidFromMesh</a> (const float *vertices, int numVertices, const int *indices, int numTriangleIndices, float radius, float expand)</td></tr>
 <tr class="separator:ad0a9c7e2f907e46b60f6bacf402987ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9f2c0daf521df4920e44cca1cb30b42c"><td class="memItemLeft" align="right" valign="top">NV_FLEX_API <a class="el" href="_nv_flex_ext_8h.html#struct_nv_flex_ext_asset">NvFlexExtAsset</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_flex_ext_8h.html#a9f2c0daf521df4920e44cca1cb30b42c">NvFlexExtCreateSoftFromMesh</a> (const float *vertices, int numVertices, const int *indices, int numTriangleIndices, float particleSpacing, float volumeSampling, float surfaceSampling, float clusterSpacing, float clusterRadius, float clusterStiffness, float linkRadius, float linkStiffness, float globalStiffness)</td></tr>
-<tr class="separator:a9f2c0daf521df4920e44cca1cb30b42c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a9ce6bba709625f6c338bd3070bd012"><td class="memItemLeft" align="right" valign="top">NV_FLEX_API <a class="el" href="_nv_flex_ext_8h.html#struct_nv_flex_ext_asset">NvFlexExtAsset</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_flex_ext_8h.html#a3a9ce6bba709625f6c338bd3070bd012">NvFlexExtCreateSoftFromMesh</a> (const float *vertices, int numVertices, const int *indices, int numTriangleIndices, float particleSpacing, float volumeSampling, float surfaceSampling, float clusterSpacing, float clusterRadius, float clusterStiffness, float linkRadius, float linkStiffness, float globalStiffness, float clusterPlasticThreshold, float clusterPlasticCreep)</td></tr>
+<tr class="separator:a3a9ce6bba709625f6c338bd3070bd012"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a36c33fafe13c5fd5773bf9a2af2dd745"><td class="memItemLeft" align="right" valign="top">NV_FLEX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_flex_ext_8h.html#a36c33fafe13c5fd5773bf9a2af2dd745">NvFlexExtDestroyAsset</a> (<a class="el" href="_nv_flex_ext_8h.html#struct_nv_flex_ext_asset">NvFlexExtAsset</a> *asset)</td></tr>
 <tr class="separator:a36c33fafe13c5fd5773bf9a2af2dd745"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6e3f12e9e92abb31b115cf31b33e34bb"><td class="memItemLeft" align="right" valign="top">NV_FLEX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_flex_ext_8h.html#a6e3f12e9e92abb31b115cf31b33e34bb">NvFlexExtCreateSoftMeshSkinning</a> (const float *vertices, int numVertices, const float *bones, int numBones, float falloff, float maxDistance, float *skinningWeights, int *skinningIndices)</td></tr>
@@ -309,6 +309,18 @@ The position of the center of mass of each shape, an array of vec3s mNumShapes i
 numShapes</td>
 <td class="fielddoc">
 The number of shape matching constraints. </td></tr>
+<tr><td class="fieldtype">
+<a class="anchor" id="aac7ec52c127730c381d4b8cbac8134bf"></a>float *</td>
+<td class="fieldname">
+shapePlasticThresholds</td>
+<td class="fielddoc">
+The plastic threshold coefficient for each shape. </td></tr>
+<tr><td class="fieldtype">
+<a class="anchor" id="a9342d21bf875d0f1a9d287ced08c087a"></a>float *</td>
+<td class="fieldname">
+shapePlasticCreeps</td>
+<td class="fielddoc">
+The plastic creep coefficient for each shape. </td></tr>
 <tr><td class="fieldtype">
 <a class="anchor" id="aeee311155e99ce95c506078964a7dc3c"></a>int *</td>
 <td class="fieldname">
@@ -1232,7 +1244,7 @@ Linear or no falloff. </td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a9f2c0daf521df4920e44cca1cb30b42c"></a>
+<a class="anchor" id="a3a9ce6bba709625f6c338bd3070bd012"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1312,7 +1324,19 @@ Linear or no falloff. </td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">float&#160;</td>
-          <td class="paramname"><em>globalStiffness</em>&#160;</td>
+          <td class="paramname"><em>globalStiffness</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>clusterPlasticThreshold</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>clusterPlasticCreep</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1337,6 +1361,8 @@ Linear or no falloff. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">linkRadius</td><td>Any particles below this distance will have additional distance constraints created between them </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">linkStiffness</td><td>The stiffness of distance links </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">globalStiffness</td><td>If this parameter is &gt; 0.0f, adds an additional global cluster that consists of all particles in the shape. The stiffness of this cluster is the globalStiffness. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">clusterPlasticThreshold</td><td>Particles belonging to rigid shapes that move with a position delta magnitude &gt; threshold will be permanently deformed in the rest pose, if clusterPlasticCreep &gt; 0.0f </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">clusterPlasticCreep</td><td>Controls the rate at which particles in the rest pose are deformed for particles passing the deformation threshold </td></tr>
   </table>
   </dd>
 </dl>
@@ -1879,7 +1905,7 @@ Linear or no falloff. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Notifies the container that asset data has changed and needs to be sent to the GPU this should be called if the constrains for an existing asset are modified by the user</p>
+<p>Notifies the container that asset data has changed and needs to be sent to the GPU this should be called if the constraints for an existing asset are modified by the user</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">container</td><td>The container the instance referencing the asset belongs to </td></tr>
@@ -2038,7 +2064,7 @@ Linear or no falloff. </td></tr>
 <p>Create a NvFlexExtForceFieldCallback structure, each callback is associated with the passed in solver once the <a class="el" href="_nv_flex_ext_8h.html#aa36d43b9e53b9b66d43c2bc5eb5abf98">NvFlexExtSetForceFields()</a> is called.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">solver</td><td>A valid solver created with <a class="el" href="_nv_flex_8h.html#af7f91fa47c779fcd8bee60061de6d31c">NvFlexCreateSolver()</a> </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">solver</td><td>A valid solver created with <a class="el" href="_nv_flex_8h.html#a9e925acbc34675dfe247da017cbd855f">NvFlexCreateSolver()</a> </td></tr>
   </table>
   </dd>
 </dl>
@@ -2113,7 +2139,7 @@ Linear or no falloff. </td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Feb 22 2017 12:18:22 for FLEX by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jun 9 2017 09:57:25 for FLEX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

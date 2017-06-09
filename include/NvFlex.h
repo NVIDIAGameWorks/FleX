@@ -36,7 +36,7 @@
 #endif
 
 // least 2 significant digits define minor version, eg: 10 -> version 0.10
-#define NV_FLEX_VERSION 110
+#define NV_FLEX_VERSION 120
 
 //! \endcond
 
@@ -68,7 +68,6 @@ enum NvFlexMapFlags
 {
    	eNvFlexMapWait		= 0,	//!< Calling thread will be blocked until buffer is ready for access, default
    	eNvFlexMapDoNotWait = 1,	//!< Calling thread will check if buffer is ready for access, if not ready then the method will return NULL immediately
-	eNvFlexMapDiscard	= 2		//!< Buffer contents will be discarded, this allows for efficent buffer reuse
 };
 
 /**
@@ -76,8 +75,8 @@ enum NvFlexMapFlags
  */
 enum NvFlexBufferType
 {
-   	eNvFlexBufferHost	= 0,	//!< Host mappable buffer, pinned memory on CUDA, staging buffer on DX
-   	eNvFlexBufferDevice	= 1,	//!< Device memory buffer, mapping this on CUDA will return a device memory pointer, and will return a buffer pointer on DX
+   	eNvFlexBufferHost	= 0,	//!< A host mappable buffer, pinned memory on CUDA, staging buffer on DX
+   	eNvFlexBufferDevice	= 1,	//!< A device memory buffer, mapping this on CUDA will return a device memory pointer, and will return a buffer pointer on DX
 };
 
 /**
@@ -86,7 +85,7 @@ enum NvFlexBufferType
 enum NvFlexRelaxationMode
 {
 	eNvFlexRelaxationGlobal = 0,	//!< The relaxation factor is a fixed multiplier on each constraint's position delta
-	eNvFlexRelaxationLocal  = 1	//!< The relaxation factor is a fixed multiplier on each constraint's delta divided by the particle's constraint count, convergence will be slower but more reliable
+	eNvFlexRelaxationLocal  = 1		//!< The relaxation factor is a fixed multiplier on each constraint's delta divided by the particle's constraint count, convergence will be slower but more reliable
 };
 
 
@@ -123,7 +122,6 @@ struct NvFlexParams
 	float lift;							//!< Lift force applied to particles belonging to dynamic triangles, proportional to velocity^2*area in the direction perpendicular to velocity and (if possible), parallel to the plane normal
 
 	// fluid params
-	bool fluid;							//!< If true then particles with phase 0 are considered fluid particles and interact using the position based fluids method
 	float cohesion;						//!< Control how strongly particles hold each other together, default: 0.025, range [0.0, +inf]
 	float surfaceTension;				//!< Controls how strongly particles attempt to minimize surface area, default: 0.0, range: [0.0, +inf]    
 	float viscosity;					//!< Smoothes particle velocities using XSPH viscosity
@@ -141,12 +139,7 @@ struct NvFlexParams
 	float diffuseBuoyancy;				//!< Scales force opposing gravity that diffuse particles receive
 	float diffuseDrag;					//!< Scales force diffuse particles receive in direction of neighbor fluid particles
 	int diffuseBallistic;				//!< The number of neighbors below which a diffuse particle is considered ballistic
-	float diffuseSortAxis[3];			//!< Diffuse particles will be sorted by depth along this axis if non-zero
 	float diffuseLifetime;				//!< Time in seconds that a diffuse particle will live for after being spawned, particles will be spawned with a random lifetime in the range [0, diffuseLifetime]
-
-	// rigid params
-	float plasticThreshold;				//!< Particles belonging to rigid shapes that move with a position delta magnitude > threshold will be permanently deformed in the rest pose
-	float plasticCreep;					//!< Controls the rate at which particles in the rest pose are deformed for particles passing the deformation threshold 
 
 	// collision params
 	float collisionDistance;			//!< Distance particles maintain against shapes, note that for robust collision against triangle meshes this distance should be greater than zero
@@ -160,22 +153,46 @@ struct NvFlexParams
 	float relaxationFactor;				//!< Control the convergence rate of the parallel solver, default: 1, values greater than 1 may lead to instability
 };
 
+
 /**
- * Flags that control the a particle's behavior and grouping, use NvFlexMakePhase() to construct a valid 32bit phase identifier
+ * Flags that control a particle's behavior and grouping, use NvFlexMakePhase() to construct a valid 32bit phase identifier
  */
 enum NvFlexPhase
 {
-	eNvFlexPhaseGroupMask			= 0x00ffffff,	//!< Low 24 bits represent the particle group for controlling collisions	
-
-	eNvFlexPhaseSelfCollide			= 1 << 24,		//!< If set this particle will interact with particles of the same group
-	eNvFlexPhaseSelfCollideFilter	= 1 << 25,		//!< If set this particle will ignore collisions with particles closer than the radius in the rest pose, this flag should not be specified unless valid rest positions have been specified using NvFlexSetRestParticles()
-	eNvFlexPhaseFluid				= 1 << 26,		//!< If set this particle will generate fluid density constraints for its overlapping neighbors
+	eNvFlexPhaseGroupMask			= 0x000fffff,	//!< Bits [ 0, 19] represent the particle group for controlling collisions
+	eNvFlexPhaseFlagsMask			= 0x00f00000,	//!< Bits [20, 23] hold flags about how the particle behave 
+	eNvFlexPhaseShapeChannelMask	= 0xff000000,	//!< Bits [24, 31] hold flags representing what shape collision channels particles will collide with, see NvFlexMakeShapeFlags()
+	
+	eNvFlexPhaseSelfCollide			= 1 << 20,		//!< If set this particle will interact with particles of the same group
+	eNvFlexPhaseSelfCollideFilter	= 1 << 21,		//!< If set this particle will ignore collisions with particles closer than the radius in the rest pose, this flag should not be specified unless valid rest positions have been specified using NvFlexSetRestParticles()
+	eNvFlexPhaseFluid				= 1 << 22,		//!< If set this particle will generate fluid density constraints for its overlapping neighbors
+	eNvFlexPhaseUnused				= 1 << 23,		//!< Reserved
+	
+	eNvFlexPhaseShapeChannel0		= 1 << 24,		//!< Particle will collide with shapes with channel 0 set (see NvFlexMakeShapeFlags())
+	eNvFlexPhaseShapeChannel1		= 1 << 25,		//!< Particle will collide with shapes with channel 1 set (see NvFlexMakeShapeFlags())
+	eNvFlexPhaseShapeChannel2		= 1 << 26,		//!< Particle will collide with shapes with channel 2 set (see NvFlexMakeShapeFlags())
+	eNvFlexPhaseShapeChannel3		= 1 << 27,		//!< Particle will collide with shapes with channel 3 set (see NvFlexMakeShapeFlags())
+	eNvFlexPhaseShapeChannel4		= 1 << 28,		//!< Particle will collide with shapes with channel 4 set (see NvFlexMakeShapeFlags())
+	eNvFlexPhaseShapeChannel5		= 1 << 29,		//!< Particle will collide with shapes with channel 5 set (see NvFlexMakeShapeFlags())
+	eNvFlexPhaseShapeChannel6		= 1 << 30,		//!< Particle will collide with shapes with channel 6 set (see NvFlexMakeShapeFlags())
+	eNvFlexPhaseShapeChannel7		= 1 << 31,		//!< Particle will collide with shapes with channel 7 set (see NvFlexMakeShapeFlags())
 };
 
+
 /**
- * Generate a bit set for the particle phase, the group should be an integer < 2^24, and the flags should be a combination of FlexPhase enum values
+ * Generate a bit set for the particle phase, this is a helper method to simply combine the
+ * group id and bit flags into a single integer.
+ *
+ * @param[in] group The index of the group for this particle, should be an integer < 2^20
+ * @param[in] particleFlags A combination of the phase flags which should be a combination of eNvFlexPhaseSelfCollide, eNvFlexPhaseSelfCollideFilter, and eNvFlexPhaseFluid
+ * @param[in] shapeChannels A combination of eNvFlexPhaseShapeChannel* flags that control which shapes will be collided against, particles will only collide against shapes that share at least one set channel, see NvFlexMakeShapeFlagsWithChannels()
  */
-NV_FLEX_API inline int NvFlexMakePhase(int group, int flags) { return (group & eNvFlexPhaseGroupMask) | flags; }
+NV_FLEX_API inline int NvFlexMakePhaseWithChannels(int group, int particleFlags, int shapeChannels) { return (group & eNvFlexPhaseGroupMask) | (particleFlags & eNvFlexPhaseFlagsMask) | (shapeChannels & eNvFlexPhaseShapeChannelMask); }
+
+/**
+ * Deprecated helper method to generates a phase with all shape channels set
+ */
+NV_FLEX_API inline int NvFlexMakePhase(int group, int particleFlags) { return NvFlexMakePhaseWithChannels(group, particleFlags, eNvFlexPhaseShapeChannelMask); }
 
 
 /**
@@ -234,14 +251,6 @@ enum NvFlexSolverCallbackStage
 	eNvFlexStageCount,			//!< Number of stages
 };
 
-/** Defines the different DirectX compute modes that Flex can use
-*/
-enum NvFlexComputeType
-{
-	eNvFlexCUDA,		//!< Use CUDA compute for Flex, the application must link against the CUDA libraries
-	eNvFlexD3D11,		//!< Use DirectX 11 compute for Flex, the application must link against the D3D libraries
-	eNvFlexD3D12,		//!< Use DirectX 12 compute for Flex, the application must link against the D3D libraries
-};
 
 /** Structure containing pointers to the internal solver data that is passed to each registered solver callback
  *
@@ -272,18 +281,6 @@ struct NvFlexSolverCallbackParams
 	const int* sortedToOriginalMap;		//!< Device pointer that maps the original particle index to the index in the callback data structure
 };
 
-/** Descriptor used to initialize Flex
-*/
-struct NvFlexInitDesc
-{
-	int deviceIndex;				//!< The GPU device index that should be used, if there is already a CUDA context on the calling thread then this parameter will be ignored and the active CUDA context used. Otherwise a new context will be created using the suggested device ordinal.
-	bool enableExtensions;			//!< Enable or disable NVIDIA/AMD extensions in DirectX, can lead to improved performance.
-	void* renderDevice;				//!< Direct3D device to use for simulation, if none is specified a new device and context will be created.
-	void* renderContext;			//!< Direct3D context to use for simulation, if none is specified a new context will be created, in DirectX 12 this should be a pointer to the ID3D12CommandQueue where compute operations will take place. 
-	
-	NvFlexComputeType computeType;	//!< Set to eNvFlexD3D11 if DirectX 11 should be used, eNvFlexD3D12 for DirectX 12, this must match the libraries used to link the application
-};
-
 /** Solver callback definition, see NvFlexRegisterSolverCallback()
  */
 struct NvFlexSolverCallback
@@ -300,6 +297,33 @@ struct NvFlexSolverCallback
  */
 typedef void (*NvFlexErrorCallback)(NvFlexErrorSeverity type, const char* msg, const char* file, int line);
 
+
+
+
+/** Defines the different compute backends that Flex can use
+*/
+enum NvFlexComputeType
+{
+	eNvFlexCUDA,		//!< Use CUDA compute for Flex, the application must link against the CUDA libraries
+	eNvFlexD3D11,		//!< Use DirectX 11 compute for Flex, the application must link against the D3D libraries
+	eNvFlexD3D12,		//!< Use DirectX 12 compute for Flex, the application must link against the D3D libraries
+};
+
+
+/** Descriptor used to initialize Flex
+*/
+struct NvFlexInitDesc
+{
+	int deviceIndex;				//!< The GPU device index that should be used, if there is already a CUDA context on the calling thread then this parameter will be ignored and the active CUDA context used. Otherwise a new context will be created using the suggested device ordinal.
+	bool enableExtensions;			//!< Enable or disable NVIDIA/AMD extensions in DirectX, can lead to improved performance.
+	void* renderDevice;				//!< Direct3D device to use for simulation, if none is specified a new device and context will be created.
+	void* renderContext;			//!< Direct3D context that the app is using for rendering. In DirectX 12 this should be a ID3D12CommandQueue pointer.
+	void* computeContext;           //!< Direct3D context to use for simulation, if none is specified a new context will be created, in DirectX 12 this should be a pointer to the ID3D12CommandQueue where compute operations will take place. 
+	bool runOnRenderContext;		//!< If true, run Flex on D3D11 render context, or D3D12 direct queue. If false, run on a D3D12 compute queue, or vendor specific D3D11 compute queue, allowing compute and graphics to run in parallel on some GPUs.
+
+	NvFlexComputeType computeType;	//!< Set to eNvFlexD3D11 if DirectX 11 should be used, eNvFlexD3D12 for DirectX 12, this must match the libraries used to link the application
+};
+
 /**
 * Initialize library, should be called before any other API function.
 *
@@ -309,7 +333,7 @@ typedef void (*NvFlexErrorCallback)(NvFlexErrorSeverity type, const char* msg, c
 * @param[in] desc The NvFlexInitDesc struct defining the device ordinal, D3D device/context and the type of D3D compute being used
 * @return A pointer to a library instance that can be used to allocate shared object such as triangle meshes, buffers, etc
 */
-NV_FLEX_API NvFlexLibrary* NvFlexInit(int version = NV_FLEX_VERSION, NvFlexErrorCallback errorFunc = 0, NvFlexInitDesc * desc = 0);
+NV_FLEX_API NvFlexLibrary* NvFlexInit(int version = NV_FLEX_VERSION, NvFlexErrorCallback errorFunc = 0, NvFlexInitDesc* desc = 0);
 
 /**
  * Shutdown library, users should manually destroy any previously created   
@@ -324,15 +348,41 @@ NV_FLEX_API void NvFlexShutdown(NvFlexLibrary* lib);
  */
 NV_FLEX_API int NvFlexGetVersion();
 
+/** 
+ * Controls which features are enabled, choosing a simple option will disable features and can lead to better performance and reduced memory usage
+ */
+enum NvFlexFeatureMode
+{
+	eNvFlexFeatureModeDefault			= 0,	//!< All features enabled
+	eNvFlexFeatureModeSimpleSolids		= 1,	//!< Simple per-particle collision (no per-particle SDF normals, no fluids)
+	eNvFlexFeatureModeSimpleFluids		= 2,	//!< Simple single phase fluid-only particles (no solids)
+};
+
+/**
+ * Describes the creation time parameters for the solver
+ */
+struct NvFlexSolverDesc
+{
+	NvFlexFeatureMode featureMode;	//!< Control which features are enabled
+
+	int maxParticles;				//!< Maximum number of regular particles in the solver
+	int maxDiffuseParticles;		//!< Maximum number of diffuse particles in the solver
+	int maxNeighborsPerParticle;	//!< Maximum number of neighbors per-particle, for solids this can be around 32, for fluids up to 128 may be necessary depending on smoothing radius
+};
+
+/**
+ * Initialize the solver desc to its default values
+ * @param[in] desc Pointer to a description structure that will be initialized to default values
+ */
+NV_FLEX_API void NvFlexSetSolverDescDefaults(NvFlexSolverDesc* desc);
+
 /**
  * Create a new particle solver
  *
  * @param[in] lib The library instance to use
- * @param[in] maxParticles Maximum number of simulation particles possible for this solver
- * @param[in] maxDiffuseParticles Maximum number of diffuse (non-simulation) particles possible for this solver
- * @param[in] maxNeighborsPerParticle Maximum number of neighbors per particle possible for this solver
+ * @param[in] desc Pointer to a solver description structure used to create the solver
  */
-NV_FLEX_API NvFlexSolver* NvFlexCreateSolver(NvFlexLibrary* lib, int maxParticles, int maxDiffuseParticles, int maxNeighborsPerParticle = 96);
+NV_FLEX_API NvFlexSolver* NvFlexCreateSolver(NvFlexLibrary* lib, const NvFlexSolverDesc* desc);
 /**
  * Delete a particle solver
  *
@@ -347,6 +397,14 @@ NV_FLEX_API void NvFlexDestroySolver(NvFlexSolver* solver);
  * @return A library pointer
  */
 NV_FLEX_API NvFlexLibrary* NvFlexGetSolverLibrary(NvFlexSolver* solver);
+
+/**
+ * Return the solver desc that was used to create a solver
+ *
+ * @param[in] solver Pointer to a valid Flex solver
+ * @param[in] desc Pointer to a desc structure
+ */
+NV_FLEX_API void NvFlexGetSolverDesc(NvFlexSolver* solver, NvFlexSolverDesc* desc);
 
 /** Registers a callback for a solver stage, the callback will be invoked from the same thread that calls NvFlexUpdateSolver().
  *
@@ -437,21 +495,40 @@ NV_FLEX_API void NvFlexSetParams(NvFlexSolver* solver, const NvFlexParams* param
 NV_FLEX_API void NvFlexGetParams(NvFlexSolver* solver, NvFlexParams* params);
 
 /**
+ * Describes a source and destination buffer region for performing a copy operation.
+ */
+struct NvFlexCopyDesc
+{
+	int srcOffset;			//<! Offset in elements from the start of the source buffer to begin reading from
+	int dstOffset;			//<! Offset in elements from the start of the destination buffer to being writing to
+	int elementCount;		//<! Number of elements to copy
+};
+
+/**
  * Set the active particles indices in the solver
  * 
  * @param[in] solver A valid solver
  * @param[in] indices Holds the indices of particles that have been made active
- * @param[in] n Number of particles to allocate
+ * @param[in] desc Describes the copy region, if NULL the solver will try to access the entire buffer (maxParticles length)
  */
-NV_FLEX_API void NvFlexSetActive(NvFlexSolver* solver, NvFlexBuffer* indices, int n);
+NV_FLEX_API void NvFlexSetActive(NvFlexSolver* solver, NvFlexBuffer* indices, const NvFlexCopyDesc* desc);
 
 /**
  * Return the active particle indices
  * 
  * @param[in] solver A valid solver
  * @param[out] indices a buffer of indices at least activeCount in length
+ * @param[in] desc Describes the copy region, if NULL the solver will try to access the entire buffer (maxParticles length)
  */
-NV_FLEX_API void NvFlexGetActive(NvFlexSolver* solver, NvFlexBuffer* indices);
+NV_FLEX_API void NvFlexGetActive(NvFlexSolver* solver, NvFlexBuffer* indices, const NvFlexCopyDesc* desc);
+
+/**
+ * Set the total number of active particles
+ * 
+ * @param[in] solver A valid solver
+ * @param[in] n The number of active particles, the first n indices in the active particles array will be used as the active count
+ */
+NV_FLEX_API void NvFlexSetActiveCount(NvFlexSolver* solver, int n);
 
 /**
  * Return the number of active particles in the solver
@@ -466,19 +543,19 @@ NV_FLEX_API int NvFlexGetActiveCount(NvFlexSolver* solver);
  * 
  * @param[in] solver A valid solver
  * @param[in] p Pointer to a buffer of particle data, should be 4*n in length
- * @param[in] n The number of particles to set
+ * @param[in] desc Describes the copy region, if NULL the solver will try to access the entire buffer (maxParticles length)
  *
  */
-NV_FLEX_API void NvFlexSetParticles(NvFlexSolver* solver, NvFlexBuffer* p, int n);
+NV_FLEX_API void NvFlexSetParticles(NvFlexSolver* solver, NvFlexBuffer* p, const NvFlexCopyDesc* desc);
 
 /**
  * Get the particles state of the solver, a particle consists of 4 floating point numbers, its x,y,z position followed by its inverse mass (1/m)
  * 
  * @param[in] solver A valid solver
  * @param[out] p Pointer to a buffer of 4*n floats that will be filled out with the particle data, can be either a host or device pointer
- * @param[in] n The number of particles to get, must be less than max particles passed to NvFlexCreateSolver
+ * @param[in] desc Describes the copy region, if NULL the solver will try to access the entire buffer (maxParticles length)
  */
-NV_FLEX_API void NvFlexGetParticles(NvFlexSolver* solver, NvFlexBuffer* p, int n);
+NV_FLEX_API void NvFlexGetParticles(NvFlexSolver* solver, NvFlexBuffer* p, const NvFlexCopyDesc* desc);
 
 /**
  * Set the particle positions in their rest state, if eNvFlexPhaseSelfCollideFilter is set on the particle's
@@ -486,20 +563,20 @@ NV_FLEX_API void NvFlexGetParticles(NvFlexSolver* solver, NvFlexBuffer* p, int n
  * 
  * @param[in] solver A valid solver
  * @param[in] p Pointer to a buffer of particle data, should be 4*n in length
- * @param[in] n The number of particles to set
+ * @param[in] desc Describes the copy region, if NULL the solver will try to access the entire buffer (maxParticles length)
  *
  */
-NV_FLEX_API void NvFlexSetRestParticles(NvFlexSolver* solver, NvFlexBuffer* p, int n);
+NV_FLEX_API void NvFlexSetRestParticles(NvFlexSolver* solver, NvFlexBuffer* p, const NvFlexCopyDesc* desc);
 
 /**
  * Get the particle positions in their rest state
  * 
  * @param[in] solver A valid solver
  * @param[in] p Pointer to a buffer of particle data, should be 4*n in length
- * @param[in] n The number of particles to set
+ * @param[in] desc Describes the copy region, if NULL the solver will try to access the entire buffer (maxParticles length)
  *
  */
-NV_FLEX_API void NvFlexGetRestParticles(NvFlexSolver* solver, NvFlexBuffer* p, int n);
+NV_FLEX_API void NvFlexGetRestParticles(NvFlexSolver* solver, NvFlexBuffer* p, const NvFlexCopyDesc* desc);
 
 
 /**
@@ -507,27 +584,27 @@ NV_FLEX_API void NvFlexGetRestParticles(NvFlexSolver* solver, NvFlexBuffer* p, i
  * 
  * @param[in] solver A valid solver
  * @param[out] p Pointer to a buffer of 4*n floats that will be filled out with the data, can be either a host or device pointer
- * @param[in] n The number of smooth particles to return
+ * @param[in] desc Describes the copy region, if NULL the solver will try to access the entire buffer (maxParticles length)
  */
-NV_FLEX_API void NvFlexGetSmoothParticles(NvFlexSolver* solver, NvFlexBuffer*  p, int n);
+NV_FLEX_API void NvFlexGetSmoothParticles(NvFlexSolver* solver, NvFlexBuffer* p, const NvFlexCopyDesc* desc);
 
 /**
  * Set the particle velocities, each velocity is a 3-tuple of x,y,z floating point values
  * 
  * @param[in] solver A valid solver
  * @param[in] v Pointer to a buffer of 3*n floats
- * @param[in] n The number of velocities to set
+ * @param[in] desc Describes the copy region, if NULL the solver will try to access the entire buffer (maxParticles length)
  *
  */
-NV_FLEX_API void NvFlexSetVelocities(NvFlexSolver* solver, NvFlexBuffer*  v, int n);
+NV_FLEX_API void NvFlexSetVelocities(NvFlexSolver* solver, NvFlexBuffer* v, const NvFlexCopyDesc* desc);
 /**
  * Get the particle velocities, each velocity is a 3-tuple of x,y,z floating point values
  * 
  * @param[in] solver A valid solver
  * @param[out] v Pointer to a buffer of 3*n floats that will be filled out with the data, can be either a host or device pointer
- * @param[in] n The number of velocities to get
+ * @param[in] desc Describes the copy region, if NULL the solver will try to access the entire buffer (maxParticles length)
  */
-NV_FLEX_API void NvFlexGetVelocities(NvFlexSolver* solver, NvFlexBuffer*  v, int n);
+NV_FLEX_API void NvFlexGetVelocities(NvFlexSolver* solver, NvFlexBuffer* v, const NvFlexCopyDesc* desc);
 
 /**
  * Set the particles phase id array, each particle has an associated phase id which 
@@ -542,37 +619,36 @@ NV_FLEX_API void NvFlexGetVelocities(NvFlexSolver* solver, NvFlexBuffer*  v, int
  * 
  * @param[in] solver A valid solver
  * @param[in] phases Pointer to a buffer of n integers containing the phases
- * @param[in] n The number of phases to set
+ * @param[in] desc Describes the copy region, if NULL the solver will try to access the entire buffer (maxParticles length)
  *
  */
-NV_FLEX_API void NvFlexSetPhases(NvFlexSolver* solver, NvFlexBuffer* phases, int n);
+NV_FLEX_API void NvFlexSetPhases(NvFlexSolver* solver, NvFlexBuffer* phases, const NvFlexCopyDesc* desc);
 /**
  * Get the particle phase ids
  * 
  * @param[in] solver A valid solver
  * @param[out] phases Pointer to a buffer of n integers that will be filled with the phase data, can be either a host or device pointer
- * @param[in] n The number of phases to get
+ * @param[in] desc Describes the copy region, if NULL the solver will try to access the entire buffer (maxParticles length)
  */
-NV_FLEX_API void NvFlexGetPhases(NvFlexSolver* solver, NvFlexBuffer* phases, int n);
+NV_FLEX_API void NvFlexGetPhases(NvFlexSolver* solver, NvFlexBuffer* phases, const NvFlexCopyDesc* desc);
 
 /**
  * Set per-particle normals to the solver, these will be overwritten after each simulation step, but can be used to initialize the normals to valid values
  * 
  * @param[in] solver A valid solver
  * @param[in] normals Pointer to a buffer of normals, should be 4*n in length
- * @param[in] n The number of normals to set
- *
+ * @param[in] desc Describes the copy region, if NULL the solver will try to access the entire buffer (maxParticles length)
  */
-NV_FLEX_API void NvFlexSetNormals(NvFlexSolver* solver, NvFlexBuffer* normals, int n);
+NV_FLEX_API void NvFlexSetNormals(NvFlexSolver* solver, NvFlexBuffer* normals, const NvFlexCopyDesc* desc);
 
 /**
  * Get per-particle normals from the solver, these are the world-space normals computed during surface tension, cloth, and rigid body calculations
  * 
  * @param[in] solver A valid solver
  * @param[out] normals Pointer to a buffer of normals, should be 4*n in length
- * @param[in] n The number of normals to get
+ * @param[in] desc Describes the copy region, if NULL the solver will try to access the entire buffer (maxParticles length)
  */
-NV_FLEX_API void NvFlexGetNormals(NvFlexSolver* solver, NvFlexBuffer* normals, int n);
+NV_FLEX_API void NvFlexGetNormals(NvFlexSolver* solver, NvFlexBuffer* normals, const NvFlexCopyDesc* desc);
 
 
 /**
@@ -609,23 +685,32 @@ NV_FLEX_API void NvFlexGetSprings(NvFlexSolver* solver, NvFlexBuffer* indices, N
  * @param[in] restPositions Pointer to a buffer of local space positions relative to the rigid's center of mass (average position), this should be at least 3*numIndices in length in the format x,y,z
  * @param[in] restNormals Pointer to a buffer of local space normals, this should be at least 4*numIndices in length in the format x,y,z,w where w is the (negative) signed distance of the particle inside its shape
  * @param[in] stiffness Pointer to a buffer of rigid stiffness coefficents, should be numRigids in length, valid values in range [0, 1]
+ * @param[in] thresholds Pointer to a buffer of plastic deformation threshold coefficients, should be numRigids in length
+ * @param[in] creeps Pointer to a buffer of plastic deformation creep coefficients, should be numRigids in length, valid values in range [0, 1]
  * @param[in] rotations Pointer to a buffer of quaternions (4*numRigids in length)
  * @param[in] translations Pointer to a buffer of translations of the center of mass (3*numRigids in length)
  * @param[in] numRigids The number of rigid bodies to set
  * @param[in] numIndices The number of indices in the indices array
  *
  */
-NV_FLEX_API void NvFlexSetRigids(NvFlexSolver* solver, NvFlexBuffer* offsets, NvFlexBuffer* indices, NvFlexBuffer* restPositions, NvFlexBuffer* restNormals, NvFlexBuffer* stiffness, NvFlexBuffer* rotations, NvFlexBuffer* translations, int numRigids, int numIndices);
-
+NV_FLEX_API void NvFlexSetRigids(NvFlexSolver* solver, NvFlexBuffer* offsets, NvFlexBuffer* indices, NvFlexBuffer* restPositions, NvFlexBuffer* restNormals, NvFlexBuffer* stiffness, NvFlexBuffer* thresholds, NvFlexBuffer* creeps, NvFlexBuffer* rotations, NvFlexBuffer* translations, int numRigids, int numIndices);
 
 /**
- * Get the rotation matrices for the rigid bodies in the solver
+ * Retrive the rigid body shape matching constraints and transforms, if any buffer pointers are NULL then they will be ignored
+ * This method supersedes the previous NvFlexGetRigidTransforms method and can be used to retrieve modified rest positions from plastic deformation.
  * 
  * @param[in] solver A valid solver
- * @param[out] rotations Pointer to a buffer of quaternions, should be 4*numRigids floats in length
- * @param[out] translations Pointer to a buffer of vectors to hold the rigid translations, should be 3*numRigids floats in length
+ * @param[in] offsets Pointer to a buffer of start offsets for a rigid in the indices array, should be numRigids+1 in length, the first entry must be 0
+ * @param[in] indices Pointer to a buffer of indices for the rigid bodies, the indices for the jth rigid body start at indices[offsets[j]] and run to indices[offsets[j+1]] exclusive
+ * @param[in] restPositions Pointer to a buffer of local space positions relative to the rigid's center of mass (average position), this should be at least 3*numIndices in length in the format x,y,z
+ * @param[in] restNormals Pointer to a buffer of local space normals, this should be at least 4*numIndices in length in the format x,y,z,w where w is the (negative) signed distance of the particle inside its shape
+ * @param[in] stiffness Pointer to a buffer of rigid stiffness coefficents, should be numRigids in length, valid values in range [0, 1]
+ * @param[in] thresholds Pointer to a buffer of plastic deformation threshold coefficients, should be numRigids in length
+ * @param[in] creeps Pointer to a buffer of plastic deformation creep coefficients, should be numRigids in length, valid values in range [0, 1]
+ * @param[in] rotations Pointer to a buffer of quaternions (4*numRigids in length with the imaginary elements in the x,y,z components)
+ * @param[in] translations Pointer to a buffer of translations of the center of mass (3*numRigids in length)
  */
-NV_FLEX_API void NvFlexGetRigidTransforms(NvFlexSolver* solver, NvFlexBuffer* rotations, NvFlexBuffer* translations);
+NV_FLEX_API void NvFlexGetRigids(NvFlexSolver* solver, NvFlexBuffer* offsets, NvFlexBuffer* indices, NvFlexBuffer* restPositions, NvFlexBuffer* restNormals, NvFlexBuffer* stiffness, NvFlexBuffer* thresholds, NvFlexBuffer* creeps, NvFlexBuffer* rotations, NvFlexBuffer* translations);
 
 /**
  * An opaque type representing a static triangle mesh in the solver
@@ -715,7 +800,7 @@ NV_FLEX_API void NvFlexDestroyDistanceField(NvFlexLibrary* lib, NvFlexDistanceFi
 NV_FLEX_API void NvFlexUpdateDistanceField(NvFlexLibrary* lib, NvFlexDistanceFieldId sdf, int dimx, int dimy, int dimz, NvFlexBuffer* field);
 
 /**
- * Create a convex mesh collision shapes, see NvFlexConvexMeshId for details.
+ * Create a convex mesh collision shape, see NvFlexConvexMeshId for details.
  * 
  * @param[in] lib The library instance to use
  * @return A pointer to a signed distance field object
@@ -736,11 +821,11 @@ NV_FLEX_API void NvFlexDestroyConvexMesh(NvFlexLibrary* lib, NvFlexConvexMeshId 
  * @param[in] lib The library instance to use
  * @param[in] convex A valid convex mesh shape created from NvFlexCreateConvexMesh()
  * @param[in] planes An array of planes, each plane consists of 4 floats in the form a*x + b*y + c*z + d = 0
- * @param[in] numPlanes The number of planes in the convex
+ * @param[in] numPlanes The number of planes in the convex, must be less than 64 planes per-convex
  * @param[in] lower The local space lower bound of the convex shape
  * @param[in] upper The local space upper bound of the convex shape
   */
-NV_FLEX_API void NvFlexUpdateConvexMesh(NvFlexLibrary* lib, NvFlexConvexMeshId convex, NvFlexBuffer* planes, int numPlanes, float* lower, float* upper);
+NV_FLEX_API void NvFlexUpdateConvexMesh(NvFlexLibrary* lib, NvFlexConvexMeshId convex, NvFlexBuffer* planes, int numPlanes, const float* lower, const float* upper);
 
 /**
  * Retrieve the local space bounds of the mesh, these are the same values specified to NvFlexUpdateConvexMesh()
@@ -831,17 +916,27 @@ enum NvFlexCollisionShapeType
 
 enum NvFlexCollisionShapeFlags
 {
-	eNvFlexShapeFlagTypeMask	= 0x7,		//!< Lower 3 bits holds the type of the collision shape
-	eNvFlexShapeFlagDynamic		= 8,		//!< Indicates the shape is dynamic and should have lower priority over static collision shapes
-	eNvFlexShapeFlagTrigger		= 16,		//!< Indicates that the shape is a trigger volume, this means it will not perform any collision response, but will be reported in the contacts array (see NvFlexGetContacts())
-
+	eNvFlexShapeFlagTypeMask	= 0x7,		//!< Lower 3 bits holds the type of the collision shape given by the NvFlexCollisionShapeType enum
+	eNvFlexShapeFlagDynamic		= 0x8,		//!< Indicates the shape is dynamic and should have lower priority over static collision shapes
+	eNvFlexShapeFlagTrigger		= 0x10,		//!< Indicates that the shape is a trigger volume, this means it will not perform any collision response, but will be reported in the contacts array (see NvFlexGetContacts())
+	
 	eNvFlexShapeFlagReserved	= 0xffffff00
 };
 
 /** 
- * Combines geometry type and static/dynamic flags
+ * Helper function to combine shape type, flags, and phase/shape collision channels into a 32bit value
+ * 
+ * @param[in] type The type of the shape, see NvFlexCollisionShapeType
+ * @param[in] dynamic See eNvFlexShapeFlagDynamic
+ * @param[in] shapeChannels A combination of the eNvFlexPhaseShapeChannel* flags, collisions will only be processed between a particle and a shape if a channel is set on both the particle and shape, see NvFlexMakePhaseWithChannels()
  */
-NV_FLEX_API inline int NvFlexMakeShapeFlags(NvFlexCollisionShapeType type, bool dynamic) { return type | (dynamic?eNvFlexShapeFlagDynamic:0); }
+NV_FLEX_API inline int NvFlexMakeShapeFlagsWithChannels(NvFlexCollisionShapeType type, bool dynamic, int shapeChannels) { return type | (dynamic?eNvFlexShapeFlagDynamic:0) | shapeChannels; }
+
+/** 
+ * Deprecrated helper method that creates shape flags that by default have all collision channels enabled
+ */
+NV_FLEX_API inline int NvFlexMakeShapeFlags(NvFlexCollisionShapeType type, bool dynamic) { return NvFlexMakeShapeFlagsWithChannels(type, dynamic, eNvFlexPhaseShapeChannelMask); }
+
 
 /**
  * Set the collision shapes for the solver
@@ -899,10 +994,10 @@ NV_FLEX_API void NvFlexSetInflatables(NvFlexSolver* solver, NvFlexBuffer* startT
  * Get the density values for fluid particles
  *
  * @param[in] solver A valid solver
- * @param[in] n The number of particle densities to return
  * @param[out] densities Pointer to a buffer of floats, should be maxParticles in length, density values are normalized between [0, 1] where 1 represents the rest density
+ * @param[in] desc Pointer to a descriptor specifying the contents to read back
  */
-NV_FLEX_API void NvFlexGetDensities(NvFlexSolver* solver, NvFlexBuffer* densities, int n);
+NV_FLEX_API void NvFlexGetDensities(NvFlexSolver* solver, NvFlexBuffer* densities, const NvFlexCopyDesc* desc);
 
 /**
  * Get the anisotropy of fluid particles, the particle distribution for a particle is represented
@@ -916,8 +1011,9 @@ NV_FLEX_API void NvFlexGetDensities(NvFlexSolver* solver, NvFlexBuffer* densitie
  * @param[out] q1 Pointer to a buffer of floats that receive the first basis vector and scale, should be 4*maxParticles in length
  * @param[out] q2 Pointer to a buffer of floats that receive the second basis vector and scale, should be 4*maxParticles in length
  * @param[out] q3 Pointer to a buffer of floats that receive the third basis vector and scale, should be 4*maxParticles in length
+ * @param[in] desc Pointer to a descriptor specifying the contents to read back
  */
-NV_FLEX_API void NvFlexGetAnisotropy(NvFlexSolver* solver, NvFlexBuffer* q1, NvFlexBuffer* q2, NvFlexBuffer* q3);
+NV_FLEX_API void NvFlexGetAnisotropy(NvFlexSolver* solver, NvFlexBuffer* q1, NvFlexBuffer* q2, NvFlexBuffer* q3, const NvFlexCopyDesc* desc);
 /**
  * Get the state of the diffuse particles. Diffuse particles are passively advected by the fluid
  * velocity field.
@@ -925,9 +1021,9 @@ NV_FLEX_API void NvFlexGetAnisotropy(NvFlexSolver* solver, NvFlexBuffer* q1, NvF
  * @param[in] solver A valid solver
  * @param[out] p Pointer to a buffer of floats, should be 4*maxParticles in length, the w component represents the particles lifetime with 1 representing a new particle, and 0 representing an inactive particle
  * @param[out] v Pointer to a buffer of floats, should be 4*maxParticles in length, the w component is not used
- * @param[out] indices Pointer to a buffer of ints that specify particle indices in depth sorted order, should be maxParticles in length, see NvFlexParams::mDiffuseSortDir
+ * @param[out] count Pointer to a buffer of a single int that holds the current particle count (this may be updated by the GPU which is why it is passed back in a buffer)
  */
-NV_FLEX_API int NvFlexGetDiffuseParticles(NvFlexSolver* solver, NvFlexBuffer* p, NvFlexBuffer* v, NvFlexBuffer* indices);
+NV_FLEX_API void NvFlexGetDiffuseParticles(NvFlexSolver* solver, NvFlexBuffer* p, NvFlexBuffer* v, NvFlexBuffer* count);
 
 /**
  * Set the state of the diffuse particles. Diffuse particles are passively advected by the fluid
@@ -936,7 +1032,7 @@ NV_FLEX_API int NvFlexGetDiffuseParticles(NvFlexSolver* solver, NvFlexBuffer* p,
  * @param[in] solver A valid solver
  * @param[in] p Pointer to a buffer of floats, should be 4*n in length, the w component represents the particles lifetime with 1 representing a new particle, and 0 representing an inactive particle
  * @param[in] v Pointer to a buffer of floats, should be 4*n in length, the w component is not used
- * @param[in] n Number of diffuse particles to set
+ * @param[in] n The number of active diffuse particles
  *
  */
 NV_FLEX_API void NvFlexSetDiffuseParticles(NvFlexSolver* solver, NvFlexBuffer* p, NvFlexBuffer* v, int n);
@@ -945,12 +1041,57 @@ NV_FLEX_API void NvFlexSetDiffuseParticles(NvFlexSolver* solver, NvFlexBuffer* p
  * Get the particle contact planes. Note this will only include contacts that were active on the last substep of an update, and will include all contact planes generated within NvFlexParams::shapeCollisionMargin.
  *
  * @param[in] solver A valid solver
- * @param[out] planes Pointer to a destination buffer containing the contact planes for the particle, each particle can have up to 4 contact planes so this buffer should be 16*maxParticles in length
- * @param[out] velocities Pointer to a destination buffer containing the velocity of the contact point on the shape in world space, the index of the shape (corresponding to the shape in NvFlexSetShapes() is stored in the w component), each particle can have up to 4 contact planes so this buffer should be 16*maxParticles in length
- * @param[out] indices Pointer to a buffer of indices into the contacts buffer, the first contact plane for the i'th particle is given by planes[indices[i]*sizeof(float)*4] and subsequent contacts for that particle are stored sequentially, this array should be maxParticles in length
- * @param[out] counts Pointer to a buffer of contact counts for each particle (will be <= 4), this buffer should be maxParticles in length
+ * @param[out] planes Pointer to a destination buffer containing the contact planes for the particle, each particle can have up to 6 contact planes so this buffer should be 4*6*maxParticles floats in length
+ * @param[out] velocities Pointer to a destination buffer containing the velocity of the contact point on the shape in world space, the index of the shape (corresponding to the shape in NvFlexSetShapes() is stored in the w component), each particle can have up to 6 contact planes so this buffer should be 4*6*maxParticles floats in length
+ * @param[out] indices Pointer to a buffer of indices into the contacts buffer, the first contact plane for the i'th particle is given by planes[indices[i]*sizeof(float)*4*6] and subsequent contact planes for that particle are stored sequentially, this array should be maxParticles in length
+ * @param[out] counts Pointer to a buffer of contact counts for each particle (will be <= 6), this buffer should be maxParticles in length
  */
 NV_FLEX_API void NvFlexGetContacts(NvFlexSolver* solver, NvFlexBuffer* planes, NvFlexBuffer* velocities, NvFlexBuffer* indices, NvFlexBuffer* counts);
+
+/**
+ * Get the particle neighbor lists, these are stored in a strided format, and can be iterated in the following manner:
+ *
+\code{.c}
+
+	NvFlexGetNeighbors(solver, neighborsBuffer, countsBuffer, indicesBuffer);
+
+	int* neighbors = (int*)NvFlexMap(neighborsBuffer, 0);
+	int* counts = (int*)NvFlexMap(countsBuffer, 0);
+	int* remap = (int*)NvFlexMap(remapBuffer, 0);
+
+	// neighbors are stored in a strided format so that the first neighbor
+	// of each particle is stored sequentially, then the second, and so on
+	
+	int stride = maxParticles;
+
+	for (int i=0; i < maxParticles; ++i)
+	{
+		// find offset in the neighbors buffer
+		int offset = remap[i];
+		int count = counts[offset];
+
+		for (int c=0; c < count; ++c)
+		{
+			int neighbor = remap[neighbors[c*stride + offset]];
+
+			printf("Particle %d's neighbor %d is particle %d\n", i, c, neighbor);
+		}
+	}
+
+	NvFlexUnmap(neighborsBuffer);
+	NvFlexUnmap(countsBuffer);
+	NvFlexUnmap(remapBuffer);
+
+\endcode
+ *
+ * @param[in] solver A valid solver
+ * @param[out] neighbors Pointer to a destination buffer containing the the neighbors for all particles, this should be maxParticles*maxParticleNeighbors ints (passed to NvFlexInit() in length)
+ * @param[out] counts Pointer to a buffer of neighbor counts per-particle, should be maxParticles ints in length
+ * @param[out] remap Pointer to a buffer of indices, because Flex internally re-orders particles these are used to map from an API particle index to it internal index
+ *
+ * @note Neighbors are only valid after a call to NvFlexUpdateSolver() has completed, the returned neighbors correspond to the last substep of the last update
+ */
+NV_FLEX_API void NvFlexGetNeighbors(NvFlexSolver* solver, NvFlexBuffer* neighbors, NvFlexBuffer* counts, NvFlexBuffer* remap);
 
 /**
  * Get the world space AABB of all particles in the solver, note that the bounds are calculated during the update (see NvFlexUpdateSolver()) so only become valid after an update has been performed.
@@ -965,12 +1106,15 @@ NV_FLEX_API void NvFlexGetBounds(NvFlexSolver* solver, NvFlexBuffer* lower, NvFl
 /**
  *
  * @param[in] solver A valid solver
+ * @param[out] begin Optional pointer to a 64 bit unsigned to receive the value of the GPU clock when Flex update began (in cycles)
+ * @param[out] end Optional pointer to a 64 bit unsigned to receive the value of the GPU clock when Flex update ended (in cycles)
+ * @param[out] frequency Optional pointer to a 64 bit unsigned to receive the frequency of the clock used to measure begin and end
  * @return The time in seconds between the first and last GPU operations executed by the last NvFlexUpdateSolver.
  *
  * @note This method causes the CPU to wait until the GPU has finished any outstanding work. 
  *		 To avoid blocking the calling thread it should be called after work has completed, e.g.: directly after a NvFlexMap().
  */
-NV_FLEX_API float NvFlexGetDeviceLatency(NvFlexSolver* solver);
+NV_FLEX_API float NvFlexGetDeviceLatency(NvFlexSolver* solver, unsigned long long* begin, unsigned long long* end, unsigned long long* frequency);
 
 /**
  * Fetch high-level GPU timers.
@@ -1028,7 +1172,7 @@ NV_FLEX_API void NvFlexFreeBuffer(NvFlexBuffer* buf);
 /**
  * Maps a buffer for reading and writing. When the buffer is created with NvFlexBufferType::eHost, then the returned pointer will be a host memory address
  * that can be read/written.
- * Mapping a buffer implicitly synchronizes with the GPU to ensure that any reads or writes from the buffer (e.g.: from the NvFlexGet*() or NvFlexSet*()) methods have completed.
+ * Mapping a buffer implicitly synchronizes with the GPU to ensure that any reads or writes from the buffer (e.g.: from the NvFlexGet*() or NvFlexSet*() methods) have completed.
  *
  * @param[in] buffer A buffer allocated with NvFlexAllocBuffer()
  * @param[in] flags Hints to Flex how the buffer is to be accessed, typically this should be eNvFlexMapWait (0)
@@ -1138,6 +1282,8 @@ NV_FLEX_API void NvFlexGetDeviceAndContext(NvFlexLibrary* lib, void** device, vo
  */
 NV_FLEX_API void NvFlexFlush(NvFlexLibrary* lib);
 
+NV_FLEX_API void NvFlexWait(NvFlexLibrary* lib);
+
 //! \cond HIDDEN_SYMBOLS
 
 /**
@@ -1147,6 +1293,8 @@ NV_FLEX_API void NvFlexFlush(NvFlexLibrary* lib);
 NV_FLEX_API void NvFlexSetDebug(NvFlexSolver* solver, bool enable);
 NV_FLEX_API void NvFlexGetShapeBVH(NvFlexSolver* solver, void* bvh);
 NV_FLEX_API void NvFlexCopySolver(NvFlexSolver* dst, NvFlexSolver* src);
+NV_FLEX_API void NvFlexCopyDeviceToHost(NvFlexSolver* solver, NvFlexBuffer* pDevice, void* pHost, int size, int stride);
+NV_FLEX_API void NvFlexComputeWaitForGraphics(NvFlexLibrary* lib);
 
 //! \endcond
 

@@ -44,7 +44,7 @@
 template <typename T>
 struct NvFlexVector
 {
-	NvFlexVector(NvFlexLibrary* l, int size=0) : lib(l), buffer(NULL), mappedPtr(NULL), count(0), capacity(0)
+	NvFlexVector(NvFlexLibrary* l, int size = 0, NvFlexBufferType type = eNvFlexBufferHost) : lib(l), buffer(NULL), mappedPtr(NULL), count(0), capacity(0), type(type)
 	{
 		if (size)
 		{
@@ -55,7 +55,7 @@ struct NvFlexVector
 		}		
 	}
 	
-	NvFlexVector(NvFlexLibrary* l, const T* ptr, int size) : lib(l), buffer(NULL), mappedPtr(NULL), count(0), capacity(0)
+	NvFlexVector(NvFlexLibrary* l, const T* ptr, int size, NvFlexBufferType type = eNvFlexBufferHost) : lib(l), buffer(NULL), mappedPtr(NULL), count(0), capacity(0), type(type)
 	{
 		assign(ptr, size);
 		unmap();
@@ -73,6 +73,7 @@ struct NvFlexVector
 	T* mappedPtr;
 	int count;
 	int capacity;
+	NvFlexBufferType type;
 
 	// reinitialize the vector leaving it unmapped
 	void init(int size)
@@ -177,7 +178,7 @@ struct NvFlexVector
 			// growth factor of 1.5
 			const int newCapacity = minCapacity*3/2;
 
-			NvFlexBuffer* newBuf = NvFlexAllocBuffer(lib, newCapacity, sizeof(T), eNvFlexBufferHost);
+			NvFlexBuffer* newBuf = NvFlexAllocBuffer(lib, newCapacity, sizeof(T), type);
 
 			// copy contents to new buffer			
 			void* newPtr = NvFlexMap(newBuf, eNvFlexMapWait);
@@ -327,6 +328,10 @@ struct NvFlexExtAsset
 	float* shapeCoefficients;		//!< The stiffness coefficient for each shape
 	float* shapeCenters;			//!< The position of the center of mass of each shape, an array of vec3s mNumShapes in length
 	int numShapes;					//!< The number of shape matching constraints
+
+	// plastic deformation
+	float* shapePlasticThresholds;	//!< The plastic threshold coefficient for each shape
+	float* shapePlasticCreeps;		//!< The plastic creep coefficient for each shape
 
 	// faces for cloth
 	int* triangleIndices;			//!< Indexed triangle mesh indices for clothing
@@ -489,9 +494,11 @@ NV_FLEX_API NvFlexExtAsset* NvFlexExtCreateRigidFromMesh(const float* vertices, 
 * @param[in] linkRadius Any particles below this distance will have additional distance constraints created between them
 * @param[in] linkStiffness The stiffness of distance links
 * @param[in] globalStiffness If this parameter is > 0.0f, adds an additional global cluster that consists of all particles in the shape. The stiffness of this cluster is the globalStiffness.
+* @param[in] clusterPlasticThreshold Particles belonging to rigid shapes that move with a position delta magnitude > threshold will be permanently deformed in the rest pose, if clusterPlasticCreep > 0.0f
+* @param[in] clusterPlasticCreep Controls the rate at which particles in the rest pose are deformed for particles passing the deformation threshold
 * @return A pointer to an asset structure holding the particles and constraints
 */
-NV_FLEX_API NvFlexExtAsset* NvFlexExtCreateSoftFromMesh(const float* vertices, int numVertices, const int* indices, int numTriangleIndices, float particleSpacing, float volumeSampling, float surfaceSampling, float clusterSpacing, float clusterRadius, float clusterStiffness, float linkRadius, float linkStiffness, float globalStiffness);
+NV_FLEX_API NvFlexExtAsset* NvFlexExtCreateSoftFromMesh(const float* vertices, int numVertices, const int* indices, int numTriangleIndices, float particleSpacing, float volumeSampling, float surfaceSampling, float clusterSpacing, float clusterRadius, float clusterStiffness, float linkRadius, float linkStiffness, float globalStiffness, float clusterPlasticThreshold, float clusterPlasticCreep);
 
 /**
  * Frees all memory associated with an asset created by one of the creation methods
@@ -642,7 +649,7 @@ NV_FLEX_API NvFlexExtInstance* NvFlexExtCreateInstance(NvFlexExtContainer* conta
 NV_FLEX_API void NvFlexExtDestroyInstance(NvFlexExtContainer* container, const NvFlexExtInstance* instance);
 
 /** Notifies the container that asset data has changed and needs to be sent to the GPU
- *  this should be called if the constrains for an existing asset are modified by the user
+ *  this should be called if the constraints for an existing asset are modified by the user
  *
  * @param[in] container The container the instance referencing the asset belongs to
  * @param[in] asset The asset which was modified (can be NULL)

@@ -111,9 +111,6 @@
 		<ClInclude Include="..\..\scenes\plasticbody.h">
 			<Filter>demo\scenes</Filter>
 		</ClInclude>
-		<ClInclude Include="..\..\scenes\plasticstack.h">
-			<Filter>demo\scenes</Filter>
-		</ClInclude>
 		<ClInclude Include="..\..\scenes\player.h">
 			<Filter>demo\scenes</Filter>
 		</ClInclude>
@@ -142,6 +139,9 @@
 			<Filter>demo\scenes</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\scenes\sdfcollision.h">
+			<Filter>demo\scenes</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\scenes\shapechannels.h">
 			<Filter>demo\scenes</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\scenes\shapecollision.h">

@@ -74,6 +74,7 @@
 					../../../lib/win32/NvFlexDeviceDebug_x86.lib
 					../../../external/SDL2-2.0.4/lib/x86/SDL2.lib
 					../../../external/SDL2-2.0.4/lib/x86/SDL2main.lib
+					../../../external/NvToolsExt/lib/Win32/nvToolsExt32_1.lib
 					../../../external/glew/lib/win32/glew32.lib
 				</Libraries>
 				<Libraries platforms="Win64">
@@ -82,6 +83,7 @@
 					../../../lib/win64/NvFlexDeviceDebug_x64.lib
 					../../../external/SDL2-2.0.4/lib/x64/SDL2.lib
 					../../../external/SDL2-2.0.4/lib/x64/SDL2main.lib
+					../../../external/NvToolsExt/lib/x64/nvToolsExt64_1.lib
 					../../../external/glew/lib/x64/glew32.lib
 				</Libraries>
 			
@@ -111,6 +113,7 @@
 					../../../lib/win32/NvFlexDeviceRelease_x86.lib
 					../../../external/SDL2-2.0.4/lib/x86/SDL2.lib
 					../../../external/SDL2-2.0.4/lib/x86/SDL2main.lib
+					../../../external/NvToolsExt/lib/Win32/nvToolsExt32_1.lib
 					../../../external/glew/lib/win32/glew32.lib
 				</Libraries>
 				<Libraries platforms="Win64">
@@ -119,86 +122,11 @@
 					../../../lib/win64/NvFlexDeviceRelease_x64.lib
 					../../../external/SDL2-2.0.4/lib/x64/SDL2.lib
 					../../../external/SDL2-2.0.4/lib/x64/SDL2main.lib
+					../../../external/NvToolsExt/lib/x64/nvToolsExt64_1.lib
 					../../../external/glew/lib/x64/glew32.lib					
 				</Libraries>
 
 			</Config>
-
-
-			<!-- Android -->
-
-			<Config name="default" type="app" platforms="android{x}">
-
-				<apply-template name="android-common"/>				
-
-				<OutDir tool="make">${user:ProjectRoot}/demo/compiler/android/flex_project/libs/armeabi-v7a</OutDir>
-
-				<Preprocessor type="define">
-					android
-					ANDROID=1
-					ANDROID_PLAT=1
-					DISABLE_IMPORTGL
-				</Preprocessor>
-
-				<SearchPaths type="header" tool="make">
-					"${user:ProjectRoot}"
-					"${user:ProjectRoot}/external/egl_setup"
-					"${user:ProjectRoot}/external/regal_static/include"
-				</SearchPaths>
-
-				<SearchPaths type="library" tool="make">
-					"${user:ProjectRoot}/external/regal_static/lib/armeabi-v7a"
-					"${user:ProjectRoot}/lib/android"
-				</SearchPaths>
-
-				<Libraries>
-					android stdc++ c m log dl EGL gomp cudart_static Regal_static
-				</Libraries>
-
-				<Libraries tool="make">
-					stlport_static
-				</Libraries>
-
-				<ExceptionHandling>True</ExceptionHandling>
-				<RuntimeTypeInfo>True</RuntimeTypeInfo>
-
-				<CFlags>
-					-std=c++11 -fno-exceptions -fno-rtti
-				</CFlags>
-
-				<CFlags tool="make">
-					-fpic -fPIC -ffunction-sections -funwind-tables -fstack-protector -no-canonical-prefixes -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3-d16 -O2 -g -fomit-frame-pointer -fstrict-aliasing -funswitch-loops -finline-limit=300
-				</CFlags>
-
-				<LFlags tool="make">
-					--sysroot=${NDK_ROOT}/${NDK_VERSION}/platforms/android-15/arch-arm -shared -Wl,--no-undefined
-				</LFlags>
-
-				<AndroidAPILevel>15</AndroidAPILevel>
-				<AntBuildDirectory>
-					${user:ProjectRoot}/demo/compiler/android/flex_project
-				</AntBuildDirectory>
-				<AntJavaSourceDir>
-					${user:ProjectRoot}/demo/compiler/android/src
-				</AntJavaSourceDir>
-
-			</Config>
-
-			<Configuration name="release" platforms="android{x}">
-				<OutFile>libflexDemo.so</OutFile>
-
-				<Preprocessor type="define">
-					NDEBUG
-				</Preprocessor>
-
-				<AntBuildType>debug</AntBuildType>
-
-				<Libraries>
-					NvFlexRelease_armv7l
-					NvFlexExtRelease_armv7l
-				</Libraries>
-
-			</Configuration>
 
 			<!-- Linux -->
 
@@ -220,7 +148,7 @@
 				</CFlags>
 
 				<LFlags>
-					-g -L${user:External}/glew/lib/linux -L/usr/lib -L"../../../lib/linux64" -L${user:External}/SDL2-2.0.4/lib/x64/ -L${user:CUDA_PATH}/lib64 -lGL -lglut -lGLU -lGLEW -lcudart_static -ldl
+					-g -L${user:External}/glew/lib/linux -L/usr/lib -L"../../../lib/linux64" -L${user:External}/SDL2-2.0.4/lib/x64/ -L${user:CUDA_PATH}/lib64 -lGL -lglut -lGLU -lGLEW -lcudart_static -ldl -lrt -pthread
 				</LFlags>
 				
 			</Config>      

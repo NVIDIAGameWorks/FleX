@@ -7,7 +7,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta http-equiv="x-ua-compatible" content="IE=Edge"/>
     
-    <title>Manual &mdash; NVIDIA Flex 1.1.0 documentation</title>
+    <title>Manual &mdash; NVIDIA Flex 1.2.0 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -18,7 +18,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.1.0',
+        VERSION:     '1.2.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -31,7 +31,7 @@
     <script type="text/javascript" src="_static/bootstrap.js"></script>
     <script type="text/javascript" src="_static/jquery.cookie.js"></script>
     <script type="text/javascript" src="_static/jquery.storageapi.js"></script>
-    <link rel="top" title="NVIDIA Flex 1.1.0 documentation" href="index.html" />
+    <link rel="top" title="NVIDIA Flex 1.2.0 documentation" href="index.html" />
     <link rel="next" title="Release Notes" href="releasenotes.html" />
     <link rel="prev" title="NVIDIA Flex" href="index.html" /> 
   </head>
@@ -57,7 +57,7 @@
 <div class="masthead">
     <div class="row">
       <ul class="breadcrumb">
-        <li><a href="index.html">NVIDIA Flex 1.1.0 documentation</a></li> 
+        <li><a href="index.html">NVIDIA Flex 1.2.0 documentation</a></li> 
       </ul>
     </div>
 </div>
@@ -115,17 +115,18 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="releasenotes.html">Release Notes</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="releasenotes.html#id1">1.1.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="releasenotes.html#id2">1.0.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="releasenotes.html#id3">0.9.5</a></li>
-<li class="toctree-l2"><a class="reference internal" href="releasenotes.html#id4">0.9.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="releasenotes.html#id5">0.8.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="releasenotes.html#id6">0.2.5</a></li>
-<li class="toctree-l2"><a class="reference internal" href="releasenotes.html#id7">0.2.3</a></li>
-<li class="toctree-l2"><a class="reference internal" href="releasenotes.html#id8">0.2.2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="releasenotes.html#id9">0.2.1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="releasenotes.html#id10">0.2.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="releasenotes.html#id11">0.1.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releasenotes.html#id1">1.2.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releasenotes.html#id2">1.1.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releasenotes.html#id3">1.0.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releasenotes.html#id4">0.9.5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releasenotes.html#id5">0.9.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releasenotes.html#id6">0.8.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releasenotes.html#id7">0.2.5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releasenotes.html#id8">0.2.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releasenotes.html#id9">0.2.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releasenotes.html#id10">0.2.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releasenotes.html#id11">0.2.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="releasenotes.html#id12">0.1.0</a></li>
 </ul>
 </li>
 </ul>
@@ -179,21 +180,26 @@
 <div class="section" id="quick-start">
 <span id="quick"></span><h3>Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h3>
 <p>The example code below shows how to initialize the library, create a new solver (similar to a scene in PhysX), and how to tick the solver:</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span class="cp">#include &lt;NvFlex.h&gt;</span>
+<div class="highlight-cpp"><div class="highlight"><pre><span class="n">NvFlexLibrary</span><span class="o">*</span> <span class="n">library</span> <span class="o">=</span> <span class="n">NvFlexInit</span><span class="p">();</span>
 
-<span class="n">NvFlexLibrary</span><span class="o">*</span> <span class="n">library</span> <span class="o">=</span> <span class="n">NvFlexInit</span><span class="p">();</span>
-<span class="n">NvFlexSolver</span><span class="o">*</span> <span class="n">solver</span> <span class="o">=</span> <span class="n">NvFlexCreateSolver</span><span class="p">(</span><span class="n">library</span><span class="p">);</span>
+<span class="c1">// create new solver</span>
+<span class="n">NvFlexSolverDesc</span> <span class="n">solverDesc</span><span class="p">;</span>
+<span class="n">NvFlexSetSolverDescDefaults</span><span class="p">(</span><span class="o">&amp;</span><span class="n">solverDesc</span><span class="p">);</span>
+<span class="n">solverDesc</span><span class="p">.</span><span class="n">maxParticles</span> <span class="o">=</span> <span class="n">n</span><span class="p">;</span>
+<span class="n">solverDesc</span><span class="p">.</span><span class="n">maxDiffuseParticles</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 
-<span class="n">NvFlexBuffer</span><span class="o">*</span> <span class="n">particleBuffer</span> <span class="o">=</span> <span class="n">NvlexAllocBuffer</span><span class="p">(</span><span class="n">library</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">Vec4</span><span class="p">),</span> <span class="n">eNvFlexBufferHost</span><span class="p">);</span>
-<span class="n">NvFlexBuffer</span><span class="o">*</span> <span class="n">velocityBuffer</span> <span class="o">=</span> <span class="n">NvlexAllocBuffer</span><span class="p">(</span><span class="n">library</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">Vec4</span><span class="p">),</span> <span class="n">eNvFlexBufferHost</span><span class="p">);</span>
-<span class="n">NvFlexBuffer</span><span class="o">*</span> <span class="n">phaseBuffer</span> <span class="o">=</span> <span class="n">NvlexAllocBuffer</span><span class="p">(</span><span class="n">library</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">),</span> <span class="n">eNvFlexBufferHost</span><span class="p">);</span>
+<span class="n">NvFlexSolver</span><span class="o">*</span> <span class="n">solver</span> <span class="o">=</span> <span class="n">NvFlexCreateSolver</span><span class="p">(</span><span class="n">library</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">solverDesc</span><span class="p">);</span>
+
+<span class="n">NvFlexBuffer</span><span class="o">*</span> <span class="n">particleBuffer</span> <span class="o">=</span> <span class="n">NvFlexAllocBuffer</span><span class="p">(</span><span class="n">library</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">float4</span><span class="p">),</span> <span class="n">eNvFlexBufferHost</span><span class="p">);</span>
+<span class="n">NvFlexBuffer</span><span class="o">*</span> <span class="n">velocityBuffer</span> <span class="o">=</span> <span class="n">NvFlexAllocBuffer</span><span class="p">(</span><span class="n">library</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">float4</span><span class="p">),</span> <span class="n">eNvFlexBufferHost</span><span class="p">);</span>
+<span class="n">NvFlexBuffer</span><span class="o">*</span> <span class="n">phaseBuffer</span> <span class="o">=</span> <span class="n">NvFlexAllocBuffer</span><span class="p">(</span><span class="n">library</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">),</span> <span class="n">eNvFlexBufferHost</span><span class="p">);</span>
 
 <span class="k">while</span><span class="p">(</span><span class="o">!</span><span class="n">done</span><span class="p">)</span>
 <span class="p">{</span>
         <span class="c1">// map buffers for reading / writing</span>
-        <span class="n">float4</span><span class="o">*</span> <span class="n">particles</span> <span class="o">=</span> <span class="p">(</span><span class="n">float4</span><span class="o">*</span><span class="p">)</span><span class="n">NvlexMap</span><span class="p">(</span><span class="n">particles</span><span class="p">,</span> <span class="n">eNvFlexMapWait</span><span class="p">);</span>
-        <span class="n">float3</span><span class="o">*</span> <span class="n">velocities</span>  <span class="o">=</span> <span class="p">(</span><span class="n">float3</span><span class="o">*</span><span class="p">)</span><span class="n">NvFlexMap</span><span class="p">(</span><span class="n">velocities</span><span class="p">,</span> <span class="n">eNvFlexMapWait</span><span class="p">);</span>
-        <span class="kt">int</span><span class="o">*</span> <span class="n">phases</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="o">*</span><span class="p">)</span><span class="n">NvFlexMap</span><span class="p">(</span><span class="n">phases</span><span class="p">,</span> <span class="n">eNvFlexMapWait</span><span class="p">);</span>
+        <span class="n">float4</span><span class="o">*</span> <span class="n">particles</span> <span class="o">=</span> <span class="p">(</span><span class="n">float4</span><span class="o">*</span><span class="p">)</span><span class="n">NvFlexMap</span><span class="p">(</span><span class="n">particleBuffer</span><span class="p">,</span> <span class="n">eNvFlexMapWait</span><span class="p">);</span>
+        <span class="n">float3</span><span class="o">*</span> <span class="n">velocities</span>  <span class="o">=</span> <span class="p">(</span><span class="n">float3</span><span class="o">*</span><span class="p">)</span><span class="n">NvFlexMap</span><span class="p">(</span><span class="n">velocityBuffer</span><span class="p">,</span> <span class="n">eNvFlexMapWait</span><span class="p">);</span>
+        <span class="kt">int</span><span class="o">*</span> <span class="n">phases</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="o">*</span><span class="p">)</span><span class="n">NvFlexMap</span><span class="p">(</span><span class="n">phaseBuffer</span><span class="p">,</span> <span class="n">eNvFlexMapWait</span><span class="p">);</span>
 
         <span class="c1">// spawn (user method)</span>
         <span class="n">SpawnParticles</span><span class="p">(</span><span class="n">particles</span><span class="p">,</span> <span class="n">velocities</span><span class="p">,</span> <span class="n">phases</span><span class="p">);</span>
@@ -207,17 +213,17 @@
         <span class="n">NvFlexUnmap</span><span class="p">(</span><span class="n">phaseBuffer</span><span class="p">);</span>
 
         <span class="c1">// write to device (async)</span>
-        <span class="n">NvFlexSetParticles</span><span class="p">(</span><span class="n">particleBuffer</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span>
-        <span class="n">NvFlexSetVelocities</span><span class="p">(</span><span class="n">velocityBuffer</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span>
-        <span class="n">NvFlexSetPhases</span><span class="p">(</span><span class="n">phaseBuffer</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span>
+        <span class="n">NvFlexSetParticles</span><span class="p">(</span><span class="n">solver</span><span class="p">,</span> <span class="n">particleBuffer</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+        <span class="n">NvFlexSetVelocities</span><span class="p">(</span><span class="n">solver</span><span class="p">,</span> <span class="n">velocityBuffer</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+        <span class="n">NvFlexSetPhases</span><span class="p">(</span><span class="n">solver</span><span class="p">,</span> <span class="n">phaseBuffer</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
 
         <span class="c1">// tick</span>
         <span class="n">NvFlexUpdateSolver</span><span class="p">(</span><span class="n">solver</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">false</span><span class="p">);</span>
 
         <span class="c1">// read back (async)</span>
-        <span class="n">NvFlexGetParticles</span><span class="p">(</span><span class="n">particleBuffer</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span>
-        <span class="n">NvFlexGetVelocities</span><span class="p">(</span><span class="n">velocityBuffer</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span>
-        <span class="n">NvFlexGetPhases</span><span class="p">(</span><span class="n">phaseBuffer</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span>
+        <span class="n">NvFlexGetParticles</span><span class="p">(</span><span class="n">solver</span><span class="p">,</span> <span class="n">particleBuffer</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+        <span class="n">NvFlexGetVelocities</span><span class="p">(</span><span class="n">solver</span><span class="p">,</span> <span class="n">velocityBuffer</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+        <span class="n">NvFlexGetPhases</span><span class="p">(</span><span class="n">solver</span><span class="p">,</span> <span class="n">phaseBuffer</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
 <span class="p">}</span>
 
 <span class="n">NvFlexFreeBuffer</span><span class="p">(</span><span class="n">particleBuffer</span><span class="p">);</span>
@@ -250,9 +256,9 @@
 <span class="n">NvFlexBuffer</span><span class="o">*</span> <span class="n">phaseBuffer</span> <span class="o">=</span> <span class="n">NvFlexAllocBuffer</span><span class="p">(</span><span class="n">library</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">),</span> <span class="n">eNvFlexBufferHost</span><span class="p">);</span>
 
 <span class="c1">// map buffers for reading / writing</span>
-<span class="n">float4</span><span class="o">*</span> <span class="n">particles</span> <span class="o">=</span> <span class="p">(</span><span class="n">float4</span><span class="o">*</span><span class="p">)</span><span class="n">NvFlexMap</span><span class="p">(</span><span class="n">particles</span><span class="p">,</span> <span class="n">eNvFlexMapWait</span><span class="p">);</span>
-<span class="n">float3</span><span class="o">*</span> <span class="n">velocities</span> <span class="o">=</span> <span class="p">(</span><span class="n">float3</span><span class="o">*</span><span class="p">)</span><span class="n">NvFlexMap</span><span class="p">(</span><span class="n">velocities</span><span class="p">,</span> <span class="n">eNvFlexMapWait</span><span class="p">);</span>
-<span class="kt">int</span><span class="o">*</span> <span class="n">phases</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="o">*</span><span class="p">)</span><span class="n">NvFlexMap</span><span class="p">(</span><span class="n">phases</span><span class="p">,</span> <span class="n">eFlexMapWait</span><span class="p">);</span>
+<span class="n">float4</span><span class="o">*</span> <span class="n">particles</span> <span class="o">=</span> <span class="p">(</span><span class="n">float4</span><span class="o">*</span><span class="p">)</span><span class="n">NvFlexMap</span><span class="p">(</span><span class="n">particlesBuffer</span><span class="p">,</span> <span class="n">eNvFlexMapWait</span><span class="p">);</span>
+<span class="n">float3</span><span class="o">*</span> <span class="n">velocities</span> <span class="o">=</span> <span class="p">(</span><span class="n">float3</span><span class="o">*</span><span class="p">)</span><span class="n">NvFlexMap</span><span class="p">(</span><span class="n">velocityBuffer</span><span class="p">,</span> <span class="n">eNvFlexMapWait</span><span class="p">);</span>
+<span class="kt">int</span><span class="o">*</span> <span class="n">phases</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="o">*</span><span class="p">)</span><span class="n">NvFlexMap</span><span class="p">(</span><span class="n">phaseBuffer</span><span class="p">,</span> <span class="n">eFlexMapWait</span><span class="p">);</span>
 
 <span class="c1">// spawn particles</span>
 <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
@@ -268,9 +274,9 @@
 <span class="n">NvFlexUnmap</span><span class="p">(</span><span class="n">phaseBuffer</span><span class="p">);</span>
 
 <span class="c1">// write to device (async)</span>
-<span class="n">NvFlexSetParticles</span><span class="p">(</span><span class="n">particleBuffer</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span>
-<span class="n">NvFlexSetVelocities</span><span class="p">(</span><span class="n">velocityBuffer</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span>
-<span class="n">NvFlexSetPhases</span><span class="p">(</span><span class="n">phaseBuffer</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span>
+<span class="n">NvFlexSetParticles</span><span class="p">(</span><span class="n">solver</span><span class="p">,</span> <span class="n">particleBuffer</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+<span class="n">NvFlexSetVelocities</span><span class="p">(</span><span class="n">solver</span><span class="p">,</span> <span class="n">velocityBuffer</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+<span class="n">NvFlexSetPhases</span><span class="p">(</span><span class="n">solver</span><span class="p">,</span> <span class="n">phaseBuffer</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
 </pre></div>
 </div>
 <div class="section" id="radius">
@@ -309,7 +315,9 @@
         <span class="n">activeIndices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
 
 <span class="n">NvFlexUnmap</span><span class="p">(</span><span class="n">activeBuffer</span><span class="p">);</span>
-<span class="n">NvFlexSetActive</span><span class="p">(</span><span class="n">solver</span><span class="p">,</span> <span class="n">activeBuffer</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+
+<span class="n">NvFlexSetActive</span><span class="p">(</span><span class="n">solver</span><span class="p">,</span> <span class="n">activeBuffer</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">)</span>
+<span class="n">NvFlexSetActiveCount</span><span class="p">(</span><span class="n">solver</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
 </pre></div>
 </div>
 <p><strong>Note:</strong> constraints referencing inactive particles may behave unexpectedly.</p>
@@ -634,34 +642,34 @@ simulation. Diffuse particles can be created through the <strong>NvFlexSetDiffus
 <p>Synchronization occurs when you call <strong>NvFlexMap()</strong> on a simulation buffer. To avoid making the CPU wait a long time for the GPU to finish its work it is good practice to call <strong>NvFlexMap()</strong> as far away from the <strong>NvFlexUpdateSolver()</strong> and <strong>NvFlexGet*()</strong> as possible. This gives the GPU enough time to finish its work so that the new data is ready for when you call <strong>NvFlexMap()</strong>. The following snippet shows an example of this by performing the main game tick after the the read-back methods have been issued.:</p>
 <div class="highlight-cpp"><div class="highlight"><pre><span class="k">while</span> <span class="p">(</span><span class="o">!</span><span class="n">done</span><span class="p">)</span>
 <span class="p">{</span>
-        <span class="c1">// map buffers for reading / writing (synchronizes with GPU)</span>
-        <span class="n">float4</span><span class="o">*</span> <span class="n">particles</span> <span class="o">=</span> <span class="p">(</span><span class="n">float4</span><span class="o">*</span><span class="p">)</span><span class="n">NvFlexMap</span><span class="p">(</span><span class="n">particleBuffer</span><span class="p">,</span> <span class="n">eNvFlexMapWait</span><span class="p">);</span>
-        <span class="n">float3</span><span class="o">*</span> <span class="n">velocities</span>  <span class="o">=</span> <span class="p">(</span><span class="n">float3</span><span class="o">*</span><span class="p">)</span><span class="n">NvFlexMap</span><span class="p">(</span><span class="n">velocityBuffer</span><span class="p">,</span> <span class="n">eNvFlexMapWait</span><span class="p">);</span>
-        <span class="kt">int</span><span class="o">*</span> <span class="n">phases</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="o">*</span><span class="p">)</span><span class="n">NvFlexMap</span><span class="p">(</span><span class="n">phaseBuffer</span><span class="p">,</span> <span class="n">eNvFlexMapWait</span><span class="p">);</span>
+<span class="c1">// map buffers for reading / writing (synchronizes with GPU)</span>
+<span class="n">float4</span><span class="o">*</span> <span class="n">particles</span> <span class="o">=</span> <span class="p">(</span><span class="n">float4</span><span class="o">*</span><span class="p">)</span><span class="n">NvFlexMap</span><span class="p">(</span><span class="n">particleBuffer</span><span class="p">,</span> <span class="n">eNvFlexMapWait</span><span class="p">);</span>
+<span class="n">float3</span><span class="o">*</span> <span class="n">velocities</span>  <span class="o">=</span> <span class="p">(</span><span class="n">float3</span><span class="o">*</span><span class="p">)</span><span class="n">NvFlexMap</span><span class="p">(</span><span class="n">velocityBuffer</span><span class="p">,</span> <span class="n">eNvFlexMapWait</span><span class="p">);</span>
+<span class="kt">int</span><span class="o">*</span> <span class="n">phases</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="o">*</span><span class="p">)</span><span class="n">NvFlexMap</span><span class="p">(</span><span class="n">phaseBuffer</span><span class="p">,</span> <span class="n">eNvFlexMapWait</span><span class="p">);</span>
 
-        <span class="c1">// application CPU-side particle update</span>
-        <span class="n">UpdateBuffers</span><span class="p">(</span><span class="n">particles</span><span class="p">,</span> <span class="n">velocities</span><span class="p">,</span> <span class="n">phases</span><span class="p">);</span>
+<span class="c1">// application CPU-side particle update</span>
+<span class="n">UpdateBuffers</span><span class="p">(</span><span class="n">particles</span><span class="p">,</span> <span class="n">velocities</span><span class="p">,</span> <span class="n">phases</span><span class="p">);</span>
 
-        <span class="c1">// unmap buffers</span>
-        <span class="n">NvFlexUnmap</span><span class="p">(</span><span class="n">particleBuffer</span><span class="p">);</span>
-        <span class="n">NvFlexUnmap</span><span class="p">(</span><span class="n">velocityBuffer</span><span class="p">);</span>
-        <span class="n">NvFlexUnmap</span><span class="p">(</span><span class="n">phaseBuffer</span><span class="p">);</span>
+<span class="c1">// unmap buffers</span>
+<span class="n">NvFlexUnmap</span><span class="p">(</span><span class="n">particleBuffer</span><span class="p">);</span>
+<span class="n">NvFlexUnmap</span><span class="p">(</span><span class="n">velocityBuffer</span><span class="p">);</span>
+<span class="n">NvFlexUnmap</span><span class="p">(</span><span class="n">phaseBuffer</span><span class="p">);</span>
 
-        <span class="c1">// write to device (async)</span>
-        <span class="n">NvFlexSetParticles</span><span class="p">(</span><span class="n">particleBuffer</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span>
-        <span class="n">NvFlexSetVelocities</span><span class="p">(</span><span class="n">velocityBuffer</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span>
-        <span class="n">NvFlexSetPhases</span><span class="p">(</span><span class="n">phaseBuffer</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span>
+<span class="c1">// write to device (async)</span>
+<span class="n">NvFlexSetParticles</span><span class="p">(</span><span class="n">solver</span><span class="p">,</span> <span class="n">particleBuffer</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+<span class="n">NvFlexSetVelocities</span><span class="p">(</span><span class="n">solver</span><span class="p">,</span> <span class="n">velocityBuffer</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+<span class="n">NvFlexSetPhases</span><span class="p">(</span><span class="n">solver</span><span class="p">,</span> <span class="n">phaseBuffer</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
 
-        <span class="c1">// tick (async)</span>
-        <span class="n">NvFlexUpdateSolver</span><span class="p">(</span><span class="n">solver</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+<span class="c1">// tick (async)</span>
+<span class="n">NvFlexUpdateSolver</span><span class="p">(</span><span class="n">solver</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
 
-        <span class="c1">// read back (async)</span>
-        <span class="n">NvFlexGetParticles</span><span class="p">(</span><span class="n">particleBuffer</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span>
-        <span class="n">NvFlexGetVelocities</span><span class="p">(</span><span class="n">velocityBuffer</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span>
-        <span class="n">NvFlexGetPhases</span><span class="p">(</span><span class="n">phaseBuffer</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span>
+<span class="c1">// read back (async)</span>
+<span class="n">NvFlexGetParticles</span><span class="p">(</span><span class="n">solver</span><span class="p">,</span> <span class="n">particleBuffer</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+<span class="n">NvFlexGetVelocities</span><span class="p">(</span><span class="n">solver</span><span class="p">,</span> <span class="n">velocityBuffer</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+<span class="n">NvFlexGetPhases</span><span class="p">(</span><span class="n">solver</span><span class="p">,</span> <span class="n">phaseBuffer</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
 
-        <span class="c1">// Perform CPU work here while update and transfer are in flight</span>
-        <span class="n">TickGame</span><span class="p">()</span>
+<span class="c1">// Perform CPU work here while update and transfer are in flight</span>
+<span class="n">TickGame</span><span class="p">()</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -708,7 +716,7 @@ simulation. Diffuse particles can be created through the <strong>NvFlexSetDiffus
 <div class="masthead">
     <div class="row">
       <ul class="breadcrumb">
-        <li><a href="index.html">NVIDIA Flex 1.1.0 documentation</a></li> 
+        <li><a href="index.html">NVIDIA Flex 1.2.0 documentation</a></li> 
       </ul>
     </div>
 </div>

@@ -1,4 +1,4 @@
-NVIDIA Flex - 1.1.0
+NVIDIA Flex - 1.2.0
 ===================
 
 Flex is a particle-based simulation library designed for real-time applications.
@@ -92,7 +92,7 @@ Known Issues
 ============
 
 * Crash with inflatable scenes on Intel HD Graphics 530
-
+* MSAA is broken on D3D12 and currently disabled
 
 Acknowledgements
 ================

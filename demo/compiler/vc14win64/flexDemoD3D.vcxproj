@@ -13,6 +13,7 @@
 	<PropertyGroup Label="Globals">
 		<ProjectGuid>{EF4EDDD8-2620-47AA-E75D-4C682C276C02}</ProjectGuid>
 		<RootNamespace>flexDemoD3D</RootNamespace>
+		<WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
 	</PropertyGroup>
 	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug|x64'" Label="Configuration">
@@ -47,15 +48,15 @@
 			<FloatingPointModel>Precise</FloatingPointModel>
 			<AdditionalOptions> /d2Zi+</AdditionalOptions>
 			<Optimization>Disabled</Optimization>
-			<AdditionalIncludeDirectories>$(CUDA_PATH)/include;$(CUDA_PATH)/extras/cupti/include;./../../..;./../..;./../../d3d11;./../../../external/SDL2-2.0.4/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-			<PreprocessorDefinitions>_CONSOLE;WIN32;_CRT_SECURE_NO_WARNINGS;FLEX_DX;_DEBUG;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+			<AdditionalIncludeDirectories>$(CUDA_PATH)/include;$(CUDA_PATH)/extras/cupti/include;./../../..;./../..;./../../d3d11;./../../d3d12;./../../../external/SDL2-2.0.4/include;./../../../external/D3D12/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+			<PreprocessorDefinitions>_CONSOLE;WIN32;_CRT_SECURE_NO_WARNINGS;FLEX_DX;FLEX_DX12;_DEBUG;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
 			<WarningLevel>Level3</WarningLevel>
 			<RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
 			<PrecompiledHeader>NotUsing</PrecompiledHeader>
 			<PrecompiledHeaderFile></PrecompiledHeaderFile>
 		</ClCompile>
 		<Link>
-			<AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;./../../../external/SDL2-2.0.4/lib/x64/SDL2.lib;./../../../external/SDL2-2.0.4/lib/x64/SDL2main.lib;./../../../lib/win64/NvFlexDebugD3D_x64.lib;./../../../lib/win64/NvFlexExtDebugD3D_x64.lib;./../../../external/glew/lib/x64/glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+			<AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;d3dcompiler.lib;./../../../external/SDL2-2.0.4/lib/x64/SDL2.lib;./../../../external/SDL2-2.0.4/lib/x64/SDL2main.lib;./../../../external/NvToolsExt/lib/x64/nvToolsExt64_1.lib;./../../../external/D3D12/libs/x64/d3d12.lib;./../../../lib/win64/NvFlexDebugD3D_x64.lib;./../../../lib/win64/NvFlexExtDebugD3D_x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
 			<OutputFile>$(OutDir)NvFlexDemoDebugD3D_x64.exe</OutputFile>
 			<AdditionalLibraryDirectories>$(CUDA_PATH)/lib/x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
 			<ProgramDatabaseFile>$(OutDir)/NvFlexDemoDebugD3D_x64.exe.pdb</ProgramDatabaseFile>
@@ -86,15 +87,15 @@
 			<FloatingPointModel>Fast</FloatingPointModel>
 			<AdditionalOptions> /d2Zi+</AdditionalOptions>
 			<Optimization>Full</Optimization>
-			<AdditionalIncludeDirectories>$(CUDA_PATH)/include;$(CUDA_PATH)/extras/cupti/include;./../../..;./../..;./../../d3d11;./../../../external/SDL2-2.0.4/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-			<PreprocessorDefinitions>_CONSOLE;WIN32;_CRT_SECURE_NO_WARNINGS;FLEX_DX;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+			<AdditionalIncludeDirectories>$(CUDA_PATH)/include;$(CUDA_PATH)/extras/cupti/include;./../../..;./../..;./../../d3d11;./../../d3d12;./../../../external/SDL2-2.0.4/include;./../../../external/D3D12/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+			<PreprocessorDefinitions>_CONSOLE;WIN32;_CRT_SECURE_NO_WARNINGS;FLEX_DX;FLEX_DX12;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
 			<WarningLevel>Level3</WarningLevel>
 			<RuntimeLibrary>MultiThreaded</RuntimeLibrary>
 			<PrecompiledHeader>NotUsing</PrecompiledHeader>
 			<PrecompiledHeaderFile></PrecompiledHeaderFile>
 		</ClCompile>
 		<Link>
-			<AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;./../../../external/SDL2-2.0.4/lib/x64/SDL2.lib;./../../../external/SDL2-2.0.4/lib/x64/SDL2main.lib;./../../../lib/win64/NvFlexReleaseD3D_x64.lib;./../../../lib/win64/NvFlexExtReleaseD3D_x64.lib;./../../../external/glew/lib/x64/glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+			<AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;d3dcompiler.lib;./../../../external/SDL2-2.0.4/lib/x64/SDL2.lib;./../../../external/SDL2-2.0.4/lib/x64/SDL2main.lib;./../../../external/NvToolsExt/lib/x64/nvToolsExt64_1.lib;./../../../external/D3D12/libs/x64/d3d12.lib;./../../../lib/win64/NvFlexReleaseD3D_x64.lib;./../../../lib/win64/NvFlexExtReleaseD3D_x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
 			<OutputFile>$(OutDir)NvFlexDemoReleaseD3D_x64.exe</OutputFile>
 			<AdditionalLibraryDirectories>$(CUDA_PATH)/lib/x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
 			<ProgramDatabaseFile>$(OutDir)/NvFlexDemoReleaseD3D_x64.exe.pdb</ProgramDatabaseFile>
@@ -183,8 +184,6 @@
 		</ClInclude>
 		<ClInclude Include="..\..\scenes\plasticbody.h">
 		</ClInclude>
-		<ClInclude Include="..\..\scenes\plasticstack.h">
-		</ClInclude>
 		<ClInclude Include="..\..\scenes\player.h">
 		</ClInclude>
 		<ClInclude Include="..\..\scenes\potpourri.h">
@@ -204,6 +203,8 @@
 		<ClInclude Include="..\..\scenes\rockpool.h">
 		</ClInclude>
 		<ClInclude Include="..\..\scenes\sdfcollision.h">
+		</ClInclude>
+		<ClInclude Include="..\..\scenes\shapechannels.h">
 		</ClInclude>
 		<ClInclude Include="..\..\scenes\shapecollision.h">
 		</ClInclude>
@@ -325,56 +326,200 @@
 		</ClInclude>
 	</ItemGroup>
 	<ItemGroup>
-		<ClInclude Include="..\..\d3d11\appD3D11Ctx.h">
+		<ClInclude Include="..\..\d3d12\appD3D12Ctx.h">
 		</ClInclude>
-		<ClInclude Include="..\..\d3d11\debugLineRender.h">
+		<ClInclude Include="..\..\d3d12\bufferD3D12.h">
 		</ClInclude>
-		<ClInclude Include="..\..\d3d11\diffuseRender.h">
+		<ClInclude Include="..\..\d3d12\demoContextD3D12.h">
 		</ClInclude>
-		<ClInclude Include="..\..\d3d11\fluidRender.h">
+		<ClInclude Include="..\..\d3d12\diffusePointRenderPipelineD3D12.h">
 		</ClInclude>
-		<ClInclude Include="..\..\d3d11\imguiGraph.h">
+		<ClInclude Include="..\..\d3d12\fluidCompositeRenderPipelineD3D12.h">
 		</ClInclude>
-		<ClInclude Include="..\..\d3d11\imguiGraphD3D11.h">
+		<ClInclude Include="..\..\d3d12\fluidEllipsoidRenderPipelineD3D12.h">
 		</ClInclude>
-		<ClInclude Include="..\..\d3d11\meshRender.h">
+		<ClInclude Include="..\..\d3d12\fluidSmoothRenderPipelineD3D12.h">
 		</ClInclude>
-		<ClInclude Include="..\..\d3d11\pointRender.h">
+		<ClInclude Include="..\..\d3d12\imguiGraphD3D12.h">
 		</ClInclude>
-		<ClInclude Include="..\..\d3d11\renderTarget.h">
+		<ClInclude Include="..\..\d3d12\lineRenderPipelineD3D12.h">
 		</ClInclude>
-		<ClInclude Include="..\..\d3d11\shadowMap.h">
+		<ClInclude Include="..\..\d3d12\meshRenderer.h">
 		</ClInclude>
-		<ClCompile Include="..\..\d3d11\appD3D11Ctx.cpp">
+		<ClInclude Include="..\..\d3d12\meshRendererD3D12.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\meshRenderPipelineD3D12.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\meshUtil.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\NvCoDx12CircularResourceHeap.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\NvCoDx12CounterFence.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\NvCoDx12DescriptorHeap.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\NvCoDx12Handle.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\NvCoDx12HelperUtil.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\NvCoDx12RenderTarget.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\NvCoDx12Resource.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\NvCoDx12ResourceScopeManager.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\NvCoDxDebugUtil.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\NvCoDxFormatUtil.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\NvCoFreeList.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\NvResult.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\pipelineUtilD3D12.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\pointRenderPipelineD3D12.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\renderStateD3D12.h">
+		</ClInclude>
+		<ClCompile Include="..\..\d3d12\appD3D12Ctx.cpp">
 		</ClCompile>
-		<ClCompile Include="..\..\d3d11\diffuseRender.cpp">
+		<ClCompile Include="..\..\d3d12\bufferD3D12.cpp">
 		</ClCompile>
-		<ClCompile Include="..\..\d3d11\fluidRender.cpp">
+		<ClCompile Include="..\..\d3d12\demoContextD3D12.cpp">
 		</ClCompile>
-		<ClCompile Include="..\..\d3d11\imguiGraph.cpp">
+		<ClCompile Include="..\..\d3d12\diffusePointRenderPipelineD3D12.cpp">
 		</ClCompile>
-		<ClCompile Include="..\..\d3d11\imguiGraphD3D11.cpp">
+		<ClCompile Include="..\..\d3d12\fluidCompositeRenderPipelineD3D12.cpp">
 		</ClCompile>
-		<ClCompile Include="..\..\d3d11\meshRender.cpp">
+		<ClCompile Include="..\..\d3d12\fluidEllipsoidRenderPipelineD3D12.cpp">
 		</ClCompile>
-		<ClCompile Include="..\..\d3d11\pointRender.cpp">
+		<ClCompile Include="..\..\d3d12\fluidSmoothRenderPipelineD3D12.cpp">
 		</ClCompile>
-		<ClCompile Include="..\..\d3d11\renderTarget.cpp">
+		<ClCompile Include="..\..\d3d12\imguiGraphD3D12.cpp">
 		</ClCompile>
-		<ClCompile Include="..\..\d3d11\shadersD3D11.cpp">
+		<ClCompile Include="..\..\d3d12\imguiInteropD3D12.cpp">
 		</ClCompile>
-		<ClCompile Include="..\..\d3d11\shadowMap.cpp">
+		<ClCompile Include="..\..\d3d12\lineRenderPipelineD3D12.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\meshRenderer.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\meshRendererD3D12.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\meshRenderPipelineD3D12.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\meshUtil.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\NvCoDx12CircularResourceHeap.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\NvCoDx12CounterFence.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\NvCoDx12DescriptorHeap.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\NvCoDx12HelperUtil.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\NvCoDx12RenderTarget.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\NvCoDx12Resource.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\NvCoDx12ResourceScopeManager.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\NvCoDxDebugUtil.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\NvCoDxFormatUtil.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\NvCoFreeList.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\pipelineUtilD3D12.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\pointRenderPipelineD3D12.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\renderStateD3D12.cpp">
 		</ClCompile>
 	</ItemGroup>
 	<ItemGroup>
-		<FxCompile Include="./../../d3d11/shaders/debugLineVS.hlsl">
+		<ClInclude Include="..\..\d3d11\appD3D11Ctx.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d11\debugLineRenderD3D11.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d11\demoContextD3D11.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d11\diffuseRenderD3D11.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d11\fluidRenderD3D11.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d11\imguiGraphD3D11.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d11\meshRenderD3D11.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d11\pointRenderD3D11.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d11\renderTargetD3D11.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d11\shadowMapD3D11.h">
+		</ClInclude>
+		<ClCompile Include="..\..\d3d11\appD3D11Ctx.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d11\debugLineRenderD3D11.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d11\demoContextD3D11.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d11\diffuseRenderD3D11.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d11\fluidRenderD3D11.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d11\imguiGraphD3D11.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d11\imguiInteropD3D11.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d11\meshRenderD3D11.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d11\pointRenderD3D11.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d11\renderTargetD3D11.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d11\shadowMapD3D11.cpp">
+		</ClCompile>
+	</ItemGroup>
+	<ItemGroup>
+		<ClInclude Include="..\..\d3d\appGraphCtx.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d\demoContext.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d\imguiGraph.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d\loader.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d\loaderMacros.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d\renderParamsD3D.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d\shaderCommonD3D.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d\shadersDemoContext.h">
+		</ClInclude>
+		<ClCompile Include="..\..\d3d\appGraphCtxLoader.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d\imguiGraph.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d\imguiGraphLoader.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d\loader.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d\renderParamsD3D.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d\shadersDemoContext.cpp">
+		</ClCompile>
+	</ItemGroup>
+	<ItemGroup>
+		<FxCompile Include="./../../d3d/shaders/debugLineVS.hlsl">
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|x64'">Vertex</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|x64'">5.0</ShaderModel>
 			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</EnableDebuggingInformation>
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|x64'">debugLineVS</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'"> </ObjectFileOutput>
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|x64'">Vertex</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|x64'">5.0</ShaderModel>
@@ -382,17 +527,17 @@
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|x64'">debugLineVS</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'"> </ObjectFileOutput>
 		</FxCompile>
-		<FxCompile Include="./../../d3d11/shaders/debugLinePS.hlsl">
+		<FxCompile Include="./../../d3d/shaders/debugLinePS.hlsl">
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|x64'">Pixel</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|x64'">5.0</ShaderModel>
 			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</EnableDebuggingInformation>
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|x64'">debugLinePS</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'"> </ObjectFileOutput>
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|x64'">Pixel</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|x64'">5.0</ShaderModel>
@@ -400,17 +545,17 @@
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|x64'">debugLinePS</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'"> </ObjectFileOutput>
 		</FxCompile>
-		<FxCompile Include="./../../d3d11/shaders/imguiPS.hlsl">
+		<FxCompile Include="./../../d3d/shaders/imguiPS.hlsl">
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|x64'">Pixel</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|x64'">5.0</ShaderModel>
 			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</EnableDebuggingInformation>
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|x64'">imguiPS</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'"> </ObjectFileOutput>
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|x64'">Pixel</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|x64'">5.0</ShaderModel>
@@ -418,17 +563,17 @@
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|x64'">imguiPS</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'"> </ObjectFileOutput>
 		</FxCompile>
-		<FxCompile Include="./../../d3d11/shaders/imguiVS.hlsl">
+		<FxCompile Include="./../../d3d/shaders/imguiVS.hlsl">
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|x64'">Vertex</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|x64'">5.0</ShaderModel>
 			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</EnableDebuggingInformation>
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|x64'">imguiVS</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'"> </ObjectFileOutput>
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|x64'">Vertex</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|x64'">5.0</ShaderModel>
@@ -436,17 +581,17 @@
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|x64'">imguiVS</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'"> </ObjectFileOutput>
 		</FxCompile>
-		<FxCompile Include="./../../d3d11/shaders/meshPS.hlsl">
+		<FxCompile Include="./../../d3d/shaders/meshPS.hlsl">
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|x64'">Pixel</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|x64'">5.0</ShaderModel>
 			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</EnableDebuggingInformation>
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|x64'">meshPS</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'"> </ObjectFileOutput>
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|x64'">Pixel</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|x64'">5.0</ShaderModel>
@@ -454,17 +599,35 @@
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|x64'">meshPS</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'"> </ObjectFileOutput>
 		</FxCompile>
-		<FxCompile Include="./../../d3d11/shaders/meshShadowPS.hlsl">
+		<FxCompile Include="./../../d3d/shaders/meshAsyncComputeBenchPS.hlsl">
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|x64'">Pixel</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|x64'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|x64'">meshPS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'"> </ObjectFileOutput>
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|x64'">Pixel</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|x64'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|x64'">meshPS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'"> </ObjectFileOutput>
+		</FxCompile>
+		<FxCompile Include="./../../d3d/shaders/meshShadowPS.hlsl">
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|x64'">Pixel</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|x64'">5.0</ShaderModel>
 			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</EnableDebuggingInformation>
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|x64'">meshPS_Shadow</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'"> </ObjectFileOutput>
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|x64'">Pixel</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|x64'">5.0</ShaderModel>
@@ -472,17 +635,17 @@
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|x64'">meshPS_Shadow</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'"> </ObjectFileOutput>
 		</FxCompile>
-		<FxCompile Include="./../../d3d11/shaders/meshVS.hlsl">
+		<FxCompile Include="./../../d3d/shaders/meshVS.hlsl">
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|x64'">Vertex</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|x64'">5.0</ShaderModel>
 			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</EnableDebuggingInformation>
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|x64'">meshVS</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'"> </ObjectFileOutput>
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|x64'">Vertex</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|x64'">5.0</ShaderModel>
@@ -490,17 +653,17 @@
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|x64'">meshVS</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'"> </ObjectFileOutput>
 		</FxCompile>
-		<FxCompile Include="./../../d3d11/shaders/pointVS.hlsl">
+		<FxCompile Include="./../../d3d/shaders/pointVS.hlsl">
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|x64'">Vertex</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|x64'">5.0</ShaderModel>
 			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</EnableDebuggingInformation>
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|x64'">pointVS</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'"> </ObjectFileOutput>
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|x64'">Vertex</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|x64'">5.0</ShaderModel>
@@ -508,17 +671,17 @@
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|x64'">pointVS</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'"> </ObjectFileOutput>
 		</FxCompile>
-		<FxCompile Include="./../../d3d11/shaders/pointGS.hlsl">
+		<FxCompile Include="./../../d3d/shaders/pointGS.hlsl">
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|x64'">Geometry</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|x64'">5.0</ShaderModel>
 			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</EnableDebuggingInformation>
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|x64'">pointGS</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'"> </ObjectFileOutput>
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|x64'">Geometry</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|x64'">5.0</ShaderModel>
@@ -526,17 +689,17 @@
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|x64'">pointGS</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'"> </ObjectFileOutput>
 		</FxCompile>
-		<FxCompile Include="./../../d3d11/shaders/pointPS.hlsl">
+		<FxCompile Include="./../../d3d/shaders/pointPS.hlsl">
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|x64'">Pixel</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|x64'">5.0</ShaderModel>
 			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</EnableDebuggingInformation>
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|x64'">pointPS</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'"> </ObjectFileOutput>
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|x64'">Pixel</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|x64'">5.0</ShaderModel>
@@ -544,17 +707,35 @@
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|x64'">pointPS</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'"> </ObjectFileOutput>
 		</FxCompile>
-		<FxCompile Include="./../../d3d11/shaders/diffuseVS.hlsl">
+		<FxCompile Include="./../../d3d/shaders/pointShadowPS.hlsl">
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|x64'">Pixel</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|x64'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|x64'">pointShadowPS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'"> </ObjectFileOutput>
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|x64'">Pixel</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|x64'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|x64'">pointShadowPS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'"> </ObjectFileOutput>
+		</FxCompile>
+		<FxCompile Include="./../../d3d/shaders/diffuseVS.hlsl">
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|x64'">Vertex</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|x64'">5.0</ShaderModel>
 			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</EnableDebuggingInformation>
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|x64'">diffuseVS</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'"> </ObjectFileOutput>
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|x64'">Vertex</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|x64'">5.0</ShaderModel>
@@ -562,17 +743,17 @@
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|x64'">diffuseVS</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'"> </ObjectFileOutput>
 		</FxCompile>
-		<FxCompile Include="./../../d3d11/shaders/diffuseGS.hlsl">
+		<FxCompile Include="./../../d3d/shaders/diffuseGS.hlsl">
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|x64'">Geometry</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|x64'">5.0</ShaderModel>
 			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</EnableDebuggingInformation>
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|x64'">diffuseGS</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'"> </ObjectFileOutput>
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|x64'">Geometry</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|x64'">5.0</ShaderModel>
@@ -580,17 +761,17 @@
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|x64'">diffuseGS</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'"> </ObjectFileOutput>
 		</FxCompile>
-		<FxCompile Include="./../../d3d11/shaders/diffusePS.hlsl">
+		<FxCompile Include="./../../d3d/shaders/diffusePS.hlsl">
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|x64'">Pixel</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|x64'">5.0</ShaderModel>
 			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</EnableDebuggingInformation>
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|x64'">diffusePS</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'"> </ObjectFileOutput>
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|x64'">Pixel</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|x64'">5.0</ShaderModel>
@@ -598,17 +779,17 @@
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|x64'">diffusePS</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'"> </ObjectFileOutput>
 		</FxCompile>
-		<FxCompile Include="./../../d3d11/shaders/ellipsoidDepthVS.hlsl">
+		<FxCompile Include="./../../d3d/shaders/ellipsoidDepthVS.hlsl">
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|x64'">Vertex</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|x64'">5.0</ShaderModel>
 			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</EnableDebuggingInformation>
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|x64'">ellipsoidDepthVS</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'"> </ObjectFileOutput>
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|x64'">Vertex</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|x64'">5.0</ShaderModel>
@@ -616,17 +797,17 @@
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|x64'">ellipsoidDepthVS</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'"> </ObjectFileOutput>
 		</FxCompile>
-		<FxCompile Include="./../../d3d11/shaders/ellipsoidDepthGS.hlsl">
+		<FxCompile Include="./../../d3d/shaders/ellipsoidDepthGS.hlsl">
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|x64'">Geometry</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|x64'">5.0</ShaderModel>
 			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</EnableDebuggingInformation>
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|x64'">ellipsoidDepthGS</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'"> </ObjectFileOutput>
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|x64'">Geometry</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|x64'">5.0</ShaderModel>
@@ -634,17 +815,17 @@
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|x64'">ellipsoidDepthGS</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'"> </ObjectFileOutput>
 		</FxCompile>
-		<FxCompile Include="./../../d3d11/shaders/ellipsoidDepthPS.hlsl">
+		<FxCompile Include="./../../d3d/shaders/ellipsoidDepthPS.hlsl">
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|x64'">Pixel</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|x64'">5.0</ShaderModel>
 			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</EnableDebuggingInformation>
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|x64'">ellipsoidDepthPS</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'"> </ObjectFileOutput>
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|x64'">Pixel</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|x64'">5.0</ShaderModel>
@@ -652,17 +833,17 @@
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|x64'">ellipsoidDepthPS</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'"> </ObjectFileOutput>
 		</FxCompile>
-		<FxCompile Include="./../../d3d11/shaders/passThroughVS.hlsl">
+		<FxCompile Include="./../../d3d/shaders/passThroughVS.hlsl">
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|x64'">Vertex</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|x64'">5.0</ShaderModel>
 			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</EnableDebuggingInformation>
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|x64'">passThroughVS</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'"> </ObjectFileOutput>
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|x64'">Vertex</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|x64'">5.0</ShaderModel>
@@ -670,17 +851,17 @@
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|x64'">passThroughVS</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'"> </ObjectFileOutput>
 		</FxCompile>
-		<FxCompile Include="./../../d3d11/shaders/blurDepthPS.hlsl">
+		<FxCompile Include="./../../d3d/shaders/blurDepthPS.hlsl">
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|x64'">Pixel</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|x64'">5.0</ShaderModel>
 			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</EnableDebuggingInformation>
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|x64'">blurDepthPS</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'"> </ObjectFileOutput>
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|x64'">Pixel</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|x64'">5.0</ShaderModel>
@@ -688,17 +869,17 @@
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|x64'">blurDepthPS</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'"> </ObjectFileOutput>
 		</FxCompile>
-		<FxCompile Include="./../../d3d11/shaders/compositePS.hlsl">
+		<FxCompile Include="./../../d3d/shaders/compositePS.hlsl">
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|x64'">Pixel</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|x64'">5.0</ShaderModel>
 			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</EnableDebuggingInformation>
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|x64'">compositePS</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'"> </ObjectFileOutput>
 			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|x64'">Pixel</ShaderType>
 			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|x64'">5.0</ShaderModel>
@@ -706,7 +887,7 @@
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|x64'">compositePS</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</TreatWarningAsError>
-			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d11/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'"> </ObjectFileOutput>
 		</FxCompile>
 	</ItemGroup>

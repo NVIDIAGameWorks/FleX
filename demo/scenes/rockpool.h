@@ -21,11 +21,12 @@ public:
 
 		CreateParticleGrid(Vec3(0.0f, radius*0.5f, -1.0f), 32, 32, 32, radius*0.55f, Vec3(0.0f), 1.0f, false, 0.0f, NvFlexMakePhase(0, eNvFlexPhaseSelfCollide | eNvFlexPhaseFluid), 0.005f);
 
+		g_solverDesc.featureMode = eNvFlexFeatureModeSimpleFluids;
+
 		g_numSubsteps = 2;
 
 		g_params.radius = radius;
 		g_params.dynamicFriction = 0.00f;
-		g_params.fluid = true;
 		g_params.viscosity = 0.01f;
 		g_params.numIterations = 2;
 		g_params.vorticityConfinement = 75.0f;

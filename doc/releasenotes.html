@@ -7,7 +7,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta http-equiv="x-ua-compatible" content="IE=Edge"/>
     
-    <title>Release Notes &mdash; NVIDIA Flex 1.1.0 documentation</title>
+    <title>Release Notes &mdash; NVIDIA Flex 1.2.0 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -18,7 +18,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.1.0',
+        VERSION:     '1.2.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -31,7 +31,7 @@
     <script type="text/javascript" src="_static/bootstrap.js"></script>
     <script type="text/javascript" src="_static/jquery.cookie.js"></script>
     <script type="text/javascript" src="_static/jquery.storageapi.js"></script>
-    <link rel="top" title="NVIDIA Flex 1.1.0 documentation" href="index.html" />
+    <link rel="top" title="NVIDIA Flex 1.2.0 documentation" href="index.html" />
     <link rel="prev" title="Manual" href="manual.html" /> 
   </head>
   <body>
@@ -56,7 +56,7 @@
 <div class="masthead">
     <div class="row">
       <ul class="breadcrumb">
-        <li><a href="index.html">NVIDIA Flex 1.1.0 documentation</a></li> 
+        <li><a href="index.html">NVIDIA Flex 1.2.0 documentation</a></li> 
       </ul>
     </div>
 </div>
@@ -114,17 +114,18 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="">Release Notes</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#id1">1.1.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id2">1.0.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id3">0.9.5</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id4">0.9.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id5">0.8.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id6">0.2.5</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id7">0.2.3</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id8">0.2.2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id9">0.2.1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id10">0.2.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id11">0.1.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">1.2.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">1.1.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">1.0.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">0.9.5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id5">0.9.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id6">0.8.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id7">0.2.5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id8">0.2.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id9">0.2.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id10">0.2.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id11">0.2.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id12">0.1.0</a></li>
 </ul>
 </li>
 </ul>
@@ -156,11 +157,29 @@
   <div class="section" id="release-notes">
 <span id="releasenotes"></span><h1>Release Notes<a class="headerlink" href="#release-notes" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="id1">
-<h2>1.1.0<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2>1.2.0<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>New API style, for consistency with other products the API has now an NvFlex prefix, and follows a naming convention similar to PhysX</li>
+<li>New API to retrieve particle neighbor information, see NvFlexGetNeighbors()</li>
+<li>New API to support shape collision filtering, collision channels can be assigned to particles and shapes to specify which pairs collide, see NvFlexPhase</li>
+<li>New API to support per-shape plastic deformation, it is now possible to specify plastic creep and threshold coefficient on a per-shape basis (previous global settings), see NvFlexSetRigids()</li>
+<li>New API to selectively disable solver features, this can lead to improved performance, see NvFlexFeatureMode, replaces global FlexParams::fluid option</li>
+<li>New API to allow sub-range particle buffer updates, see NvFlexCopyDesc</li>
+<li>New API for asynchronous compute, see NvFlexInitDesc</li>
+<li>Fix for unnecessary synchronization when calling NvFlexMap() on a device buffer</li>
+<li>Fix numerical precision for shape-matching constraints with large coordinates</li>
+<li>Fix for uninitialized contact indices returned from NvFlexGetContacts() if NvFlexUpdateSolver() has not been called</li>
+<li>Fix for SDF collision in D3D12</li>
+<li>Fix for D3D warning when using NvFlexSetRigids()</li>
+<li>Add D3D12 rendering support to the demo</li>
+<li>Add support for device NvFlexBuffers on D3D</li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h2>1.1.0<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>New API style, for consistency with other products the API has now an NvFlex prefix and follows a naming convention similar to PhysX</li>
 <li>Add support for DirectX, in addition to CUDA there is now a cross platform DirectX 11 and 12 version of the Flex libraries that Windows applications can link against</li>
-<li>Add support for max acceleration clamping, see NvFlexParams::mMaxAcceleration, can be useful to reduce popping with fast moving kinematic shapes and large interpenetration</li>
+<li>Add support for max acceleration clamping, see NvFlexParams::maxAcceleration, can be useful to reduce popping with fast moving kinematic shapes and large interpenetration</li>
 <li>Add support to querying compute device, see NvFlexGetDeviceName()</li>
 <li>Add support for flushing compute queue, see NvFlexFlush()</li>
 <li>Add support for multiple library instances, NvFlexInit() now returns a library which is bound to a single compute device</li>
@@ -178,13 +197,13 @@
 <li>Fix for bug in BVH builder that could cause missed collisions</li>
 <li>New optional NvFlexDevice library for handling GPU selection and initialization in CUDA</li>
 <li>New buffer based API, all data must now be passed to Flex through FlexBuffers created through NvFlexAllocBuffer()</li>
-<li>New stable shape matching code for more robust and efficient soft bodies, removes need for NvFlexParams::mInertiaBias</li>
+<li>New stable shape matching code for more robust and efficient soft bodies, removes need for NvFlexParams::inertiaBias</li>
 <li>New collision shape API supports instancing of convex meshes and a much simplified API, see NvFlexSetShapes()</li>
 <li>Improvements to collision detection for moving shapes, Flex will now perform a CCD check also taking into account the shape trajectory using the prev/current transforms of each shape</li>
 </ul>
 </div>
-<div class="section" id="id2">
-<h2>1.0.0<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id3">
+<h2>1.0.0<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Added support for reporting collision shape ids, and trigger volume shapes, see flexGetContacts()</li>
 <li>Optimizations to host code performance</li>
@@ -195,8 +214,8 @@
 <li>Move flexExt.h header to the /include folder</li>
 </ul>
 </div>
-<div class="section" id="id3">
-<h2>0.9.5<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id4">
+<h2>0.9.5<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Fix for NaNs being generated during shape matching with plastic deformation enabled</li>
 <li>Fix for bug that could lead to translational drifting of shape matched rigid bodies</li>
@@ -210,8 +229,8 @@
 <li>Exposed parameter to control the lifetime of diffuse particles, see FlexParams::mDiffuseLifetime</li>
 </ul>
 </div>
-<div class="section" id="id4">
-<h2>0.9.0<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id5">
+<h2>0.9.0<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Added support for soft bodies, particles can now belong to multiple shape-matching clusters used to drive linear blend skinning</li>
 <li>Added support for particle rest positions that can be used to filter collisions between particles that touch in their rest pose, see flexSetRestPositions()</li>
@@ -235,8 +254,8 @@
 <li>Rename FlexParams::mMaxVelocity -&gt; FlexParams::mMaxSpeed</li>
 </ul>
 </div>
-<div class="section" id="id5">
-<h2>0.8.0<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id6">
+<h2>0.8.0<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Upgrade to CUDA 7.0</li>
 <li>Linux binaries are now compiled with -fPIC</li>
@@ -246,8 +265,8 @@
 <li>Added option to control the max number of neighbors stored per-particle, this can reduce memory usage, see flexCreateSolver()</li>
 </ul>
 </div>
-<div class="section" id="id6">
-<h2>0.2.5<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id7">
+<h2>0.2.5<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Fix for vertex normal calculation when using sparse active particle set</li>
 <li>Fix for division by zero in rest density calculation when fluid rest distance was 0.0</li>
@@ -262,8 +281,8 @@
 <li>Extended particle phase parameters to allow fine grained control over self-collision and fluid properties, see flexMakePhase()</li>
 </ul>
 </div>
-<div class="section" id="id7">
-<h2>0.2.3<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id8">
+<h2>0.2.3<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Switched to bindless textures, 50% reduction in CPU usage, because of this change Flex now requires an SM3.0 or above GPU</li>
 <li>Optimized convex grid rasterization by assigning 4 warps/shape, reduces time from 1ms-&gt;0.25ms for large shapes</li>
@@ -283,8 +302,8 @@
 <li>Added debug capture functionality</li>
 </ul>
 </div>
-<div class="section" id="id8">
-<h2>0.2.2<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id9">
+<h2>0.2.2<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Fix for infinite mass particles gaining velocity during collisions</li>
 <li>Fix bug with planar triangle mesh rasterization</li>
@@ -304,8 +323,8 @@
 <li>Clamp particle velocity to maximum user velocity before prediction step, improves behaviour when interacting with force fields</li>
 </ul>
 </div>
-<div class="section" id="id9">
-<h2>0.2.1<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id10">
+<h2>0.2.1<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Add support for lower dimensional particle rigid bodies (rods, planes)</li>
 <li>Allow specifying rigid rotations through the solver API</li>
@@ -313,8 +332,8 @@
 <li>Add GUI to demo</li>
 </ul>
 </div>
-<div class="section" id="id10">
-<h2>0.2.0<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id11">
+<h2>0.2.0<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Fix for rest density calculation when number of neighbors &gt; than max</li>
 <li>Add support for async memory copies back to pinned host memory</li>
@@ -332,8 +351,8 @@
 <li>Switch to /MT for FlexExtensions library</li>
 </ul>
 </div>
-<div class="section" id="id11">
-<h2>0.1.0<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id12">
+<h2>0.1.0<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
 <p>Initial release</p>
 </div>
 </div>
@@ -347,7 +366,7 @@
 <div class="masthead">
     <div class="row">
       <ul class="breadcrumb">
-        <li><a href="index.html">NVIDIA Flex 1.1.0 documentation</a></li> 
+        <li><a href="index.html">NVIDIA Flex 1.2.0 documentation</a></li> 
       </ul>
     </div>
 </div>

@@ -39,7 +39,7 @@
 
 using namespace std;
 
-#ifdef WIN32
+#if defined(WIN32) || defined(WIN64)
 
 #include <windows.h>
 #include <commdlg.h>

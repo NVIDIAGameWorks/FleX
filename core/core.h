@@ -37,7 +37,7 @@
 #define VERBOSE(a)
 #endif
 
-#define Super __super
+//#define Super __super
 
 // basically just a collection of macros and types
 #ifndef UNUSED

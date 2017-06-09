@@ -45,14 +45,14 @@ public:
 		NvFlexVector<int> contactIndices(g_flexLib, g_buffers->positions.size());
 		NvFlexVector<unsigned int> contactCounts(g_flexLib, g_buffers->positions.size());
 
-		NvFlexGetContacts(g_flex, contactPlanes.buffer, contactVelocities.buffer, contactIndices.buffer, contactCounts.buffer);
+		NvFlexGetContacts(g_solver, contactPlanes.buffer, contactVelocities.buffer, contactIndices.buffer, contactCounts.buffer);
 
 		contactPlanes.map();
 		contactVelocities.map();
 		contactIndices.map();
 		contactCounts.map();
 
-		int activeCount = NvFlexGetActiveCount(g_flex);
+		int activeCount = NvFlexGetActiveCount(g_solver);
 
 		for (int i = 0; i < activeCount; ++i)
 		{

@@ -124,7 +124,6 @@ public:
 			}
 		}
 
-		g_params.fluid = true;
 		g_params.radius = 0.1f;
 		g_params.fluidRestDistance = radius;
 		g_params.numIterations = 4;

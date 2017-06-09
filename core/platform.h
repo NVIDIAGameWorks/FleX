@@ -44,7 +44,7 @@ std::string GetWorkingDirectory();
 
 #include <android/log.h>
 
-#ifndef 
+#ifndef LOGE
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR  , "Flex", __VA_ARGS__)
 #endif
 

@@ -21,8 +21,8 @@
 
 enum imguiMouseButton
 {
-	IMGUI_MBUT_LEFT = 0x01, 
-	IMGUI_MBUT_RIGHT = 0x02, 
+	IMGUI_MBUT_LEFT = 0x01,
+	IMGUI_MBUT_RIGHT = 0x02,
 };
 
 enum imguiTextAlign
@@ -32,12 +32,10 @@ enum imguiTextAlign
 	IMGUI_ALIGN_RIGHT,
 };
 
-inline unsigned int imguiRGBA(unsigned char r, unsigned char g, unsigned char b, unsigned char a=255)
+inline unsigned int imguiRGBA(unsigned char r, unsigned char g, unsigned char b, unsigned char a = 255)
 {
 	return (r) | (g << 8) | (b << 16) | (a << 24);
 }
-
-struct imguiGfxRect;
 
 void imguiBeginFrame(int mx, int my, unsigned char mbut, int scroll);
 void imguiEndFrame();
@@ -51,7 +49,7 @@ void imguiSeparator();
 void imguiSeparatorLine();
 
 bool imguiButton(const char* text, bool enabled = true);
-bool imguiItem(const char* text, bool enabled = true, unsigned int color = imguiRGBA(255, 255, 255, 200), bool forceHot = false);
+bool imguiItem(const char* text, bool enabled = true, unsigned int color = imguiRGBA(255, 255, 255, 200));
 bool imguiCheck(const char* text, bool checked, bool enabled = true);
 bool imguiCollapse(const char* text, const char* subtext, bool checked, bool enabled = true);
 void imguiLabel(const char* text);
@@ -75,18 +73,18 @@ enum imguiGfxCmdType
 
 struct imguiGfxRect
 {
-	short x,y,w,h,r;
+	short x, y, w, h, r;
 };
 
 struct imguiGfxText
 {
-	short x,y,align;
+	short x, y, align;
 	const char* text;
 };
 
 struct imguiGfxLine
 {
-	short x0,y0,x1,y1,r;
+	short x0, y0, x1, y1, r;
 };
 
 struct imguiGfxCmd

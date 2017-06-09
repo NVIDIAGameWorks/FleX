@@ -49,6 +49,13 @@
 #include "shaders.h"
 #include "imgui.h"
 
+#if FLEX_DX
+#include "d3d/shadersDemoContext.h"
+class DemoContext;
+extern DemoContext* CreateDemoContextD3D12();
+extern DemoContext* CreateDemoContextD3D11();
+#endif // FLEX_DX
+
 SDL_Window* g_window;			// window handle
 unsigned int g_windowId;		// window id
 
@@ -116,12 +123,15 @@ bool g_extensions = true;
 bool g_teamCity = false;
 bool g_interop = true;
 bool g_d3d12 = false;
+bool g_useAsyncCompute = true;		
+bool g_increaseGfxLoadForAsyncComputeTesting = false;
 
 FluidRenderer* g_fluidRenderer;
-FluidRenderBuffers g_fluidRenderBuffers;
-DiffuseRenderBuffers g_diffuseRenderBuffers;
+FluidRenderBuffers* g_fluidRenderBuffers;
+DiffuseRenderBuffers* g_diffuseRenderBuffers;
 
-NvFlexSolver* g_flex;
+NvFlexSolver* g_solver;
+NvFlexSolverDesc g_solverDesc;
 NvFlexLibrary* g_flexLib;
 NvFlexParams g_params;
 NvFlexTimers g_timers;
@@ -148,6 +158,19 @@ std::map<NvFlexDistanceFieldId, GpuMesh*> g_fields;
 // flag to request collision shapes be updated
 bool g_shapesChanged = false;
 
+/* Note that this array of colors is altered by demo code, and is also read from global by graphics API impls */
+Colour g_colors[] =
+{
+	Colour(0.0f, 0.5f, 1.0f),
+	Colour(0.797f, 0.354f, 0.000f),
+	Colour(0.092f, 0.465f, 0.820f),
+	Colour(0.000f, 0.349f, 0.173f),
+	Colour(0.875f, 0.782f, 0.051f),
+	Colour(0.000f, 0.170f, 0.453f),
+	Colour(0.673f, 0.111f, 0.000f),
+	Colour(0.612f, 0.194f, 0.394f)
+};
+
 struct SimBuffers
 {
 	NvFlexVector<Vec4> positions;
@@ -162,7 +185,8 @@ struct SimBuffers
 	NvFlexVector<Vec4> smoothPositions;
 	NvFlexVector<Vec4> diffusePositions;
 	NvFlexVector<Vec4> diffuseVelocities;
-	NvFlexVector<int> diffuseIndices;
+	NvFlexVector<int> diffuseCount;
+
 	NvFlexVector<int> activeIndices;
 
 	// convexes
@@ -178,6 +202,8 @@ struct SimBuffers
 	NvFlexVector<int> rigidIndices;
 	NvFlexVector<int> rigidMeshSize;
 	NvFlexVector<float> rigidCoefficients;
+	NvFlexVector<float> rigidPlasticThresholds;
+	NvFlexVector<float> rigidPlasticCreeps;
 	NvFlexVector<Quat> rigidRotations;
 	NvFlexVector<Vec3> rigidTranslations;
 	NvFlexVector<Vec3> rigidLocalPositions;
@@ -202,10 +228,10 @@ struct SimBuffers
 	SimBuffers(NvFlexLibrary* l) :
 		positions(l), restPositions(l), velocities(l), phases(l), densities(l),
 		anisotropy1(l), anisotropy2(l), anisotropy3(l), normals(l), smoothPositions(l),
-		diffusePositions(l), diffuseVelocities(l), diffuseIndices(l), activeIndices(l),
+		diffusePositions(l), diffuseVelocities(l), diffuseCount(l), activeIndices(l),
 		shapeGeometry(l), shapePositions(l), shapeRotations(l), shapePrevPositions(l),
 		shapePrevRotations(l),	shapeFlags(l), rigidOffsets(l), rigidIndices(l), rigidMeshSize(l),
-		rigidCoefficients(l), rigidRotations(l), rigidTranslations(l),
+		rigidCoefficients(l), rigidPlasticThresholds(l), rigidPlasticCreeps(l), rigidRotations(l), rigidTranslations(l),
 		rigidLocalPositions(l), rigidLocalNormals(l), inflatableTriOffsets(l),
 		inflatableTriCounts(l), inflatableVolumes(l), inflatableCoefficients(l),
 		inflatablePressures(l), springIndices(l), springLengths(l),
@@ -228,7 +254,7 @@ void MapBuffers(SimBuffers* buffers)
 	buffers->normals.map();
 	buffers->diffusePositions.map();
 	buffers->diffuseVelocities.map();
-	buffers->diffuseIndices.map();
+	buffers->diffuseCount.map();
 	buffers->smoothPositions.map();
 	buffers->activeIndices.map();
 
@@ -244,6 +270,8 @@ void MapBuffers(SimBuffers* buffers)
 	buffers->rigidIndices.map();
 	buffers->rigidMeshSize.map();
 	buffers->rigidCoefficients.map();
+	buffers->rigidPlasticThresholds.map();
+	buffers->rigidPlasticCreeps.map();
 	buffers->rigidRotations.map();
 	buffers->rigidTranslations.map();
 	buffers->rigidLocalPositions.map();
@@ -279,7 +307,7 @@ void UnmapBuffers(SimBuffers* buffers)
 	buffers->normals.unmap();
 	buffers->diffusePositions.unmap();
 	buffers->diffuseVelocities.unmap();
-	buffers->diffuseIndices.unmap();
+	buffers->diffuseCount.unmap();
 	buffers->smoothPositions.unmap();
 	buffers->activeIndices.unmap();
 
@@ -296,6 +324,8 @@ void UnmapBuffers(SimBuffers* buffers)
 	buffers->rigidIndices.unmap();
 	buffers->rigidMeshSize.unmap();
 	buffers->rigidCoefficients.unmap();
+	buffers->rigidPlasticThresholds.unmap();
+	buffers->rigidPlasticCreeps.unmap();
 	buffers->rigidRotations.unmap();
 	buffers->rigidTranslations.unmap();
 	buffers->rigidLocalPositions.unmap();
@@ -339,7 +369,7 @@ void DestroyBuffers(SimBuffers* buffers)
 	buffers->normals.destroy();
 	buffers->diffusePositions.destroy();
 	buffers->diffuseVelocities.destroy();
-	buffers->diffuseIndices.destroy();
+	buffers->diffuseCount.destroy();
 	buffers->smoothPositions.destroy();
 	buffers->activeIndices.destroy();
 
@@ -356,6 +386,8 @@ void DestroyBuffers(SimBuffers* buffers)
 	buffers->rigidIndices.destroy();
 	buffers->rigidMeshSize.destroy();
 	buffers->rigidCoefficients.destroy();
+	buffers->rigidPlasticThresholds.destroy();
+	buffers->rigidPlasticCreeps.destroy();
 	buffers->rigidRotations.destroy();
 	buffers->rigidTranslations.destroy();
 	buffers->rigidLocalPositions.destroy();
@@ -476,6 +508,8 @@ int g_lasty;
 int g_lastb = -1;
 
 bool g_profile = false;
+bool g_outputAllFrameTimes = false;
+bool g_asyncComputeBenchmark = false;
 
 ShadowMap* g_shadowMap;
 
@@ -525,7 +559,7 @@ void Init(int scene, bool centerCamera = true)
 {
 	RandInit();
 
-	if (g_flex)
+	if (g_solver)
 	{
 		if (g_buffers)
 			DestroyBuffers(g_buffers);
@@ -556,8 +590,8 @@ void Init(int scene, bool centerCamera = true)
 		g_meshes.clear();
 		g_convexes.clear();
 
-		NvFlexDestroySolver(g_flex);
-		g_flex = NULL;
+		NvFlexDestroySolver(g_solver);
+		g_solver = NULL;
 	}
 
 	// alloc buffers
@@ -576,6 +610,8 @@ void Init(int scene, bool centerCamera = true)
 	g_buffers->rigidRotations.resize(0);
 	g_buffers->rigidTranslations.resize(0);
 	g_buffers->rigidCoefficients.resize(0);
+	g_buffers->rigidPlasticThresholds.resize(0);
+	g_buffers->rigidPlasticCreeps.resize(0);
 	g_buffers->rigidLocalPositions.resize(0);
 	g_buffers->rigidLocalNormals.resize(0);
 
@@ -592,6 +628,8 @@ void Init(int scene, bool centerCamera = true)
 	g_emitters.resize(1);
 	g_emitters[0].mEnabled = false;
 	g_emitters[0].mSpeed = 1.0f;
+	g_emitters[0].mLeftOver = 0.0f;
+	g_emitters[0].mWidth = 8;
 
 	g_buffers->shapeGeometry.resize(0);
 	g_buffers->shapePositions.resize(0);
@@ -670,9 +708,6 @@ void Init(int scene, bool centerCamera = true)
 	g_params.particleCollisionMargin = 0.0f;
 	g_params.shapeCollisionMargin = 0.0f;
 	g_params.collisionDistance = 0.0f;
-	g_params.plasticThreshold = 0.0f;
-	g_params.plasticCreep = 0.0f;
-	g_params.fluid = false;
 	g_params.sleepThreshold = 0.0f;
 	g_params.shockPropagation = 0.0f;
 	g_params.restitution = 0.0f;
@@ -692,9 +727,6 @@ void Init(int scene, bool centerCamera = true)
 	g_params.diffuseBuoyancy = 1.0f;
 	g_params.diffuseDrag = 0.8f;
 	g_params.diffuseBallistic = 16;
-	g_params.diffuseSortAxis[0] = 0.0f;
-	g_params.diffuseSortAxis[1] = 0.0f;
-	g_params.diffuseSortAxis[2] = 0.0f;
 	g_params.diffuseLifetime = 2.0f;
 
 	g_numSubsteps = 2;
@@ -710,8 +742,7 @@ void Init(int scene, bool centerCamera = true)
 	g_diffuseOutscatter = 0.53f;
 
 	// reset phase 0 particle color to blue
-	extern Colour gColors[];
-	gColors[0] = Colour(0.0f, 0.5f, 1.0f);
+	g_colors[0] = Colour(0.0f, 0.5f, 1.0f);
 
 	g_numSolidParticles = 0;
 
@@ -730,26 +761,27 @@ void Init(int scene, bool centerCamera = true)
 	g_sceneLower = FLT_MAX;
 	g_sceneUpper = -FLT_MAX;
 
+	// initialize solver desc
+	NvFlexSetSolverDescDefaults(&g_solverDesc);
+
 	// create scene
+	StartGpuWork();
 	g_scenes[g_scene]->Initialize();
+	EndGpuWork();
 
 	uint32_t numParticles = g_buffers->positions.size();
 	uint32_t maxParticles = numParticles + g_numExtraParticles*g_numExtraMultiplier;
-
-	// by default solid particles use the maximum radius
-	if (g_params.fluid && g_params.solidRestDistance == 0.0f)
-		g_params.solidRestDistance = g_params.fluidRestDistance;
-	else
+	
+	if (g_params.solidRestDistance == 0.0f)
 		g_params.solidRestDistance = g_params.radius;
 
-	// collision distance with shapes half the radius
-	if (g_params.collisionDistance == 0.0f)
-	{
-		g_params.collisionDistance = g_params.radius*0.5f;
+	// if fluid present then we assume solid particles have the same radius
+	if (g_params.fluidRestDistance > 0.0f)
+		g_params.solidRestDistance = g_params.fluidRestDistance;
 
-		if (g_params.fluid)
-			g_params.collisionDistance = g_params.fluidRestDistance*0.5f;
-	}
+	// set collision distance automatically based on rest distance if not alraedy set
+	if (g_params.collisionDistance == 0.0f)
+		g_params.collisionDistance = Max(g_params.solidRestDistance, g_params.fluidRestDistance)*0.5f;
 
 	// default particle friction to 10% of shape friction
 	if (g_params.particleFriction == 0.0f)
@@ -788,7 +820,7 @@ void Init(int scene, bool centerCamera = true)
 
 	g_buffers->diffusePositions.resize(g_maxDiffuseParticles);
 	g_buffers->diffuseVelocities.resize(g_maxDiffuseParticles);
-	g_buffers->diffuseIndices.resize(g_maxDiffuseParticles);
+	g_buffers->diffuseCount.resize(1, 0);
 
 	// for fluid rendering these are the Laplacian smoothed positions
 	g_buffers->smoothPositions.resize(maxParticles);
@@ -825,8 +857,12 @@ void Init(int scene, bool centerCamera = true)
 		g_meshRestPositions.resize(0);
 	}
 
+	g_solverDesc.maxParticles = maxParticles;
+	g_solverDesc.maxDiffuseParticles = g_maxDiffuseParticles;
+	g_solverDesc.maxNeighborsPerParticle = g_maxNeighborsPerParticle;
+
 	// main create method for the Flex solver
-	g_flex = NvFlexCreateSolver(g_flexLib, maxParticles, g_maxDiffuseParticles, g_maxNeighborsPerParticle);
+	g_solver = NvFlexCreateSolver(g_flexLib, &g_solverDesc);
 
 	// give scene a chance to do some post solver initialization
 	g_scenes[g_scene]->PostInitialize();
@@ -868,13 +904,20 @@ void Init(int scene, bool centerCamera = true)
 
 		const int numRigids = g_buffers->rigidOffsets.size() - 1;
 
+		// If the centers of mass for the rigids are not yet computed, this is done here
+		// (If the CreateParticleShape method is used instead of the NvFlexExt methods, the centers of mass will be calculated here)
+		if (g_buffers->rigidTranslations.size() == 0) 
+		{
+			g_buffers->rigidTranslations.resize(g_buffers->rigidOffsets.size() - 1, Vec3());
+			CalculateRigidCentersOfMass(&g_buffers->positions[0], g_buffers->positions.size(), &g_buffers->rigidOffsets[0], &g_buffers->rigidTranslations[0], &g_buffers->rigidIndices[0], numRigids);
+		}
+
 		// calculate local rest space positions
 		g_buffers->rigidLocalPositions.resize(g_buffers->rigidOffsets.back());
-		CalculateRigidLocalPositions(&g_buffers->positions[0], g_buffers->positions.size(), &g_buffers->rigidOffsets[0], &g_buffers->rigidIndices[0], numRigids, &g_buffers->rigidLocalPositions[0]);
+		CalculateRigidLocalPositions(&g_buffers->positions[0], &g_buffers->rigidOffsets[0], &g_buffers->rigidTranslations[0], &g_buffers->rigidIndices[0], numRigids, &g_buffers->rigidLocalPositions[0]);
 
+		// set rigidRotations to correct length, probably NULL up until here
 		g_buffers->rigidRotations.resize(g_buffers->rigidOffsets.size() - 1, Quat());
-		g_buffers->rigidTranslations.resize(g_buffers->rigidOffsets.size() - 1, Vec3());
-
 	}
 
 	// unmap so we can start transferring data to GPU
@@ -883,47 +926,53 @@ void Init(int scene, bool centerCamera = true)
 	//-----------------------------
 	// Send data to Flex
 
-	NvFlexSetParams(g_flex, &g_params);
-	NvFlexSetParticles(g_flex, g_buffers->positions.buffer, numParticles);
-	NvFlexSetVelocities(g_flex, g_buffers->velocities.buffer, numParticles);
-	NvFlexSetNormals(g_flex, g_buffers->normals.buffer, numParticles);
-	NvFlexSetPhases(g_flex, g_buffers->phases.buffer, g_buffers->phases.size());
-	NvFlexSetRestParticles(g_flex, g_buffers->restPositions.buffer, g_buffers->restPositions.size());
+	NvFlexCopyDesc copyDesc;
+	copyDesc.dstOffset = 0;
+	copyDesc.srcOffset = 0;
+	copyDesc.elementCount = numParticles;
 
-	NvFlexSetActive(g_flex, g_buffers->activeIndices.buffer, numParticles);
+	NvFlexSetParams(g_solver, &g_params);
+	NvFlexSetParticles(g_solver, g_buffers->positions.buffer, &copyDesc);
+	NvFlexSetVelocities(g_solver, g_buffers->velocities.buffer, &copyDesc);
+	NvFlexSetNormals(g_solver, g_buffers->normals.buffer, &copyDesc);
+	NvFlexSetPhases(g_solver, g_buffers->phases.buffer, &copyDesc);
+	NvFlexSetRestParticles(g_solver, g_buffers->restPositions.buffer, &copyDesc);
 
+	NvFlexSetActive(g_solver, g_buffers->activeIndices.buffer, &copyDesc);
+	NvFlexSetActiveCount(g_solver, numParticles);
+	
 	// springs
 	if (g_buffers->springIndices.size())
 	{
 		assert((g_buffers->springIndices.size() & 1) == 0);
 		assert((g_buffers->springIndices.size() / 2) == g_buffers->springLengths.size());
 
-		NvFlexSetSprings(g_flex, g_buffers->springIndices.buffer, g_buffers->springLengths.buffer, g_buffers->springStiffness.buffer, g_buffers->springLengths.size());
+		NvFlexSetSprings(g_solver, g_buffers->springIndices.buffer, g_buffers->springLengths.buffer, g_buffers->springStiffness.buffer, g_buffers->springLengths.size());
 	}
 
 	// rigids
 	if (g_buffers->rigidOffsets.size())
 	{
-		NvFlexSetRigids(g_flex, g_buffers->rigidOffsets.buffer, g_buffers->rigidIndices.buffer, g_buffers->rigidLocalPositions.buffer, g_buffers->rigidLocalNormals.buffer, g_buffers->rigidCoefficients.buffer, g_buffers->rigidRotations.buffer, g_buffers->rigidTranslations.buffer, g_buffers->rigidOffsets.size() - 1, g_buffers->rigidIndices.size());
+		NvFlexSetRigids(g_solver, g_buffers->rigidOffsets.buffer, g_buffers->rigidIndices.buffer, g_buffers->rigidLocalPositions.buffer, g_buffers->rigidLocalNormals.buffer, g_buffers->rigidCoefficients.buffer, g_buffers->rigidPlasticThresholds.buffer, g_buffers->rigidPlasticCreeps.buffer, g_buffers->rigidRotations.buffer, g_buffers->rigidTranslations.buffer, g_buffers->rigidOffsets.size() - 1, g_buffers->rigidIndices.size());
 	}
 
 	// inflatables
 	if (g_buffers->inflatableTriOffsets.size())
 	{
-		NvFlexSetInflatables(g_flex, g_buffers->inflatableTriOffsets.buffer, g_buffers->inflatableTriCounts.buffer, g_buffers->inflatableVolumes.buffer, g_buffers->inflatablePressures.buffer, g_buffers->inflatableCoefficients.buffer, g_buffers->inflatableTriOffsets.size());
+		NvFlexSetInflatables(g_solver, g_buffers->inflatableTriOffsets.buffer, g_buffers->inflatableTriCounts.buffer, g_buffers->inflatableVolumes.buffer, g_buffers->inflatablePressures.buffer, g_buffers->inflatableCoefficients.buffer, g_buffers->inflatableTriOffsets.size());
 	}
 
 	// dynamic triangles
 	if (g_buffers->triangles.size())
 	{
-		NvFlexSetDynamicTriangles(g_flex, g_buffers->triangles.buffer, g_buffers->triangleNormals.buffer, g_buffers->triangles.size() / 3);
+		NvFlexSetDynamicTriangles(g_solver, g_buffers->triangles.buffer, g_buffers->triangleNormals.buffer, g_buffers->triangles.size() / 3);
 	}
 
 	// collision shapes
 	if (g_buffers->shapeFlags.size())
 	{
 		NvFlexSetShapes(
-			g_flex,
+			g_solver,
 			g_buffers->shapeGeometry.buffer,
 			g_buffers->shapePositions.buffer,
 			g_buffers->shapeRotations.buffer,
@@ -946,20 +995,20 @@ void Init(int scene, bool centerCamera = true)
 		NvFlexParams copy = g_params;
 		copy.numIterations = 4;
 
-		NvFlexSetParams(g_flex, &copy);
+		NvFlexSetParams(g_solver, &copy);
 
 		const int kWarmupIterations = 100;
 
 		for (int i = 0; i < kWarmupIterations; ++i)
 		{
-			NvFlexUpdateSolver(g_flex, 0.0001f, 1, false);
-			NvFlexSetVelocities(g_flex, g_buffers->velocities.buffer, maxParticles);
+			NvFlexUpdateSolver(g_solver, 0.0001f, 1, false);
+			NvFlexSetVelocities(g_solver, g_buffers->velocities.buffer, NULL);
 		}
 
 		// udpate host copy
-		NvFlexGetParticles(g_flex, g_buffers->positions.buffer, g_buffers->positions.size());
-		NvFlexGetSmoothParticles(g_flex, g_buffers->smoothPositions.buffer, g_buffers->smoothPositions.size());
-		NvFlexGetAnisotropy(g_flex, g_buffers->anisotropy1.buffer, g_buffers->anisotropy2.buffer, g_buffers->anisotropy3.buffer);
+		NvFlexGetParticles(g_solver, g_buffers->positions.buffer, NULL);
+		NvFlexGetSmoothParticles(g_solver, g_buffers->smoothPositions.buffer, NULL);
+		NvFlexGetAnisotropy(g_solver, g_buffers->anisotropy1.buffer, g_buffers->anisotropy2.buffer, g_buffers->anisotropy3.buffer, NULL);
 
 		printf("Finished warm up.\n");
 	}
@@ -996,7 +1045,7 @@ void Shutdown()
 	g_fields.clear();
 	g_meshes.clear();
 
-	NvFlexDestroySolver(g_flex);
+	NvFlexDestroySolver(g_solver);
 	NvFlexShutdown(g_flexLib);
 
 #if _WIN32
@@ -1019,7 +1068,7 @@ void UpdateEmitters()
 	// process emitters
 	if (g_emit)
 	{
-		int activeCount = NvFlexGetActiveCount(g_flex);
+		int activeCount = NvFlexGetActiveCount(g_solver);
 
 		size_t e = 0;
 
@@ -1036,19 +1085,9 @@ void UpdateEmitters()
 			Vec3 emitterRight = g_emitters[e].mRight;
 			Vec3 emitterPos = g_emitters[e].mPos;
 
-			float r;
-			int phase;
 
-			if (g_params.fluid)
-			{
-				r = g_params.fluidRestDistance;
-				phase = NvFlexMakePhase(0, eNvFlexPhaseSelfCollide | eNvFlexPhaseFluid);
-			}
-			else
-			{
-				r = g_params.solidRestDistance;
-				phase = NvFlexMakePhase(0, eNvFlexPhaseSelfCollide);
-			}
+			float r = g_params.fluidRestDistance;
+			int phase = NvFlexMakePhase(0, eNvFlexPhaseSelfCollide | eNvFlexPhaseFluid);
 
 			float numParticles = (g_emitters[e].mSpeed / r)*g_dt;
 
@@ -1124,7 +1163,7 @@ void UpdateMouse()
 		Vec3 origin, dir;
 		GetViewRay(g_lastx, g_screenHeight - g_lasty, origin, dir);
 
-		const int numActive = NvFlexGetActiveCount(g_flex);
+		const int numActive = NvFlexGetActiveCount(g_solver);
 
 		g_mouseParticle = PickParticle(origin, dir, &g_buffers->positions[0], &g_buffers->phases[0], numActive, g_params.radius*0.8f, g_mouseT);
 
@@ -1190,8 +1229,8 @@ void UpdateScene()
 
 void RenderScene()
 {
-	const int numParticles = NvFlexGetActiveCount(g_flex);
-	const int numDiffuse = NvFlexGetDiffuseParticles(g_flex, NULL, NULL, NULL);
+	const int numParticles = NvFlexGetActiveCount(g_solver);
+	const int numDiffuse = g_buffers->diffuseCount[0];
 
 	//---------------------------------------------------
 	// use VBO buffer wrappers to allow Flex to write directly to the OpenGL buffers
@@ -1203,7 +1242,7 @@ void RenderScene()
 		if (g_interop)
 		{
 			// copy data directly from solver to the renderer buffers
-			UpdateFluidRenderBuffers(g_fluidRenderBuffers, g_flex, g_drawEllipsoids, g_drawDensity);
+			UpdateFluidRenderBuffers(g_fluidRenderBuffers, g_solver, g_drawEllipsoids, g_drawDensity);
 		}
 		else
 		{
@@ -1235,13 +1274,16 @@ void RenderScene()
 			}
 		}
 	}
+
+	// GPU Render time doesn't include CPU->GPU copy time
+	GraphicsTimerBegin();
 	
 	if (numDiffuse)
 	{
 		if (g_interop)
 		{
 			// copy data directly from solver to the renderer buffers
-			UpdateDiffuseRenderBuffers(g_diffuseRenderBuffers, g_flex);
+			UpdateDiffuseRenderBuffers(g_diffuseRenderBuffers, g_solver);
 		}
 		else
 		{
@@ -1249,7 +1291,6 @@ void RenderScene()
 			UpdateDiffuseRenderBuffers(g_diffuseRenderBuffers,
 				&g_buffers->diffusePositions[0],
 				&g_buffers->diffuseVelocities[0],
-				&g_buffers->diffuseIndices[0],
 				numDiffuse);
 		}
 	}
@@ -1287,15 +1328,8 @@ void RenderScene()
 	Matrix44 lightView = LookAtMatrix(Point3(g_lightPos), Point3(g_lightTarget));
 	Matrix44 lightTransform = lightPerspective*lightView;
 
-	// non-fluid particles maintain radius distance (not 2.0f*radius) so multiply by a half
-	float radius = g_params.solidRestDistance;
-
-	// fluid particles overlap twice as much again, so half the radius again
-	if (g_params.fluid)
-		radius = g_params.fluidRestDistance;
-
-	radius *= 0.5f;
-	radius *= g_pointScale;
+	// radius used for drawing
+	float radius = Max(g_params.solidRestDistance, g_params.fluidRestDistance)*0.5f*g_pointScale;
 
 	//-------------------------------------
 	// shadowing pass 
@@ -1335,7 +1369,7 @@ void RenderScene()
 	{
 		shadowParticles = 0;
 
-		if (g_drawEllipsoids && g_params.fluid)
+		if (g_drawEllipsoids)
 		{
 			shadowParticles = numParticles - g_numSolidParticles;
 			shadowParticlesOffset = g_numSolidParticles;
@@ -1350,7 +1384,7 @@ void RenderScene()
 	}
 
 	if (g_buffers->activeIndices.size())
-		DrawPoints(g_fluidRenderBuffers.mPositionVBO, g_fluidRenderBuffers.mDensityVBO, g_fluidRenderBuffers.mIndices, shadowParticles, shadowParticlesOffset, radius, 2048, 1.0f, lightFov, g_lightPos, g_lightTarget, lightTransform, g_shadowMap, g_drawDensity);
+		DrawPoints(g_fluidRenderBuffers, shadowParticles, shadowParticlesOffset, radius, 2048, 1.0f, lightFov, g_lightPos, g_lightTarget, lightTransform, g_shadowMap, g_drawDensity);
 
 	ShadowEnd();
 
@@ -1362,26 +1396,33 @@ void RenderScene()
 	SetView(view, proj);
 	SetCullMode(true);
 
-	DrawPlanes((Vec4*)g_params.planes, g_params.numPlanes, g_drawPlaneBias);
+	// When the benchmark measures async compute, we need a graphics workload that runs for a whole frame.
+	// We do this by rerendering our simple graphics many times.
+	int passes = g_increaseGfxLoadForAsyncComputeTesting ? 50 : 1;
 
-	if (g_drawMesh)
-		DrawMesh(g_mesh, g_meshColor);
-
-
-	DrawShapes();
-
-	if (g_drawCloth && g_buffers->triangles.size())
-		DrawCloth(&g_buffers->positions[0], &g_buffers->normals[0], g_buffers->uvs.size() ? &g_buffers->uvs[0].x : NULL, &g_buffers->triangles[0], g_buffers->triangles.size() / 3, g_buffers->positions.size(), 3, g_expandCloth);
-
-	if (g_drawRopes)
+	for (int i = 0; i != passes; i++)
 	{
-		for (size_t i = 0; i < g_ropes.size(); ++i)
-			DrawRope(&g_buffers->positions[0], &g_ropes[i].mIndices[0], g_ropes[i].mIndices.size(), g_params.radius*0.5f*g_ropeScale, i);
+
+		DrawPlanes((Vec4*)g_params.planes, g_params.numPlanes, g_drawPlaneBias);
+
+		if (g_drawMesh)
+			DrawMesh(g_mesh, g_meshColor);
+
+
+		DrawShapes();
+
+		if (g_drawCloth && g_buffers->triangles.size())
+			DrawCloth(&g_buffers->positions[0], &g_buffers->normals[0], g_buffers->uvs.size() ? &g_buffers->uvs[0].x : NULL, &g_buffers->triangles[0], g_buffers->triangles.size() / 3, g_buffers->positions.size(), 3, g_expandCloth);
+
+		if (g_drawRopes)
+		{
+			for (size_t i = 0; i < g_ropes.size(); ++i)
+				DrawRope(&g_buffers->positions[0], &g_ropes[i].mIndices[0], g_ropes[i].mIndices.size(), g_params.radius*0.5f*g_ropeScale, i);
+		}
+
+		// give scene a chance to do custom drawing
+		g_scenes[g_scene]->Draw(0);
 	}
-
-	// give scene a chance to do custom drawing
-	g_scenes[g_scene]->Draw(0);
-
 	UnbindSolidShader();
 
 
@@ -1389,11 +1430,11 @@ void RenderScene()
 	if (g_drawDiffuse)
 		RenderDiffuse(g_fluidRenderer, g_diffuseRenderBuffers, numDiffuse, radius*g_diffuseScale, float(g_screenWidth), aspect, fov, g_diffuseColor, g_lightPos, g_lightTarget, lightTransform, g_shadowMap, g_diffuseMotionScale, g_diffuseInscatter, g_diffuseOutscatter, g_diffuseShadow, false);
 
-	if (g_drawEllipsoids && g_params.fluid)
+	if (g_drawEllipsoids)
 	{
 		// draw solid particles separately
 		if (g_numSolidParticles && g_drawPoints)
-			DrawPoints(g_fluidRenderBuffers.mPositionVBO, g_fluidRenderBuffers.mDensityVBO, g_fluidRenderBuffers.mIndices, g_numSolidParticles, 0, radius, float(g_screenWidth), aspect, fov, g_lightPos, g_lightTarget, lightTransform, g_shadowMap, g_drawDensity);
+			DrawPoints(g_fluidRenderBuffers, g_numSolidParticles, 0, radius, float(g_screenWidth), aspect, fov, g_lightPos, g_lightTarget, lightTransform, g_shadowMap, g_drawDensity);
 
 		// render fluid surface
 		RenderEllipsoids(g_fluidRenderer, g_fluidRenderBuffers, numParticles - g_numSolidParticles, g_numSolidParticles, radius, float(g_screenWidth), aspect, fov, g_lightPos, g_lightTarget, lightTransform, g_shadowMap, g_fluidColor, g_blur, g_ior, g_drawOpaque);
@@ -1410,10 +1451,11 @@ void RenderScene()
 			int offset = g_drawMesh ? g_numSolidParticles : 0;
 
 			if (g_buffers->activeIndices.size())
-				DrawPoints(g_fluidRenderBuffers.mPositionVBO, g_fluidRenderBuffers.mDensityVBO, g_fluidRenderBuffers.mIndices, numParticles - offset, offset, radius, float(g_screenWidth), aspect, fov, g_lightPos, g_lightTarget, lightTransform, g_shadowMap, g_drawDensity);
+				DrawPoints(g_fluidRenderBuffers, numParticles - offset, offset, radius, float(g_screenWidth), aspect, fov, g_lightPos, g_lightTarget, lightTransform, g_shadowMap, g_drawDensity);
 		}
 	}
 
+	GraphicsTimerEnd();
 }
 
 void RenderDebug()
@@ -1472,7 +1514,7 @@ void RenderDebug()
 		NvFlexVector<int> contactIndices(g_flexLib, g_buffers->positions.size());
 		NvFlexVector<unsigned int> contactCounts(g_flexLib, g_buffers->positions.size());
 
-		NvFlexGetContacts(g_flex, contactPlanes.buffer, contactVelocities.buffer, contactIndices.buffer, contactCounts.buffer);
+		NvFlexGetContacts(g_solver, contactPlanes.buffer, contactVelocities.buffer, contactIndices.buffer, contactCounts.buffer);
 
 		// ensure transfers have finished
 		contactPlanes.map();
@@ -1528,7 +1570,7 @@ void RenderDebug()
 
 	if (g_drawNormals)
 	{
-		NvFlexGetNormals(g_flex, g_buffers->normals.buffer, g_buffers->normals.size());
+		NvFlexGetNormals(g_solver, g_buffers->normals.buffer, NULL);
 
 		BeginLines();
 
@@ -1655,8 +1697,8 @@ int DoUI()
 
 	if (g_showHelp)
 	{
-		const int numParticles = NvFlexGetActiveCount(g_flex);
-		const int numDiffuse = NvFlexGetDiffuseParticles(g_flex, NULL, NULL, NULL);
+		const int numParticles = NvFlexGetActiveCount(g_solver);		
+		const int numDiffuse = g_buffers->diffuseCount[0];
 
 		int x = g_screenWidth - 200;
 		int y = g_screenHeight - 23;
@@ -1687,6 +1729,8 @@ int DoUI()
 				{
 					DrawImguiString(x, y, Vec3(1.0f), IMGUI_ALIGN_RIGHT, "Sim Time (CPU): %.2fms", g_updateTime*1000.0f); y -= fontHeight;
 					DrawImguiString(x, y, Vec3(0.97f, 0.59f, 0.27f), IMGUI_ALIGN_RIGHT, "Sim Latency (GPU): %.2fms", g_simLatency); y -= fontHeight * 2;
+
+					BenchmarkUpdateGraph();
 				}
 				else
 				{
@@ -1750,7 +1794,7 @@ int DoUI()
 		for (int i = 0; i < int(g_scenes.size()); ++i)
 		{
 			unsigned int color = g_scene == i ? imguiRGBA(255, 151, 61, 255) : imguiRGBA(255, 255, 255, 200);
-			if (imguiItem(g_scenes[i]->GetName(), true, color, i == g_selectedScene))
+			if (imguiItem(g_scenes[i]->GetName(), true, color)) // , i == g_selectedScene))
 			{
 				newScene = i;
 			}
@@ -1842,11 +1886,6 @@ int DoUI()
 			imguiSlider("Collision Distance", &g_params.collisionDistance, 0.0f, 0.5f, 0.001f);
 			imguiSlider("Collision Margin", &g_params.shapeCollisionMargin, 0.0f, 5.0f, 0.01f);
 
-			// rigid params
-			imguiSeparatorLine();
-			imguiSlider("Plastic Creep", &g_params.plasticCreep, 0.0f, 1.0f, 0.001f);
-			imguiSlider("Plastic Threshold", &g_params.plasticThreshold, 0.0f, 0.5f, 0.001f);
-
 			// cloth params
 			imguiSeparatorLine();
 			imguiSlider("Wind", &g_windStrength, -1.0f, 1.0f, 0.01f);
@@ -1855,9 +1894,6 @@ int DoUI()
 			imguiSeparatorLine();
 
 			// fluid params
-			if (imguiCheck("Fluid", g_params.fluid))
-				g_params.fluid = !g_params.fluid;
-
 			imguiSlider("Adhesion", &g_params.adhesion, 0.0f, 10.0f, 0.01f);
 			imguiSlider("Cohesion", &g_params.cohesion, 0.0f, 0.2f, 0.0001f);
 			imguiSlider("Surface Tension", &g_params.surfaceTension, 0.0f, 50.0f, 0.01f);
@@ -1891,12 +1927,8 @@ int DoUI()
 		imguiEndFrame();
 
 		// kick render commands
-		imguiGraphDraw();
+		DrawImguiGraph();
 	}
-
-	// update benchmark and change scene if one is requested
-	if (g_benchmark)
-		newScene = BenchmarkUpdate();
 
 	return newScene;
 }
@@ -2003,6 +2035,11 @@ void UpdateFrame()
 
 	double waitEndTime = GetSeconds();
 
+	// Getting timers causes CPU/GPU sync, so we do it after a map
+	float newSimLatency = NvFlexGetDeviceLatency(g_solver, &g_GpuTimers.computeBegin, &g_GpuTimers.computeEnd, &g_GpuTimers.computeFreq);
+	float newGfxLatency = RendererGetDeviceTimestamps(&g_GpuTimers.renderBegin, &g_GpuTimers.renderEnd,&g_GpuTimers.renderFreq);
+	(void)newGfxLatency;
+
 	UpdateCamera();
 
 	if (!g_pause || g_step)	
@@ -2018,17 +2055,18 @@ void UpdateFrame()
 
 	double renderBeginTime = GetSeconds();
 
-	if (g_profile && (!g_pause || g_step)) {
-		if (g_benchmark) {
-			g_numDetailTimers = NvFlexGetDetailTimers(g_flex, &g_detailTimers);
+	if (g_profile && (!g_pause || g_step))
+	{
+		if (g_benchmark)
+		{
+			g_numDetailTimers = NvFlexGetDetailTimers(g_solver, &g_detailTimers);
 		}
-		else {
+		else
+		{
 			memset(&g_timers, 0, sizeof(g_timers));
-			NvFlexGetTimers(g_flex, &g_timers);
+			NvFlexGetTimers(g_solver, &g_timers);
 		}
 	}
-
-	float newSimLatency = NvFlexGetDeviceLatency(g_flex);
 
 	StartFrame(Vec4(g_clearColor, 1.0f));
 
@@ -2036,9 +2074,14 @@ void UpdateFrame()
 	RenderScene();
 	RenderDebug();
 	
+	int newScene = DoUI();
+
 	EndFrame();
 
-	const int newScene = DoUI();
+	// If user has disabled async compute, ensure that no compute can overlap 
+	// graphics by placing a sync between them	
+	if (!g_useAsyncCompute) 
+		NvFlexComputeWaitForGraphics(g_flexLib);
 
 	UnmapBuffers(g_buffers);
 
@@ -2074,26 +2117,18 @@ void UpdateFrame()
 		g_resetScene = false;
 	}
 
-	// if gui requested a scene change process it now
-	if (newScene != -1)
-	{
-		g_scene = newScene;
-		Init(g_scene);
-		return;
-	}
-
-
-
 	//-------------------------------------------------------------------
 	// Flex Update
 
 	double updateBeginTime = GetSeconds();
 
 	// send any particle updates to the solver
-	NvFlexSetParticles(g_flex, g_buffers->positions.buffer, g_buffers->positions.size());
-	NvFlexSetVelocities(g_flex, g_buffers->velocities.buffer, g_buffers->velocities.size());
-	NvFlexSetPhases(g_flex, g_buffers->phases.buffer, g_buffers->phases.size());
-	NvFlexSetActive(g_flex, g_buffers->activeIndices.buffer, g_buffers->activeIndices.size());
+	NvFlexSetParticles(g_solver, g_buffers->positions.buffer, NULL);
+	NvFlexSetVelocities(g_solver, g_buffers->velocities.buffer, NULL);
+	NvFlexSetPhases(g_solver, g_buffers->phases.buffer, NULL);
+	NvFlexSetActive(g_solver, g_buffers->activeIndices.buffer, NULL);
+
+	NvFlexSetActiveCount(g_solver, g_buffers->activeIndices.size());
 
 	// allow scene to update constraints etc
 	SyncScene();
@@ -2101,7 +2136,7 @@ void UpdateFrame()
 	if (g_shapesChanged)
 	{
 		NvFlexSetShapes(
-			g_flex,
+			g_solver,
 			g_buffers->shapeGeometry.buffer,
 			g_buffers->shapePositions.buffer,
 			g_buffers->shapeRotations.buffer,
@@ -2116,8 +2151,8 @@ void UpdateFrame()
 	if (!g_pause || g_step)
 	{
 		// tick solver
-		NvFlexSetParams(g_flex, &g_params);
-		NvFlexUpdateSolver(g_flex, g_dt, g_numSubsteps, g_profile);
+		NvFlexSetParams(g_solver, &g_params);
+		NvFlexUpdateSolver(g_solver, g_dt, g_numSubsteps, g_profile);
 
 		g_frame++;
 		g_step = false;
@@ -2128,36 +2163,42 @@ void UpdateFrame()
 	// to be executed later.
 	// When we're ready to read the fetched buffers we'll Map them, and that's when
 	// the CPU will wait for the GPU flex update and GPU copy to finish.
-	NvFlexGetParticles(g_flex, g_buffers->positions.buffer, g_buffers->positions.size());
-	NvFlexGetVelocities(g_flex, g_buffers->velocities.buffer, g_buffers->velocities.size());
-	NvFlexGetNormals(g_flex, g_buffers->normals.buffer, g_buffers->normals.size());
+	NvFlexGetParticles(g_solver, g_buffers->positions.buffer, NULL);
+	NvFlexGetVelocities(g_solver, g_buffers->velocities.buffer, NULL);
+	NvFlexGetNormals(g_solver, g_buffers->normals.buffer, NULL);
 
 	// readback triangle normals
 	if (g_buffers->triangles.size())
-		NvFlexGetDynamicTriangles(g_flex, g_buffers->triangles.buffer, g_buffers->triangleNormals.buffer, g_buffers->triangles.size() / 3);
+		NvFlexGetDynamicTriangles(g_solver, g_buffers->triangles.buffer, g_buffers->triangleNormals.buffer, g_buffers->triangles.size() / 3);
 
 	// readback rigid transforms
 	if (g_buffers->rigidOffsets.size())
-		NvFlexGetRigidTransforms(g_flex, g_buffers->rigidRotations.buffer, g_buffers->rigidTranslations.buffer);
+		NvFlexGetRigids(g_solver, NULL, NULL, NULL, NULL, NULL, NULL, NULL, g_buffers->rigidRotations.buffer, g_buffers->rigidTranslations.buffer);
 
 	if (!g_interop)
 	{
 		// if not using interop then we read back fluid data to host
 		if (g_drawEllipsoids)
 		{
-			NvFlexGetSmoothParticles(g_flex, g_buffers->smoothPositions.buffer, g_buffers->smoothPositions.size());
-			NvFlexGetAnisotropy(g_flex, g_buffers->anisotropy1.buffer, g_buffers->anisotropy2.buffer, g_buffers->anisotropy3.buffer);
+			NvFlexGetSmoothParticles(g_solver, g_buffers->smoothPositions.buffer, NULL);
+			NvFlexGetAnisotropy(g_solver, g_buffers->anisotropy1.buffer, g_buffers->anisotropy2.buffer, g_buffers->anisotropy3.buffer, NULL);
 		}
 
 		// read back diffuse data to host
 		if (g_drawDensity)
-			NvFlexGetDensities(g_flex, g_buffers->densities.buffer, g_buffers->positions.size());
+			NvFlexGetDensities(g_solver, g_buffers->densities.buffer, NULL);
 
-		if (g_diffuseRenderBuffers.mNumDiffuseParticles)
+		if (GetNumDiffuseRenderParticles(g_diffuseRenderBuffers))
 		{
-			NvFlexGetDiffuseParticles(g_flex, g_buffers->diffusePositions.buffer, g_buffers->diffuseVelocities.buffer, g_buffers->diffuseIndices.buffer);
+			NvFlexGetDiffuseParticles(g_solver, g_buffers->diffusePositions.buffer, g_buffers->diffuseVelocities.buffer, g_buffers->diffuseCount.buffer);
 		}
 	}
+	else
+	{
+		// read back just the new diffuse particle count, render buffers will be updated during rendering
+		NvFlexGetDiffuseParticles(g_solver, NULL, NULL, g_buffers->diffuseCount.buffer);	
+	}
+
 
 	double updateEndTime = GetSeconds();
 
@@ -2176,6 +2217,15 @@ void UpdateFrame()
 	g_waitTime = (g_waitTime == 0.0f) ? newWaitTime : Lerp(g_waitTime, newWaitTime, timerSmoothing);
 	g_simLatency = (g_simLatency == 0.0f) ? newSimLatency : Lerp(g_simLatency, newSimLatency, timerSmoothing);
 	
+	if(g_benchmark) newScene = BenchmarkUpdate();
+
+	// if gui or benchmark requested a scene change process it now
+	if (newScene != -1)
+	{
+		g_scene = newScene;
+		Init(g_scene);
+	}
+
 	PresentFrame(g_vsync);
 }
 
@@ -2548,10 +2598,10 @@ void MouseMotionFunc(unsigned state, int x, int y)
 
 bool g_Error = false;
 
-void ErrorCallback(NvFlexErrorSeverity, const char* msg, const char* file, int line)
+void ErrorCallback(NvFlexErrorSeverity severity, const char* msg, const char* file, int line)
 {
 	printf("Flex: %s - %s:%d\n", msg, file, line);
-	g_Error = true;
+	g_Error = (severity == eNvFlexLogError);
 	//assert(0); asserts are bad for TeamCity
 }
 
@@ -2606,9 +2656,14 @@ void SDLInit(const char* title)
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0)	// Initialize SDL's Video subsystem and game controllers
 		printf("Unable to initialize SDL");
 
-	// Create our window centered
+#if FLEX_DX
+	unsigned int flags = SDL_WINDOW_RESIZABLE;
+#else
+	unsigned int flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL;
+#endif
+
 	g_window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-		g_screenWidth, g_screenHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+		g_screenWidth, g_screenHeight, flags);
 
 	g_windowId = SDL_GetWindowID(g_window);
 }
@@ -2692,17 +2747,32 @@ int main(int argc, char* argv[])
 		if (sscanf(argv[i], "-extensions=%d", &d))
 			g_extensions = d != 0;
 
-		if (strstr(argv[i], "-benchmark"))
+		if (strcmp(argv[i], "-benchmark") == 0)
 		{
 			g_benchmark = true;
 			g_profile = true;
+			g_outputAllFrameTimes = false;
+			g_vsync = false;
+			g_fullscreen = true;
 		}
 
-		if (strstr(argv[i], "-d3d12"))
+		if (strcmp(argv[i], "-d3d12") == 0)
+		{
 			g_d3d12 = true;
+			// Currently interop doesn't work on d3d12
+			g_interop = false;
+		}
 
-		if (strstr(argv[i], "-tc"))
+		if (strcmp(argv[i], "-benchmarkAllFrameTimes") == 0)
+		{
+			g_benchmark = true;
+			g_outputAllFrameTimes = true;
+		}
+
+		if (strcmp(argv[i], "-tc") == 0)
+		{
 			g_teamCity = true;
+		}
 
 		if (sscanf(argv[i], "-msaa=%d", &d))
 			g_msaaSamples = d;
@@ -2715,11 +2785,24 @@ int main(int argc, char* argv[])
 			g_screenHeight = h;
 			g_fullscreen = true;
 		}
-		else if (strstr(argv[i], "-fullscreen"))
+		else if (strcmp(argv[i], "-fullscreen") == 0)
 		{
 			g_screenWidth = w;
 			g_screenHeight = h;
 			g_fullscreen = true;
+		}
+
+		if (sscanf(argv[i], "-windowed=%dx%d", &w, &h) == 2)
+		{
+			g_screenWidth = w;
+			g_screenHeight = h;
+			g_fullscreen = false;
+		}
+		else if (strstr(argv[i], "-windowed"))
+		{
+			g_screenWidth = w;
+			g_screenHeight = h;
+			g_fullscreen = false;
 		}
 
 		if (sscanf(argv[i], "-vsync=%d", &d))
@@ -2730,100 +2813,174 @@ int main(int argc, char* argv[])
 			g_numExtraMultiplier = d;
 		}
 
-		if (strstr(argv[i], "-disabletweak"))
+		if (strcmp(argv[i], "-disabletweak") == 0)
 		{
 			g_tweakPanel = false;
 		}
 
-		if (strstr(argv[i], "-disableinterop"))
+		if (strcmp(argv[i], "-disableinterop") == 0)
 		{
 			g_interop = false;
+		}
+		if (sscanf(argv[i], "-asynccompute=%d", &d) == 1)
+		{
+			g_useAsyncCompute = (d != 0);
 		}
 	}
 
 	// opening scene
 	g_scenes.push_back(new PotPourri("Pot Pourri"));	
 
-
 	// soft body scenes
-	SoftBody* softOctopus = new SoftBody("Soft Octopus", "../../data/softs/octopus.obj");
-	softOctopus->mScale = Vec3(32.0f);
-	softOctopus->mClusterSpacing = 2.75f;
-	softOctopus->mClusterRadius = 3.0f;
-	softOctopus->mClusterStiffness = 0.15f;
-	softOctopus->mSurfaceSampling = 1.0f;
-	softOctopus->mStack[1] = 3;
+	SoftBody::Instance octopus("../../data/softs/octopus.obj");
+	octopus.mScale = Vec3(32.0f);
+	octopus.mClusterSpacing = 2.75f;
+	octopus.mClusterRadius = 3.0f;
+	octopus.mClusterStiffness = 0.15f;
+	octopus.mSurfaceSampling = 1.0f;
+	SoftBody* softOctopusSceneNew = new SoftBody("Soft Octopus");
+	softOctopusSceneNew->AddStack(octopus, 1, 3, 1);
 
-	SoftBody* softRope = new SoftBody("Soft Rope", "../../data/rope.obj");
-	softRope->mScale = Vec3(50.0f);
-	softRope->mClusterSpacing = 1.5f;
-	softRope->mClusterRadius = 0.0f;
-	softRope->mClusterStiffness = 0.55f;
+	SoftBody::Instance rope("../../data/rope.obj");
+	rope.mScale = Vec3(50.0f);
+	rope.mClusterSpacing = 1.5f;
+	rope.mClusterRadius = 0.0f;
+	rope.mClusterStiffness = 0.55f;
+	SoftBody* softRopeSceneNew = new SoftBody("Soft Rope");
+	softRopeSceneNew->AddInstance(rope);
 
-	SoftBody* softBowl = new SoftBody("Soft Bowl", "../../data/bowl_high.ply");
-	softBowl->mScale = Vec3(10.0f);
-	softBowl->mClusterSpacing = 2.0f;
-	softBowl->mClusterRadius = 2.0f;
-	softBowl->mClusterStiffness = 0.55f;
+	SoftBody::Instance bowl("../../data/bowl_high.ply");
+	bowl.mScale = Vec3(10.0f);
+	bowl.mClusterSpacing = 2.0f;
+	bowl.mClusterRadius = 2.0f;
+	bowl.mClusterStiffness = 0.55f;
+	SoftBody* softBowlSceneNew = new SoftBody("Soft Bowl");
+	softBowlSceneNew->AddInstance(bowl);
 
-	SoftBody* softCloth = new SoftBody("Soft Cloth", "../../data/box_ultra_high.ply");
-	softCloth->mScale = Vec3(20.0f, 0.2f, 20.0f);
-	softCloth->mRadius = 0.05f;
-	softCloth->mClusterSpacing = 1.0f;
-	softCloth->mClusterRadius = 2.0f;
-	softCloth->mClusterStiffness = 0.2f;
-	softCloth->mLinkRadius = 2.0f;
-	softCloth->mLinkStiffness = 1.0f;
-	softCloth->mSkinningFalloff = 1.0f;
-	softCloth->mSkinningMaxDistance = 100.f;
+	SoftBody::Instance cloth("../../data/box_ultra_high.ply");
+	cloth.mScale = Vec3(20.0f, 0.2f, 20.0f);
+	cloth.mClusterSpacing = 1.0f;
+	cloth.mClusterRadius = 2.0f;
+	cloth.mClusterStiffness = 0.2f;
+	cloth.mLinkRadius = 2.0f;
+	cloth.mLinkStiffness = 1.0f;
+	cloth.mSkinningFalloff = 1.0f;
+	cloth.mSkinningMaxDistance = 100.f;
+	SoftBody* softClothSceneNew = new SoftBody("Soft Cloth");
+	softClothSceneNew->mRadius = 0.05f;
+	softClothSceneNew->AddInstance(cloth);
 
-	SoftBodyFixed* softRod = new SoftBodyFixed("Soft Rod", "../../data/box_very_high.ply");
-	softRod->mScale = Vec3(20.0f, 2.0f, 2.0f);
-	softRod->mOffset = Vec3(-0.3f, 1.0f, 0.0f);
-	softRod->mClusterSpacing = 2.0f;
-	softRod->mClusterRadius = 2.0f;
-	softRod->mClusterStiffness = 0.225f;
-	softRod->mStack[2] = 3;
+	SoftBody::Instance rod("../../data/box_very_high.ply");
+	rod.mScale = Vec3(20.0f, 2.0f, 2.0f);
+	rod.mTranslation = Vec3(-0.3f, 1.0f, 0.0f);
+	rod.mClusterSpacing = 2.0f;
+	rod.mClusterRadius = 2.0f;
+	rod.mClusterStiffness = 0.225f;
+	SoftBodyFixed* softRodSceneNew = new SoftBodyFixed("Soft Rod");
+	softRodSceneNew->AddStack(rod, 3);
 
-	SoftBody* softTeapot = new SoftBody("Soft Teapot", "../../data/teapot.ply");
-	softTeapot->mScale = Vec3(25.0f);
-	softTeapot->mClusterSpacing = 3.0f;
-	softTeapot->mClusterRadius = 0.0f;
-	softTeapot->mClusterStiffness = 0.1f;
+	SoftBody::Instance teapot("../../data/teapot.ply");
+	teapot.mScale = Vec3(25.0f);
+	teapot.mClusterSpacing = 3.0f;
+	teapot.mClusterRadius = 0.0f;
+	teapot.mClusterStiffness = 0.1f;
+	SoftBody* softTeapotSceneNew = new SoftBody("Soft Teapot");
+	softTeapotSceneNew->AddInstance(teapot);
 
-	SoftBody* softArmadillo = new SoftBody("Soft Armadillo", "../../data/armadillo.ply");
-	softArmadillo->mScale = Vec3(25.0f);
-	softArmadillo->mClusterSpacing = 3.0f;
-	softArmadillo->mClusterRadius = 0.0f;
+	SoftBody::Instance armadillo("../../data/armadillo.ply");
+	armadillo.mScale = Vec3(25.0f);
+	armadillo.mClusterSpacing = 3.0f;
+	armadillo.mClusterRadius = 0.0f;
+	SoftBody* softArmadilloSceneNew = new SoftBody("Soft Armadillo");
+	softArmadilloSceneNew->AddInstance(armadillo);
 
-	SoftBody* softBunny = new SoftBody("Soft Bunny", "../../data/bunny.ply");
-	softBunny->mScale = Vec3(20.0f);
-	softBunny->mClusterSpacing = 3.5f;
-	softBunny->mClusterRadius = 0.0f;
-	softBunny->mClusterStiffness = 0.2f;
+	SoftBody::Instance softbunny("../../data/bunny.ply");
+	softbunny.mScale = Vec3(20.0f);
+	softbunny.mClusterSpacing = 3.5f;
+	softbunny.mClusterRadius = 0.0f;
+	softbunny.mClusterStiffness = 0.2f;
+	SoftBody* softBunnySceneNew = new SoftBody("Soft Bunny");
+	softBunnySceneNew->AddInstance(softbunny);
 
-	SoftBody* plasticBunnies = new SoftBody("Plastic Bunnies", "../../data/bunny.ply");
-	plasticBunnies->mScale = Vec3(10.0f);
-	plasticBunnies->mClusterSpacing = 1.0f;
-	plasticBunnies->mClusterRadius = 0.0f;
-	plasticBunnies->mClusterStiffness = 0.0f;
-	plasticBunnies->mGlobalStiffness = 1.0f;
-	plasticBunnies->mPlasticThreshold = 0.0015f;
-	plasticBunnies->mPlasticCreep = 0.15f;
-	plasticBunnies->mRelaxationFactor = 1.0f;
-	plasticBunnies->mOffset[1] = 5.0f;
-	plasticBunnies->mStack[1] = 10;	
-	plasticBunnies->mPlinth = true;
+	// plastic scenes
+	SoftBody::Instance plasticbunny("../../data/bunny.ply");
+	plasticbunny.mScale = Vec3(10.0f);
+	plasticbunny.mClusterSpacing = 1.0f;
+	plasticbunny.mClusterRadius = 0.0f;
+	plasticbunny.mClusterStiffness = 0.0f;
+	plasticbunny.mGlobalStiffness = 1.0f;
+	plasticbunny.mClusterPlasticThreshold = 0.0015f;
+	plasticbunny.mClusterPlasticCreep = 0.15f;
+	plasticbunny.mTranslation[1] = 5.0f;
+	SoftBody* plasticBunniesSceneNew = new SoftBody("Plastic Bunnies");
+	plasticBunniesSceneNew->mPlinth = true;
+	plasticBunniesSceneNew->AddStack(plasticbunny, 1, 10, 1, true);
 
-	g_scenes.push_back(softOctopus);
-	g_scenes.push_back(softTeapot);
-	g_scenes.push_back(softRope);
-	g_scenes.push_back(softCloth);
-	g_scenes.push_back(softBowl);
-	g_scenes.push_back(softRod);
-	g_scenes.push_back(softArmadillo);
-	g_scenes.push_back(softBunny);
-	g_scenes.push_back(plasticBunnies);
+	SoftBody::Instance bunny1("../../data/bunny.ply");
+	bunny1.mScale = Vec3(10.0f);
+	bunny1.mClusterSpacing = 1.0f;
+	bunny1.mClusterRadius = 0.0f;
+	bunny1.mClusterStiffness = 0.0f;
+	bunny1.mGlobalStiffness = 1.0f;
+	bunny1.mClusterPlasticThreshold = 0.0015f;
+	bunny1.mClusterPlasticCreep = 0.15f;
+	bunny1.mTranslation[1] = 5.0f;
+	SoftBody::Instance bunny2("../../data/bunny.ply");
+	bunny2.mScale = Vec3(10.0f);
+	bunny2.mClusterSpacing = 1.0f;
+	bunny2.mClusterRadius = 0.0f;
+	bunny2.mClusterStiffness = 0.0f;
+	bunny2.mGlobalStiffness = 1.0f;
+	bunny2.mClusterPlasticThreshold = 0.0015f;
+	bunny2.mClusterPlasticCreep = 0.30f;
+	bunny2.mTranslation[1] = 5.0f;
+	bunny2.mTranslation[0] = 2.0f;
+	SoftBody* plasticComparisonScene = new SoftBody("Plastic Comparison");
+	plasticComparisonScene->AddInstance(bunny1);
+	plasticComparisonScene->AddInstance(bunny2);
+	plasticComparisonScene->mPlinth = true;
+
+	SoftBody::Instance stackBox("../../data/box_high.ply");
+	stackBox.mScale = Vec3(10.0f);
+	stackBox.mClusterSpacing = 1.5f;
+	stackBox.mClusterRadius = 0.0f;
+	stackBox.mClusterStiffness = 0.0f;
+	stackBox.mGlobalStiffness = 1.0f;
+	stackBox.mClusterPlasticThreshold = 0.0015f;
+	stackBox.mClusterPlasticCreep = 0.25f;
+	stackBox.mTranslation[1] = 1.0f;
+	SoftBody::Instance stackSphere("../../data/sphere.ply");
+	stackSphere.mScale = Vec3(10.0f);
+	stackSphere.mClusterSpacing = 1.5f;
+	stackSphere.mClusterRadius = 0.0f;
+	stackSphere.mClusterStiffness = 0.0f;
+	stackSphere.mGlobalStiffness = 1.0f;
+	stackSphere.mClusterPlasticThreshold = 0.0015f;
+	stackSphere.mClusterPlasticCreep = 0.25f;
+	stackSphere.mTranslation[1] = 2.0f;
+	SoftBody* plasticStackScene = new SoftBody("Plastic Stack");
+	plasticStackScene->AddInstance(stackBox);
+	plasticStackScene->AddInstance(stackSphere);
+	for (int i = 0; i < 3; i++) {
+		stackBox.mTranslation[1] += 2.0f;
+		stackSphere.mTranslation[1] += 2.0f;
+		plasticStackScene->AddInstance(stackBox);
+		plasticStackScene->AddInstance(stackSphere);
+	}
+
+
+	g_scenes.push_back(softOctopusSceneNew);
+	g_scenes.push_back(softTeapotSceneNew);
+	g_scenes.push_back(softRopeSceneNew);
+	g_scenes.push_back(softClothSceneNew);
+	g_scenes.push_back(softBowlSceneNew);
+	g_scenes.push_back(softRodSceneNew);
+	g_scenes.push_back(softArmadilloSceneNew);
+	g_scenes.push_back(softBunnySceneNew);
+
+	g_scenes.push_back(plasticBunniesSceneNew);
+	g_scenes.push_back(plasticComparisonScene);
+	g_scenes.push_back(plasticStackScene);
 
 
 	// collision scenes
@@ -2832,6 +2989,7 @@ int main(int argc, char* argv[])
 	g_scenes.push_back(new FrictionMovingShape("Friction Moving Sphere", 1));
 	g_scenes.push_back(new FrictionMovingShape("Friction Moving Capsule", 2));
 	g_scenes.push_back(new ShapeCollision("Shape Collision"));
+	g_scenes.push_back(new ShapeChannels("Shape Channels"));
 	g_scenes.push_back(new TriangleCollision("Triangle Collision"));
 	g_scenes.push_back(new LocalSpaceFluid("Local Space Fluid"));
 	g_scenes.push_back(new LocalSpaceCloth("Local Space Cloth"));	
@@ -2886,7 +3044,6 @@ int main(int argc, char* argv[])
 	g_scenes.push_back(new RigidPile("Rigid8", 12));
 	g_scenes.push_back(new BananaPile("Bananas"));
 	g_scenes.push_back(new LowDimensionalShapes("Low Dimensional Shapes"));
-	g_scenes.push_back(new PlasticStack("Plastic Stack"));
 
 	// granular scenes
 	g_scenes.push_back(new GranularPile("Granular Pile"));
@@ -2911,7 +3068,34 @@ int main(int argc, char* argv[])
 
 	SDLInit(title);
 
-	InitRender(g_window, g_fullscreen, g_msaaSamples);
+	RenderInitOptions options;
+	options.window = g_window;
+	options.numMsaaSamples = g_msaaSamples;
+	options.asyncComputeBenchmark = g_asyncComputeBenchmark;
+	options.defaultFontHeight = -1;
+	options.fullscreen = g_fullscreen;
+
+#if FLEX_DX
+	{
+		DemoContext* demoContext = nullptr;
+
+		if (g_d3d12)
+		{
+			// workaround for a driver issue with D3D12 with msaa, force it to off
+			options.numMsaaSamples = 1;
+
+			demoContext = CreateDemoContextD3D12();
+		}
+		else
+		{
+			demoContext = CreateDemoContextD3D11();
+		}
+		// Set the demo context
+		SetDemoContext(demoContext);
+	}
+#endif
+
+	InitRender(options);
 
 	if (g_fullscreen)
 		SDL_SetWindowFullscreen(g_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
@@ -2922,16 +3106,16 @@ int main(int argc, char* argv[])
 
 #if !FLEX_DX
 
-	// use the PhysX GPU selected from the NVIDIA control panel
+	// use the PhysX GPU selected from the NVIDIA control panel	
 	if (g_device == -1)
 		g_device = NvFlexDeviceGetSuggestedOrdinal();
-
+		
 	// Create an optimized CUDA context for Flex and set it on the 
 	// calling thread. This is an optional call, it is fine to use 
 	// a regular CUDA context, although creating one through this API
 	// is recommended for best performance.
 	bool success = NvFlexDeviceCreateCudaContext(g_device);
-
+	
 	if (!success)
 	{
 		printf("Error creating CUDA context.\n");
@@ -2945,6 +3129,7 @@ int main(int argc, char* argv[])
 	desc.enableExtensions = g_extensions;
 	desc.renderDevice = 0;
 	desc.renderContext = 0;
+	desc.computeContext = 0;
 	desc.computeType = eNvFlexCUDA;
 	
 #if FLEX_DX
@@ -2954,18 +3139,36 @@ int main(int argc, char* argv[])
 	else
 		desc.computeType = eNvFlexD3D11;
 
-	if (g_device == -1 && !g_d3d12)
+	bool userSpecifiedGpuToUseForFlex = (g_device != -1);
+
+	if (userSpecifiedGpuToUseForFlex)
 	{
-		// use the renderer device
-		GetRenderDevice((ID3D11Device**)&desc.renderDevice,
-						(ID3D11DeviceContext**)&desc.renderContext);
-	}	
-	else
-	{
-		// disable shared resources
+		// Flex doesn't currently support interop between different D3DDevices.
+		// If the user specifies which physical device to use, then Flex always 
+		// creates its own D3DDevice, even if graphics is on the same physical device.
+		// So specified physical device always means no interop.
 		g_interop = false;
 	}
+	else
+	{
+		// Ask Flex to run on the same GPU as rendering
+		GetRenderDevice(&desc.renderDevice,
+			&desc.renderContext);
+	}
 	
+	// Shared resources are unimplemented on D3D12,
+	// so disable it for now.
+	if (g_d3d12) 
+		g_interop = false;
+
+	// Setting runOnRenderContext = true doesn't prevent async compute, it just 
+	// makes Flex send compute and graphics to the GPU on the same queue.
+	//
+	// So to allow the user to toggle async compute, we set runOnRenderContext = false
+	// and provide a toggleable sync between compute and graphics in the app.
+	//
+	// Search for g_useAsyncCompute for details
+	desc.runOnRenderContext = false;
 #endif
 
 	// Init Flex library, note that no CUDA methods should be called before this 
@@ -2983,14 +3186,15 @@ int main(int argc, char* argv[])
 	printf("Compute Device: %s\n\n", g_deviceName);
 
 	if (g_benchmark)
-		BenchmarkInit();
-
+		g_scene = BenchmarkInit();
 
 	// create shadow maps
 	g_shadowMap = ShadowCreate();
 
 	// init default scene
+	StartGpuWork();
 	Init(g_scene);
+	EndGpuWork();
 
 	SDLMainLoop();
 		
@@ -3001,9 +3205,9 @@ int main(int argc, char* argv[])
 	DestroyDiffuseRenderBuffers(g_diffuseRenderBuffers);
 
 	ShadowDestroy(g_shadowMap);
-	DestroyRender();
-
+	
 	Shutdown();
+	DestroyRender();
 
 	SDL_DestroyWindow(g_window);
 	SDL_Quit();

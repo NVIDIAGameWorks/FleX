@@ -38,21 +38,26 @@ Quick Start
 
 The example code below shows how to initialize the library, create a new solver (similar to a scene in PhysX), and how to tick the solver::
 
-	#include <NvFlex.h>
-
 	NvFlexLibrary* library = NvFlexInit();
-	NvFlexSolver* solver = NvFlexCreateSolver(library);
 
-	NvFlexBuffer* particleBuffer = NvlexAllocBuffer(library, n, sizeof(Vec4), eNvFlexBufferHost);
-	NvFlexBuffer* velocityBuffer = NvlexAllocBuffer(library, n, sizeof(Vec4), eNvFlexBufferHost);
-	NvFlexBuffer* phaseBuffer = NvlexAllocBuffer(library, n, sizeof(int), eNvFlexBufferHost);
+	// create new solver
+	NvFlexSolverDesc solverDesc; 
+	NvFlexSetSolverDescDefaults(&solverDesc);	
+	solverDesc.maxParticles = n;
+	solverDesc.maxDiffuseParticles = 0;
+
+	NvFlexSolver* solver = NvFlexCreateSolver(library, &solverDesc);
+
+	NvFlexBuffer* particleBuffer = NvFlexAllocBuffer(library, n, sizeof(float4), eNvFlexBufferHost);
+	NvFlexBuffer* velocityBuffer = NvFlexAllocBuffer(library, n, sizeof(float4), eNvFlexBufferHost);
+	NvFlexBuffer* phaseBuffer = NvFlexAllocBuffer(library, n, sizeof(int), eNvFlexBufferHost);
 
 	while(!done)
 	{
 		// map buffers for reading / writing
-		float4* particles = (float4*)NvlexMap(particles, eNvFlexMapWait);
-		float3* velocities  = (float3*)NvFlexMap(velocities, eNvFlexMapWait);
-		int* phases = (int*)NvFlexMap(phases, eNvFlexMapWait);
+		float4* particles = (float4*)NvFlexMap(particleBuffer, eNvFlexMapWait);
+		float3* velocities  = (float3*)NvFlexMap(velocityBuffer, eNvFlexMapWait);
+		int* phases = (int*)NvFlexMap(phaseBuffer, eNvFlexMapWait);
 
 		// spawn (user method)
 		SpawnParticles(particles, velocities, phases);
@@ -66,17 +71,17 @@ The example code below shows how to initialize the library, create a new solver 
 		NvFlexUnmap(phaseBuffer);
 
 		// write to device (async)
-		NvFlexSetParticles(particleBuffer, n);
-		NvFlexSetVelocities(velocityBuffer, n);
-		NvFlexSetPhases(phaseBuffer, n);
+		NvFlexSetParticles(solver, particleBuffer, NULL);
+		NvFlexSetVelocities(solver, velocityBuffer, NULL);
+		NvFlexSetPhases(solver, phaseBuffer, NULL);
 
 		// tick
 		NvFlexUpdateSolver(solver, dt, 1, false);
 
 		// read back (async)
-		NvFlexGetParticles(particleBuffer, n);
-		NvFlexGetVelocities(velocityBuffer, n);
-		NvFlexGetPhases(phaseBuffer, n);
+		NvFlexGetParticles(solver, particleBuffer, NULL);
+		NvFlexGetVelocities(solver, velocityBuffer, NULL);
+		NvFlexGetPhases(solver, phaseBuffer, NULL);
 	}
 
 	NvFlexFreeBuffer(particleBuffer);
@@ -119,9 +124,9 @@ Particles are the fundamental building-block in Flex. For each particle the basi
 	NvFlexBuffer* phaseBuffer = NvFlexAllocBuffer(library, n, sizeof(int), eNvFlexBufferHost);
 
 	// map buffers for reading / writing
-	float4* particles = (float4*)NvFlexMap(particles, eNvFlexMapWait);
-	float3* velocities = (float3*)NvFlexMap(velocities, eNvFlexMapWait);
-	int* phases = (int*)NvFlexMap(phases, eFlexMapWait);
+	float4* particles = (float4*)NvFlexMap(particlesBuffer, eNvFlexMapWait);
+	float3* velocities = (float3*)NvFlexMap(velocityBuffer, eNvFlexMapWait);
+	int* phases = (int*)NvFlexMap(phaseBuffer, eFlexMapWait);
 
 	// spawn particles
 	for (int i=0; i < n; ++i)
@@ -137,9 +142,9 @@ Particles are the fundamental building-block in Flex. For each particle the basi
 	NvFlexUnmap(phaseBuffer);
 
 	// write to device (async)
-	NvFlexSetParticles(particleBuffer, n);
-	NvFlexSetVelocities(velocityBuffer, n);
-	NvFlexSetPhases(phaseBuffer, n);	
+	NvFlexSetParticles(solver, particleBuffer, NULL);
+	NvFlexSetVelocities(solver, velocityBuffer, NULL);
+	NvFlexSetPhases(solver, phaseBuffer, NULL);	
 
 .. _Radius:
 	
@@ -187,7 +192,9 @@ The example code below shows how to create an active set which enables simulatio
  		activeIndices[i] = i;
 
  	NvFlexUnmap(activeBuffer);
-	NvFlexSetActive(solver, activeBuffer, 10)
+
+	NvFlexSetActive(solver, activeBuffer, NULL)
+	NvFlexSetActiveCount(solver, 10);
 
 **Note:** constraints referencing inactive particles may behave unexpectedly.
 
@@ -581,34 +588,34 @@ Synchronization occurs when you call **NvFlexMap()** on a simulation buffer. To 
 
 	while (!done)
 	{
-		// map buffers for reading / writing (synchronizes with GPU)
-		float4* particles = (float4*)NvFlexMap(particleBuffer, eNvFlexMapWait);
-		float3* velocities  = (float3*)NvFlexMap(velocityBuffer, eNvFlexMapWait);
-		int* phases = (int*)NvFlexMap(phaseBuffer, eNvFlexMapWait);
+        // map buffers for reading / writing (synchronizes with GPU)
+        float4* particles = (float4*)NvFlexMap(particleBuffer, eNvFlexMapWait);
+        float3* velocities  = (float3*)NvFlexMap(velocityBuffer, eNvFlexMapWait);
+        int* phases = (int*)NvFlexMap(phaseBuffer, eNvFlexMapWait);
 
-		// application CPU-side particle update
-		UpdateBuffers(particles, velocities, phases);
+        // application CPU-side particle update
+        UpdateBuffers(particles, velocities, phases);
 
-		// unmap buffers
-		NvFlexUnmap(particleBuffer);
-		NvFlexUnmap(velocityBuffer);
-		NvFlexUnmap(phaseBuffer);
+        // unmap buffers
+        NvFlexUnmap(particleBuffer);
+        NvFlexUnmap(velocityBuffer);
+        NvFlexUnmap(phaseBuffer);
 
-		// write to device (async)
-		NvFlexSetParticles(particleBuffer, n);
-		NvFlexSetVelocities(velocityBuffer, n);
-		NvFlexSetPhases(phaseBuffer, n);	
+        // write to device (async)
+        NvFlexSetParticles(solver, particleBuffer, NULL);
+        NvFlexSetVelocities(solver, velocityBuffer, NULL);
+        NvFlexSetPhases(solver, phaseBuffer, NULL);
 
-		// tick (async)
-		NvFlexUpdateSolver(solver, dt, 1, NULL);
+        // tick (async)
+        NvFlexUpdateSolver(solver, dt, 1, NULL);
 
-		// read back (async)
-		NvFlexGetParticles(particleBuffer, n);
-		NvFlexGetVelocities(velocityBuffer, n);
-		NvFlexGetPhases(phaseBuffer, n);
+        // read back (async)
+        NvFlexGetParticles(solver, particleBuffer, NULL);
+        NvFlexGetVelocities(solver, velocityBuffer, NULL);
+        NvFlexGetPhases(solver, phaseBuffer, NULL);
 
-		// Perform CPU work here while update and transfer are in flight
-		TickGame()
+        // Perform CPU work here while update and transfer are in flight
+        TickGame()
 	}
 
 

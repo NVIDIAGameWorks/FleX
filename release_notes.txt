@@ -1,3 +1,28 @@
+1.2.0 (beta)
+------------
+
+- New API to retrieve particle neighbor information, see NvFlexGetNeighbors()
+- New API to support shape collision filtering, collision channels can be assigned to particles and shapes to specify which pairs collide, see NvFlexPhase
+- New API to support per-shape plastic deformation, it is now possible to specify plastic creep and threshold coefficient on a per-shape basis (previous global settings), see NvFlexSetRigids()
+- New API to selectively disable solver features, this can lead to improved performance, see NvFlexFeatureMode, replaces global FlexParams::fluid option
+- New API to allow sub-range particle buffer updates, see NvFlexCopyDesc
+- New API for asynchronous compute, see NvFlexInitDesc
+- Fix for unnecessary synchronization when calling NvFlexMap() on a device buffer
+- Fix numerical precision for shape-matching constraints with large coordinates
+- Fix for uninitialized contact indices returned from NvFlexGetContacts() if NvFlexUpdateSolver() has not been called
+- Fix for SDF collision in D3D12
+- Fix for D3D warning when using NvFlexSetRigids()
+- Add D3D12 rendering support to the demo
+- Add support for device NvFlexBuffers on D3D
+- Enable NvToolkit profiling zones so to provide annotations in NSight profiles by default
+
+Known Issues
+------------
+
+- Demo rendering artifacts in D3D12 fullscreen on AMD platforms
+- NvFlexGetTimers() may report incorrect values on D3D12
+- Crash on inflatable test scenes on some Kepler class GPUs
+
 1.1.0
 -----
 

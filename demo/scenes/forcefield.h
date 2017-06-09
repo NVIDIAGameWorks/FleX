@@ -40,7 +40,7 @@ public:
 			NvFlexExtDestroyForceFieldCallback(callback);
 
 		// create new callback
-		callback = NvFlexExtCreateForceFieldCallback(g_flex);
+		callback = NvFlexExtCreateForceFieldCallback(g_solver);
 
 		// expand scene bounds to include force field
 		g_sceneLower -= Vec3(1.0f);

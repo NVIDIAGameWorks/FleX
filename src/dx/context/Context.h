@@ -94,7 +94,7 @@ namespace NvFlex
 	virtual NvFlexUint addRef() { return Object::addRefInternal(); } \
 	virtual NvFlexUint release() { return Object::releaseInternal(); }
 
-	#define NV_FLEX_DISPATCH_MAX_READ_TEXTURES ( 30u )
+	#define NV_FLEX_DISPATCH_MAX_READ_TEXTURES ( 32u )
 	#define NV_FLEX_DISPATCH_MAX_WRITE_TEXTURES ( 8u )
 
 	#define NV_FLEX_DRAW_MAX_READ_TEXTURES ( 8u )
@@ -118,7 +118,8 @@ namespace NvFlex
 		eRaw = 1 << 3,
 		eStructured = 1 << 4,
 		eIndirect = 1 << 5,
-		eShared = 1 << 6
+		eShared = 1 << 6,
+		eDynamic = 1 << 7
 	};
 
 	struct BufferDesc
@@ -184,12 +185,20 @@ namespace NvFlex
 		virtual Resource* getResource() = 0;
 	};
 
-	
+	enum BufferResourceTypes
+	{
+		eResource = 1 << 0,
+		eDefaultBuffer = 1 << 1,
+		eUploadBuffer = 1 << 2,
+		eDownloadBuffer = 1 << 3,
+		eNativeBuffer = 1 << 4,
+	};
+
 	/// Context created resources
 	/// includes Resource, ResourceRW
 	struct Buffer : public NvFlexObject
 	{
-		virtual Resource* getResource() = 0;
+		virtual Resource* getResource(BufferResourceTypes type = eResource) = 0;
 		virtual ResourceRW* getResourceRW() = 0;
 		virtual ~Buffer() {}
 		BufferDesc m_desc;
@@ -238,6 +247,14 @@ namespace NvFlex
 		Buffer * IndirectLaunchArgs;
 	};
 
+	enum MapType
+	{
+		eMapRead = 0,
+		eMapWrite = 1,
+		eMapReadWrite = 2,
+		eMapWriteDiscard = 3,
+	};
+
 	struct MappedData
 	{
 		void* data;
@@ -265,7 +282,7 @@ namespace NvFlex
 
 		virtual void clear() = 0;
 
-		virtual float get(int index) = 0;
+		virtual float get(int index, unsigned long long* begin = 0, unsigned long long* end = 0, unsigned long long* freq = 0) = 0;
 		// Set the number of timers in the pool
 		// In D3D12 this results in a reallocation of the timer heap
 		virtual void reserve(size_t size) = 0;
@@ -327,9 +344,7 @@ namespace NvFlex
 
 		virtual Buffer* createBufferView(Buffer* buffer, const BufferViewDesc* desc) = 0;
 
-		virtual void* map(Buffer* buffer) = 0;
-
-		virtual void* mapUpload(Buffer* buffer) = 0;
+		virtual void* map(Buffer* buffer, MapType type = eMapReadWrite, bool wait=true) = 0;
 
 		virtual void unmap(Buffer* buffer) = 0;
 
@@ -345,11 +360,13 @@ namespace NvFlex
 
 		virtual void copyToNative(void* dst, unsigned dstByteOffset, Buffer* src, NvFlexUint srcByteOffset, NvFlexUint numBytes) = 0;
 
-		virtual void copyToDevice(Buffer* dst, unsigned dstByteOffset, Buffer* src, NvFlexUint srcByteOffset, NvFlexUint numBytes) = 0;
+		virtual void copyToDevice(Buffer* dst, unsigned dstByteOffset, Buffer* src, NvFlexUint srcByteOffset, NvFlexUint numBytes, BufferResourceTypes type = eDownloadBuffer) = 0;
 
 		virtual void copyToHost(Buffer* dst, unsigned dstByteOffset, Buffer* src, NvFlexUint srcByteOffset, NvFlexUint numBytes) = 0;
 
 		virtual void clearUnorderedAccessViewUint(Buffer* buffer, const NvFlexUint * values) = 0;
+
+		virtual void clearUnorderedAccessViewFloat(Buffer* buffer, const NvFlexFloat * values) = 0;
 
 		virtual void copyResourceState(Buffer* bufferFrom, Buffer* bufferTo) = 0;
 
@@ -390,6 +407,8 @@ namespace NvFlex
 		virtual void flush() = 0;
 
 		virtual void clearState() = 0;
+
+		virtual void computeWaitForGraphics() = 0;
 
 		// ***************** Profiling ****************
 

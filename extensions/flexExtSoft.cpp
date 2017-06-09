@@ -441,7 +441,7 @@ void SampleMesh(const Vec3* vertices, int numVertices, const int* indices, int n
 		meshOffset.z = 0.5f * (spacing - (edges.z - (dz - 1)*spacing));
 		meshLower -= meshOffset;
 
-		Voxelize((const float*)vertices, numVertices, indices, numIndices, maxDim, maxDim, maxDim, &voxels[0], meshLower, meshLower + Vec3(maxDim*spacing));
+		Voxelize(vertices, numVertices, indices, numIndices, maxDim, maxDim, maxDim, &voxels[0], meshLower, meshLower + Vec3(maxDim*spacing));
 
 		// sample interior
 		for (int x = 0; x < maxDim; ++x)
@@ -507,14 +507,31 @@ void SampleMesh(const Vec3* vertices, int numVertices, const int* indices, int n
 
 // API methods
 
-NvFlexExtAsset* NvFlexExtCreateSoftFromMesh(const float* vertices, int numVertices, const int* indices, int numIndices, float particleSpacing, float volumeSampling, float surfaceSampling, float clusterSpacing, float clusterRadius, float clusterStiffness, float linkRadius, float linkStiffness, float globalStiffness)
+NvFlexExtAsset* NvFlexExtCreateSoftFromMesh(const float* vertices, int numVertices, const int* indices, int numIndices, float particleSpacing, float volumeSampling, float surfaceSampling, float clusterSpacing, float clusterRadius, float clusterStiffness, float linkRadius, float linkStiffness, float globalStiffness, float clusterPlasticThreshold, float clusterPlasticCreep)
 {
+	// Switch to relative coordinates by computing the mean position of the vertices and subtracting the result from every vertex position
+	// The increased precision will prevent ghost forces caused by inaccurate center of mass computations
+	Vec3 meshOffset(0.0f);
+	for (int i = 0; i < numVertices; i++)
+	{
+		meshOffset += ((Vec3*)vertices)[i];
+	}
+	meshOffset /= float(numVertices);
+
+	Vec3* relativeVertices = new Vec3[numVertices];
+	for (int i = 0; i < numVertices; i++)
+	{
+		relativeVertices[i] += ((Vec3*)vertices)[i] - meshOffset;
+	}
+
 	// construct asset definition
 	NvFlexExtAsset* asset = new NvFlexExtAsset();
 
 	// create particle sampling
 	std::vector<Vec3> samples;
-	SampleMesh((Vec3*)vertices, numVertices, indices, numIndices, particleSpacing, volumeSampling, surfaceSampling, samples);
+	SampleMesh(relativeVertices, numVertices, indices, numIndices, particleSpacing, volumeSampling, surfaceSampling, samples);
+
+	delete[] relativeVertices;
 
 	const int numParticles = int(samples.size());	
 
@@ -522,6 +539,8 @@ NvFlexExtAsset* NvFlexExtCreateSoftFromMesh(const float* vertices, int numVertic
 	std::vector<int> clusterOffsets;
 	std::vector<Vec3> clusterPositions;
 	std::vector<float> clusterCoefficients;
+	std::vector<float> clusterPlasticThresholds;
+	std::vector<float> clusterPlasticCreeps;
 
 	// priority (not currently used)
 	std::vector<float> priority(numParticles);
@@ -533,6 +552,15 @@ NvFlexExtAsset* NvFlexExtCreateSoftFromMesh(const float* vertices, int numVertic
 	
 	// assign all clusters the same stiffness 
 	clusterCoefficients.resize(numClusters, clusterStiffness);
+
+	if (clusterPlasticCreep) 
+	{
+		// assign all clusters the same plastic threshold 
+		clusterPlasticThresholds.resize(numClusters, clusterPlasticThreshold);
+
+		// assign all clusters the same plastic creep 
+		clusterPlasticCreeps.resize(numClusters, clusterPlasticCreep);
+	}
 
 	// create links between clusters 
 	if (linkRadius > 0.0f)
@@ -565,24 +593,36 @@ NvFlexExtAsset* NvFlexExtCreateSoftFromMesh(const float* vertices, int numVertic
 	{
 		numClusters += 1;
 		clusterCoefficients.push_back(globalStiffness);
+		if (clusterPlasticCreep) 
+		{
+			clusterPlasticThresholds.push_back(clusterPlasticThreshold);
+			clusterPlasticCreeps.push_back(clusterPlasticCreep);
+		}
 
 		for (int i = 0; i < numParticles; ++i)
 		{
 			clusterIndices.push_back(i);
 		}
-
 		clusterOffsets.push_back((int)clusterIndices.size());
 
 		// the mean of the global cluster is the mean of all particles
 		Vec3 globalMeanPosition(0.0f);
-
 		for (int i = 0; i < numParticles; ++i)
 		{
 			globalMeanPosition += samples[i];
 		}
 		globalMeanPosition /= float(numParticles);
-
 		clusterPositions.push_back(globalMeanPosition);
+	}
+
+	// Switch back to absolute coordinates by adding meshOffset to the centers of mass and to each particle positions
+	for (int i = 0; i < numParticles; ++i)
+	{
+		 samples[i] += meshOffset;
+	}
+	for (int i = 0; i < numClusters; ++i)
+	{
+		clusterPositions[i] += meshOffset;
 	}
 
 	// assign particles
@@ -610,6 +650,20 @@ NvFlexExtAsset* NvFlexExtCreateSoftFromMesh(const float* vertices, int numVertic
 
 	asset->shapeCoefficients = new float[numClusters];
 	memcpy(asset->shapeCoefficients, &clusterCoefficients[0], sizeof(float)*numClusters);
+
+	if (clusterPlasticCreep) 
+	{
+		asset->shapePlasticThresholds = new float[numClusters];
+		memcpy(asset->shapePlasticThresholds, &clusterPlasticThresholds[0], sizeof(float)*numClusters);
+
+		asset->shapePlasticCreeps = new float[numClusters];
+		memcpy(asset->shapePlasticCreeps, &clusterPlasticCreeps[0], sizeof(float)*numClusters);
+	}
+	else
+	{
+		asset->shapePlasticThresholds = NULL;
+		asset->shapePlasticCreeps = NULL;
+	}
 
 	asset->numShapeIndices = int(clusterIndices.size());
 	asset->numShapes = numClusters;

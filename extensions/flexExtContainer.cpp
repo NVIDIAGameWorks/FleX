@@ -107,6 +107,8 @@ struct NvFlexExtContainer
 	NvFlexVector<int> mShapeOffsets;
 	NvFlexVector<int> mShapeIndices;
 	NvFlexVector<float> mShapeCoefficients;
+	NvFlexVector<float> mShapePlasticThresholds;
+	NvFlexVector<float> mShapePlasticCreeps;
 	NvFlexVector<Quat> mShapeRotations;
 	NvFlexVector<Vec3> mShapeTranslations;
 	NvFlexVector<Vec3> mShapeRestPositions;
@@ -139,7 +141,8 @@ struct NvFlexExtContainer
 		mMaxParticles(0), mSolver(NULL), mFlexLib(l),
 		mActiveList(l),mParticles(l),mParticlesRest(l),mVelocities(l),
 		mPhases(l),mNormals(l),mShapeOffsets(l),mShapeIndices(l),
-		mShapeCoefficients(l),mShapeRotations(l),mShapeTranslations(l),
+		mShapeCoefficients(l),mShapePlasticThresholds(l),
+		mShapePlasticCreeps(l),mShapeRotations(l),mShapeTranslations(l),
 		mShapeRestPositions(l),mSpringIndices(l),mSpringLengths(l),
 		mSpringCoefficients(l),mTriangleIndices(l),mTriangleNormals(l),
 		mInflatableStarts(l),mInflatableCounts(l),mInflatableRestVolumes(l),
@@ -161,6 +164,8 @@ void CompactObjects(NvFlexExtContainer* c)
 	int totalNumShapes = 0;
 	int totalNumShapeIndices = 0;
 
+	bool plasticDeformation = false;
+
 	// pre-calculate array sizes
 	for (size_t i = 0; i < c->mInstances.size(); ++i)
 	{
@@ -176,6 +181,11 @@ void CompactObjects(NvFlexExtContainer* c)
 
 		totalNumShapeIndices += asset->numShapeIndices;
 		totalNumShapes += asset->numShapes;
+
+		if (asset->shapePlasticThresholds && asset->shapePlasticCreeps)
+		{ 
+			plasticDeformation = true;
+		}
 	}
 
 	//----------------------
@@ -202,6 +212,9 @@ void CompactObjects(NvFlexExtContainer* c)
 	c->mShapeRestPositions.map();
 	c->mShapeOffsets.map();
 	c->mShapeCoefficients.map();
+
+	c->mShapePlasticThresholds.map();
+	c->mShapePlasticCreeps.map();
 
 	c->mShapeTranslations.map();
 	c->mShapeRotations.map();
@@ -231,6 +244,17 @@ void CompactObjects(NvFlexExtContainer* c)
 	c->mShapeOffsets.resize(1 + totalNumShapes);
 	c->mShapeCoefficients.resize(totalNumShapes);
 
+	if (plasticDeformation) 
+	{
+		c->mShapePlasticThresholds.resize(totalNumShapes);
+		c->mShapePlasticCreeps.resize(totalNumShapes);
+	}
+	else
+	{
+		c->mShapePlasticThresholds.resize(0);
+		c->mShapePlasticCreeps.resize(0);
+	}
+
 	c->mShapeTranslations.resize(totalNumShapes);
 	c->mShapeRotations.resize(totalNumShapes);
 
@@ -244,6 +268,13 @@ void CompactObjects(NvFlexExtContainer* c)
 	Vec3* __restrict dstShapeRestPositions = (totalNumShapeIndices) ? &c->mShapeRestPositions[0] : NULL;
 	int* __restrict dstShapeOffsets = (totalNumShapes) ? &c->mShapeOffsets[0] : NULL;
 	float* __restrict dstShapeCoefficients = (totalNumShapes) ? &c->mShapeCoefficients[0] : NULL;
+	float* __restrict dstShapePlasticThresholds = NULL;
+	float* __restrict dstShapePlasticCreeps = NULL;
+	if (plasticDeformation)
+	{
+		dstShapePlasticThresholds = (totalNumShapes) ? &c->mShapePlasticThresholds[0] : NULL;
+		dstShapePlasticCreeps = (totalNumShapes) ? &c->mShapePlasticCreeps[0] : NULL;
+	}
 	Vec3* __restrict dstShapeTranslations = (totalNumShapes) ? &c->mShapeTranslations[0] : NULL;
 	Quat* __restrict dstShapeRotations = (totalNumShapes) ? &c->mShapeRotations[0] : NULL;
 
@@ -300,6 +331,18 @@ void CompactObjects(NvFlexExtContainer* c)
 			{
 				dstShapeOffsets[shapeIndex] = asset->shapeOffsets[s] + indexOffset;
 				dstShapeCoefficients[shapeIndex]  = asset->shapeCoefficients[s];
+				if (plasticDeformation)
+				{
+					if (asset->shapePlasticThresholds)
+						dstShapePlasticThresholds[shapeIndex] = asset->shapePlasticThresholds[s];
+					else
+						dstShapePlasticThresholds[shapeIndex] = 0.0f;
+
+					if (asset->shapePlasticCreeps)
+						dstShapePlasticCreeps[shapeIndex]  = asset->shapePlasticCreeps[s];
+					else
+						dstShapePlasticCreeps[shapeIndex] = 0.0f;
+				}
 				dstShapeTranslations[shapeIndex]  = Vec3(&inst->shapeTranslations[s*3]);
 				dstShapeRotations[shapeIndex]  = Quat(&inst->shapeRotations[s*4]);
 
@@ -309,15 +352,10 @@ void CompactObjects(NvFlexExtContainer* c)
 
 				for (int i=shapeStart; i < shapeEnd; ++i)
 				{
-					const int firstParticle = asset->shapeIndices[0];
 					const int currentParticle = asset->shapeIndices[i];
 
 					// remap indices and create local space positions for each shape
-					// To make this calculation more robust, subtract the position of the first particle from both, the positions of the current
-					// particle and the shapeCenter. Without this one would subtract two very similar floating point values, which can lead to ghost forces.
-					dstShapeRestPositions[shapeIndexOffset] = (Vec3(&asset->particles[currentParticle*4]) - Vec3(&asset->particles[firstParticle]))
-						- (Vec3(&asset->shapeCenters[s*3]) - Vec3(&asset->particles[firstParticle]));
-
+					dstShapeRestPositions[shapeIndexOffset] = Vec3(&asset->particles[currentParticle*4]) - Vec3(&asset->shapeCenters[s*3]);
 					dstShapeIndices[shapeIndexOffset] = remap[asset->shapeIndices[i]];
 
 					++shapeIndexOffset;
@@ -378,6 +416,9 @@ void CompactObjects(NvFlexExtContainer* c)
 	c->mShapeOffsets.unmap();
 	c->mShapeCoefficients.unmap();
 
+	c->mShapePlasticThresholds.unmap();
+	c->mShapePlasticCreeps.unmap();
+
 	c->mShapeTranslations.unmap();
 	c->mShapeRotations.unmap();
 
@@ -393,14 +434,14 @@ void CompactObjects(NvFlexExtContainer* c)
 	// shapes
 	if (c->mShapeCoefficients.size())
 	{
-		NvFlexSetRigids(c->mSolver, c->mShapeOffsets.buffer, c->mShapeIndices.buffer, c->mShapeRestPositions.buffer, NULL, c->mShapeCoefficients.buffer, c->mShapeRotations.buffer, c->mShapeTranslations.buffer, int(c->mShapeCoefficients.size()), c->mShapeIndices.size());
+		NvFlexSetRigids(c->mSolver, c->mShapeOffsets.buffer, c->mShapeIndices.buffer, c->mShapeRestPositions.buffer, NULL, c->mShapeCoefficients.buffer, c->mShapePlasticThresholds.buffer, c->mShapePlasticCreeps.buffer, c->mShapeRotations.buffer, c->mShapeTranslations.buffer, int(c->mShapeCoefficients.size()), c->mShapeIndices.size());
 	}
 	else
 	{
 		c->mShapeRotations.resize(0);
 		c->mShapeTranslations.resize(0);
 
-		NvFlexSetRigids(c->mSolver, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0);		
+		NvFlexSetRigids(c->mSolver, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0);		
 	}
 
 	// triangles
@@ -729,18 +770,19 @@ void NvFlexExtPushToDevice(NvFlexExtContainer* c)
 		int n = NvFlexExtGetActiveList(c, &c->mActiveList[0]);		
 		c->mActiveList.unmap();
 
-		NvFlexSetActive(c->mSolver, c->mActiveList.buffer, n);
+		NvFlexSetActive(c->mSolver, c->mActiveList.buffer, NULL);
+		NvFlexSetActiveCount(c->mSolver, n);
 
 		c->mNeedsActiveListRebuild = false;
 	}
 
 	// push any changes to solver
-	NvFlexSetParticles(c->mSolver, c->mParticles.buffer, int(c->mParticles.size()));
-	NvFlexSetRestParticles(c->mSolver, c->mParticlesRest.buffer, int(c->mParticlesRest.size()));
+	NvFlexSetParticles(c->mSolver, c->mParticles.buffer, NULL);
+	NvFlexSetRestParticles(c->mSolver, c->mParticlesRest.buffer, NULL);
 
-	NvFlexSetVelocities(c->mSolver, c->mVelocities.buffer, int(c->mVelocities.size()));
-	NvFlexSetPhases(c->mSolver, c->mPhases.buffer, int(c->mPhases.size()));
-	NvFlexSetNormals(c->mSolver, c->mNormals.buffer, int(c->mNormals.size()));
+	NvFlexSetVelocities(c->mSolver, c->mVelocities.buffer, NULL);
+	NvFlexSetPhases(c->mSolver, c->mPhases.buffer, NULL);
+	NvFlexSetNormals(c->mSolver, c->mNormals.buffer, NULL);
 	
 	if (c->mNeedsCompact)
 		CompactObjects(c);
@@ -748,18 +790,16 @@ void NvFlexExtPushToDevice(NvFlexExtContainer* c)
 
 void NvFlexExtPullFromDevice(NvFlexExtContainer* c)
 {
-	
 	// read back particle data
-	NvFlexGetParticles(c->mSolver, c->mParticles.buffer, int(c->mParticles.size()));
-	NvFlexGetVelocities(c->mSolver, c->mVelocities.buffer, int(c->mVelocities.size()));
-	NvFlexGetPhases(c->mSolver, c->mPhases.buffer, int(c->mPhases.size()));
-	NvFlexGetNormals(c->mSolver, c->mNormals.buffer, int(c->mNormals.size()));
+	NvFlexGetParticles(c->mSolver, c->mParticles.buffer, NULL);
+	NvFlexGetVelocities(c->mSolver, c->mVelocities.buffer, NULL);
+	NvFlexGetPhases(c->mSolver, c->mPhases.buffer, NULL);
+	NvFlexGetNormals(c->mSolver, c->mNormals.buffer, NULL);
 	NvFlexGetBounds(c->mSolver, c->mBoundsLower.buffer, c->mBoundsUpper.buffer);
 
 	// read back shape transforms
 	if (c->mShapeCoefficients.size())
-		NvFlexGetRigidTransforms(c->mSolver, c->mShapeRotations.buffer, c->mShapeTranslations.buffer);
-		
+		NvFlexGetRigids(c->mSolver, NULL, NULL, NULL, NULL, NULL, NULL, NULL, c->mShapeRotations.buffer, c->mShapeTranslations.buffer);
 }
 
 void NvFlexExtUpdateInstances(NvFlexExtContainer* c)
@@ -800,6 +840,8 @@ void NvFlexExtDestroyAsset(NvFlexExtAsset* asset)
 	delete[] asset->shapeOffsets;
 	delete[] asset->shapeCenters;
 	delete[] asset->shapeCoefficients;	
+	delete[] asset->shapePlasticThresholds;	
+	delete[] asset->shapePlasticCreeps;	
 
 	delete asset;
 }

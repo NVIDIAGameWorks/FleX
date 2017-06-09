@@ -2,50 +2,144 @@
 
 class SoftBody : public Scene
 {
-public:
 
-	SoftBody(const char* name, const char* mesh) :
+public:
+	SoftBody(const char* name) :
 		Scene(name),
-		mFile(mesh),
-		mScale(2.0f),
-		mOffset(0.0f, 1.0f, 0.0f),
 		mRadius(0.1f),
-		mClusterSpacing(1.0f),
-		mClusterRadius(0.0f),
-		mClusterStiffness(0.5f),
-		mLinkRadius(0.0f),
-		mLinkStiffness(1.0f),
-		mGlobalStiffness(0.0f),
-		mSurfaceSampling(0.0f),
-		mVolumeSampling(4.0f),
-		mSkinningFalloff(2.0f),
-		mSkinningMaxDistance(100.0f),
-		mPlasticThreshold(0.0f),
-		mPlasticCreep(0.0f),
 		mRelaxationFactor(1.0f),
-		mPlinth(false)
+		mPlinth(false),
+		plasticDeformation(false)
 	{
-		mStack[0] = 1;
-		mStack[1] = 1;
-		mStack[2] = 1;
+		const Vec3 colorPicker[7] =
+		{
+			Vec3(0.0f, 0.5f, 1.0f),
+			Vec3(0.797f, 0.354f, 0.000f),
+			Vec3(0.000f, 0.349f, 0.173f),
+			Vec3(0.875f, 0.782f, 0.051f),
+			Vec3(0.01f, 0.170f, 0.453f),
+			Vec3(0.673f, 0.111f, 0.000f),
+			Vec3(0.612f, 0.194f, 0.394f)
+		};
+		memcpy(mColorPicker, colorPicker, sizeof(Vec3) * 7);
+	}
+
+	float mRadius;
+	float mRelaxationFactor;
+	bool mPlinth;
+
+	Vec3 mColorPicker[7];
+
+	struct Instance
+	{
+		Instance(const char* mesh) :
+
+			mFile(mesh),
+			mColor(0.5f, 0.5f, 1.0f),
+
+			mScale(2.0f),
+			mTranslation(0.0f, 1.0f, 0.0f),
+
+			mClusterSpacing(1.0f),
+			mClusterRadius(0.0f),
+			mClusterStiffness(0.5f),
+
+			mLinkRadius(0.0f),
+			mLinkStiffness(1.0f),
+
+			mGlobalStiffness(0.0f),
+
+			mSurfaceSampling(0.0f),
+			mVolumeSampling(4.0f),
+
+			mSkinningFalloff(2.0f),
+			mSkinningMaxDistance(100.0f),
+
+			mClusterPlasticThreshold(0.0f),
+			mClusterPlasticCreep(0.0f)
+		{}
+
+		const char* mFile;
+		Vec3 mColor;
+
+		Vec3 mScale;
+		Vec3 mTranslation;
+
+		float mClusterSpacing;
+		float mClusterRadius;
+		float mClusterStiffness;
+
+		float mLinkRadius;
+		float mLinkStiffness;
+
+		float mGlobalStiffness;
+
+		float mSurfaceSampling;
+		float mVolumeSampling;
+
+		float mSkinningFalloff;
+		float mSkinningMaxDistance;
+
+		float mClusterPlasticThreshold;
+		float mClusterPlasticCreep;
+	};
+
+	std::vector<Instance> mInstances;
+
+private:
+
+	struct RenderingInstance
+	{
+		Mesh* mMesh;
+		std::vector<int> mSkinningIndices;
+		std::vector<float> mSkinningWeights;
+		vector<Vec3> mRigidRestPoses;
+		Vec3 mColor;
+		int mOffset;
+	};
+
+	std::vector<RenderingInstance> mRenderingInstances;
+
+	bool plasticDeformation;
+
+
+public:
+	virtual void AddInstance(Instance instance)
+	{
+		this->mInstances.push_back(instance);
+	}
+
+	virtual void AddStack(Instance instance, int xStack, int yStack, int zStack, bool rotateColors = false)
+	{
+		Vec3 translation = instance.mTranslation;
+		for (int x = 0; x < xStack; ++x)
+		{
+			for (int y = 0; y < yStack; ++y)
+			{
+				for (int z = 0; z < zStack; ++z)
+				{
+					instance.mTranslation = translation + Vec3(x*(instance.mScale.x + 1), y*(instance.mScale.y + 1), z*(instance.mScale.z + 1))*mRadius;
+					if (rotateColors) {
+						instance.mColor = mColorPicker[(x*yStack*zStack + y*zStack + z) % 7];
+					}
+					this->mInstances.push_back(instance);
+				}
+			}
+		}
 	}
 
 	virtual void Initialize()
 	{
 		float radius = mRadius;
 
+		// no fluids or sdf based collision
+		g_solverDesc.featureMode = eNvFlexFeatureModeSimpleSolids;
+
 		g_params.radius = radius;
 		g_params.dynamicFriction = 0.35f;
 		g_params.particleFriction = 0.25f;
-		g_params.dissipation = 0.0f;
 		g_params.numIterations = 4;
-		g_params.viscosity = 0.0f;
-		g_params.drag = 0.0f;
-		g_params.lift = 0.0f;
 		g_params.collisionDistance = radius*0.75f;
-
-		g_params.plasticThreshold = mPlasticThreshold;
-		g_params.plasticCreep = mPlasticCreep;
 
 		g_params.relaxationFactor = mRelaxationFactor;
 
@@ -61,14 +155,14 @@ public:
 
 		g_buffers->rigidOffsets.push_back(0);
 
-		mInstances.resize(0);
+		mRenderingInstances.resize(0);
 
+		// build soft bodies 
+		for (int i = 0; i < int(mInstances.size()); i++)
+			CreateSoftBody(mInstances[i], mRenderingInstances.size());
 
-		CreateBodies();
-
-		if (mPlinth) {
+		if (mPlinth) 
 			AddPlinth();
-		}
 
 		// fix any particles below the ground plane in place
 		for (int i = 0; i < int(g_buffers->positions.size()); ++i)
@@ -81,73 +175,60 @@ public:
 		g_lightDistance *= 1.5f;
 	}
 
-	virtual void CreateBodies()
+	void CreateSoftBody(Instance instance, int group = 0)
 	{
-		// build soft body 
-		for (int x = 0; x < mStack[0]; ++x)
-		{
-			for (int y = 0; y < mStack[1]; ++y)
-			{
-				for (int z = 0; z < mStack[2]; ++z)
-				{
-					CreateSoftBody(mRadius, mOffset + Vec3(x*(mScale.x + 1), y*(mScale.y + 1), z*(mScale.z + 1))*mRadius, mClusterStiffness, mInstances.size());
-				}
-			}
-		}
-	}
+		RenderingInstance renderingInstance;
 
-	void CreateSoftBody(float radius, Vec3 position, float clusterStiffness, int group = 0)
-	{
-		Instance instance;
-
-		Mesh* mesh = ImportMesh(GetFilePathByPlatform(mFile).c_str());
+		Mesh* mesh = ImportMesh(GetFilePathByPlatform(instance.mFile).c_str());
 		mesh->Normalize();
-		mesh->Transform(TranslationMatrix(Point3(position))*ScaleMatrix(mScale*radius));
+		mesh->Transform(TranslationMatrix(Point3(instance.mTranslation))*ScaleMatrix(instance.mScale*mRadius));
 
-		instance.mMesh = mesh;
-		instance.mColor = Vec3(0.5f, 0.5f, 1.0f);
-		instance.mOffset = g_buffers->rigidTranslations.size();
+		renderingInstance.mMesh = mesh;
+		renderingInstance.mColor = instance.mColor;
+		renderingInstance.mOffset = g_buffers->rigidTranslations.size();
 
 		double createStart = GetSeconds();
 
 		// create soft body definition
 		NvFlexExtAsset* asset = NvFlexExtCreateSoftFromMesh(
-			(float*)&instance.mMesh->m_positions[0],
-			instance.mMesh->m_positions.size(),
-			(int*)&instance.mMesh->m_indices[0],
-			instance.mMesh->m_indices.size(),
-			radius,
-			mVolumeSampling,
-			mSurfaceSampling,
-			mClusterSpacing*radius,
-			mClusterRadius*radius,
-			clusterStiffness,
-			mLinkRadius*radius,
-			mLinkStiffness,
-			mGlobalStiffness);
+			(float*)&renderingInstance.mMesh->m_positions[0],
+			renderingInstance.mMesh->m_positions.size(),
+			(int*)&renderingInstance.mMesh->m_indices[0],
+			renderingInstance.mMesh->m_indices.size(),
+			mRadius,
+			instance.mVolumeSampling,
+			instance.mSurfaceSampling,
+			instance.mClusterSpacing*mRadius,
+			instance.mClusterRadius*mRadius,
+			instance.mClusterStiffness,
+			instance.mLinkRadius*mRadius,
+			instance.mLinkStiffness,
+			instance.mGlobalStiffness,
+			instance.mClusterPlasticThreshold,
+			instance.mClusterPlasticCreep);
 
 		double createEnd = GetSeconds();
 
 		// create skinning
 		const int maxWeights = 4;
 
-		instance.mSkinningIndices.resize(instance.mMesh->m_positions.size()*maxWeights);
-		instance.mSkinningWeights.resize(instance.mMesh->m_positions.size()*maxWeights);
+		renderingInstance.mSkinningIndices.resize(renderingInstance.mMesh->m_positions.size()*maxWeights);
+		renderingInstance.mSkinningWeights.resize(renderingInstance.mMesh->m_positions.size()*maxWeights);
 
 		for (int i = 0; i < asset->numShapes; ++i)
-			instance.mRigidRestPoses.push_back(Vec3(&asset->shapeCenters[i * 3]));
+			renderingInstance.mRigidRestPoses.push_back(Vec3(&asset->shapeCenters[i * 3]));
 
 		double skinStart = GetSeconds();
 
 		NvFlexExtCreateSoftMeshSkinning(
-			(float*)&instance.mMesh->m_positions[0],
-			instance.mMesh->m_positions.size(),
+			(float*)&renderingInstance.mMesh->m_positions[0],
+			renderingInstance.mMesh->m_positions.size(),
 			asset->shapeCenters,
 			asset->numShapes,
-			mSkinningFalloff,
-			mSkinningMaxDistance,
-			&instance.mSkinningWeights[0],
-			&instance.mSkinningIndices[0]);
+			instance.mSkinningFalloff,
+			instance.mSkinningMaxDistance,
+			&renderingInstance.mSkinningWeights[0],
+			&renderingInstance.mSkinningIndices[0]);
 
 		double skinEnd = GetSeconds();
 
@@ -178,6 +259,52 @@ public:
 			g_buffers->rigidCoefficients.push_back(asset->shapeCoefficients[i]);
 		}
 
+
+		// add plastic deformation data to solver, if at least one asset has non-zero plastic deformation coefficients, leave the according pointers at NULL otherwise
+		if (plasticDeformation)
+		{
+			if (asset->shapePlasticThresholds && asset->shapePlasticCreeps)
+			{
+				for (int i = 0; i < asset->numShapes; ++i)
+				{
+					g_buffers->rigidPlasticThresholds.push_back(asset->shapePlasticThresholds[i]);
+					g_buffers->rigidPlasticCreeps.push_back(asset->shapePlasticCreeps[i]);
+				}
+			}
+			else
+			{
+				for (int i = 0; i < asset->numShapes; ++i)
+				{
+					g_buffers->rigidPlasticThresholds.push_back(0.0f);
+					g_buffers->rigidPlasticCreeps.push_back(0.0f);
+				}
+			}
+		}
+		else 
+		{
+			if (asset->shapePlasticThresholds && asset->shapePlasticCreeps)
+			{
+				int oldBufferSize = g_buffers->rigidCoefficients.size() - asset->numShapes;
+
+				g_buffers->rigidPlasticThresholds.resize(oldBufferSize);
+				g_buffers->rigidPlasticCreeps.resize(oldBufferSize);
+
+				for (int i = 0; i < oldBufferSize; i++)
+				{
+					g_buffers->rigidPlasticThresholds[i] = 0.0f;
+					g_buffers->rigidPlasticCreeps[i] = 0.0f;
+				}
+
+				for (int i = 0; i < asset->numShapes; ++i)
+				{
+					g_buffers->rigidPlasticThresholds.push_back(asset->shapePlasticThresholds[i]);
+					g_buffers->rigidPlasticCreeps.push_back(asset->shapePlasticCreeps[i]);
+				}
+
+				plasticDeformation = true;
+			}
+		}
+
 		// add link data to the solver 
 		for (int i = 0; i < asset->numSprings; ++i)
 		{
@@ -190,7 +317,7 @@ public:
 
 		NvFlexExtDestroyAsset(asset);
 
-		mInstances.push_back(instance);
+		mRenderingInstances.push_back(renderingInstance);
 	}
 
 	virtual void Draw(int pass)
@@ -198,9 +325,9 @@ public:
 		if (!g_drawMesh)
 			return;
 
-		for (int s = 0; s < int(mInstances.size()); ++s)
+		for (int s = 0; s < int(mRenderingInstances.size()); ++s)
 		{
-			const Instance& instance = mInstances[s];
+			const RenderingInstance& instance = mRenderingInstances[s];
 
 			Mesh m;
 			m.m_positions.resize(instance.mMesh->m_positions.size());
@@ -239,58 +366,15 @@ public:
 			DrawMesh(&m, instance.mColor);
 		}
 	}
-
-	struct Instance
-	{
-		Mesh* mMesh;
-		std::vector<int> mSkinningIndices;
-		std::vector<float> mSkinningWeights;
-		vector<Vec3> mRigidRestPoses;
-		Vec3 mColor;
-		int mOffset;
-	};
-
-	std::vector<Instance> mInstances;
-
-	const char* mFile;
-	Vec3 mScale;
-	Vec3 mOffset;
-
-	float mRadius;
-
-	float mClusterSpacing;
-	float mClusterRadius;
-	float mClusterStiffness;
-
-	float mLinkRadius;
-	float mLinkStiffness;
-
-	float mGlobalStiffness;
-
-	float mSurfaceSampling;
-	float mVolumeSampling;
-
-	float mSkinningFalloff;
-	float mSkinningMaxDistance;
-
-	float mPlasticThreshold;
-	float mPlasticCreep;
-
-	float mRelaxationFactor;
-
-	bool mPlinth;
-
-	int mStack[3];
 };
-
-
 
 
 class SoftBodyFixed : public SoftBody
 {
 public:
 
-	SoftBodyFixed(const char* name, const char* mesh) : SoftBody(name, mesh) {}
+	SoftBodyFixed(const char* name) : SoftBody(name) 
+	{}
 
 	virtual void Initialize()
 	{
@@ -302,16 +386,16 @@ public:
 				g_buffers->positions[i].w = 0.0f;
 	}
 
-	virtual void CreateBodies()
+	virtual void AddStack(Instance instance, int zStack)
 	{
-		int x = 0;
-		int y = 0;
+		float clusterStiffness = instance.mClusterStiffness;
+		Vec3 translation = instance.mTranslation;
 
-		for (int z = 0; z < 4; ++z)
+		for (int z = 0; z < zStack; ++z)
 		{
-			float stiffness = sqr(mClusterStiffness*(z + 1));
-
-			CreateSoftBody(mRadius, mOffset + Vec3(x*(mScale.x + 1), y*(mScale.y + 1), -z*(mScale.z + 1))*mRadius, stiffness, mInstances.size());
+			instance.mClusterStiffness = sqr(clusterStiffness*(z + 1));
+			instance.mTranslation = translation + Vec3(0.0f, 0.0f, -z*(instance.mScale.z + 1))*mRadius;
+			this->mInstances.push_back(instance);
 		}
 	}
 

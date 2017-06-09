@@ -23,7 +23,6 @@ public:
 
 		g_params.radius = radius;
 		g_params.dynamicFriction = 0.f;
-		g_params.fluid = true;
 		g_params.viscosity = 0.01f;
 		g_params.numIterations = 3;
 		g_params.vorticityConfinement = 50.0f;

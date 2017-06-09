@@ -46,7 +46,6 @@ public:
 
 		g_numSubsteps = 2;
 
-		g_params.fluid = true;
 		g_params.radius = radius;
 		g_params.fluidRestDistance = restDistance;
 		g_params.dynamicFriction = 0.f;

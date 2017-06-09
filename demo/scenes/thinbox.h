@@ -47,7 +47,6 @@ public:
 		g_params.gravity[1] = -9.f;
 		g_params.radius = radius;
 		g_params.dynamicFriction = 0.0f;
-		g_params.fluid = false;
 		g_params.numIterations = 5;
 		g_params.numPlanes = 1;
 		g_params.restitution = 0.0f;

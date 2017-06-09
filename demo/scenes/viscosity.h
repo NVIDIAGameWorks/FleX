@@ -10,9 +10,10 @@ public:
 		float radius = 0.1f;
 		float restDistance = radius*0.5f;
 
+		g_solverDesc.featureMode = eNvFlexFeatureModeSimpleFluids;
+
 		g_params.radius = radius;
 
-		g_params.fluid = true;
 		g_params.numIterations = 3;
 		g_params.vorticityConfinement = 0.0f;
 		g_params.fluidRestDistance = restDistance;

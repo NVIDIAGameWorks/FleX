@@ -88,8 +88,6 @@ public:
 		g_params.collisionDistance = 0.01f;
 		g_params.solidPressure = 0.0f;
 
-		g_params.fluid = true;
-
 		g_params.fluidRestDistance = radius*0.65f;
 		g_params.viscosity = 0.0;
 		g_params.adhesion = 0.0f;
@@ -190,11 +188,11 @@ public:
 	virtual void Sync()
 	{
 		// send new particle data to the GPU
-		NvFlexSetRestParticles(g_flex, g_buffers->restPositions.buffer, g_buffers->restPositions.size());
+		NvFlexSetRestParticles(g_solver, g_buffers->restPositions.buffer, NULL);
 
 		// update solver
-		NvFlexSetSprings(g_flex, g_buffers->springIndices.buffer, g_buffers->springLengths.buffer, g_buffers->springStiffness.buffer, g_buffers->springLengths.size());
-		NvFlexSetDynamicTriangles(g_flex, g_buffers->triangles.buffer, g_buffers->triangleNormals.buffer, g_buffers->triangles.size() / 3);
+		NvFlexSetSprings(g_solver, g_buffers->springIndices.buffer, g_buffers->springLengths.buffer, g_buffers->springStiffness.buffer, g_buffers->springLengths.size());
+		NvFlexSetDynamicTriangles(g_solver, g_buffers->triangles.buffer, g_buffers->triangleNormals.buffer, g_buffers->triangles.size() / 3);
 	}
 
 	virtual void Update()

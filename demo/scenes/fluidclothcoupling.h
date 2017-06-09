@@ -138,7 +138,6 @@ public:
 		g_numExtraParticles = 64*1024;
 
 		g_params.radius = radius;
-		g_params.fluid = true;
 		g_params.numIterations = 5;
 		g_params.vorticityConfinement = 0.0f;
 		g_params.anisotropyScale = 30.0f;

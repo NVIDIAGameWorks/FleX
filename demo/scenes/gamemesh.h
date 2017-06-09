@@ -40,7 +40,6 @@ public:
 			g_params.radius = radius;
 			g_params.dynamicFriction = 0.3f;
 			g_params.dissipation = 0.0f;
-			g_params.fluid = false;
 			g_params.fluidRestDistance = g_params.radius*0.5f;
 			g_params.viscosity = 0.05f;
 			g_params.anisotropyScale = 20.0f;
@@ -73,7 +72,6 @@ public:
 			g_params.dissipation = 0.0f;
 			g_params.numIterations = 4;
 			g_params.numPlanes = 1;
-			g_params.fluid = false;
 			g_params.particleCollisionMargin = g_params.radius*0.1f;
 			g_params.restitution = 0.0f;
 
@@ -103,7 +101,6 @@ public:
 			g_params.numIterations = 3;
 			g_params.anisotropyScale = 30.0f;
 			g_params.smoothing = 0.5f;
-			g_params.fluid = true;
 			g_params.relaxationFactor = 1.0f;
 			g_params.restitution = 0.0f;
 			g_params.smoothing = 0.5f;

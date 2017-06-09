@@ -19,6 +19,9 @@
 
     <Target name="flexDemoD3D">
 
+	  <!-- Dx12 needs a post 8.1 version of windows SDK -->
+	  <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
+	
       <!-- Windows -->
 
       <Config name="default" type="console" platforms="Win32 Win64">
@@ -34,6 +37,7 @@
           WIN32
           _CRT_SECURE_NO_WARNINGS
           FLEX_DX
+		  FLEX_DX12
         </Preprocessor>
 
         <WarningLevel>3</WarningLevel>
@@ -42,23 +46,29 @@
         <CharacterSet>MultiByte</CharacterSet>
 
         <SearchPaths type="header">
-      		${user:ProjectRoot}
-      		${user:ProjectRoot}\demo
-      		${user:ProjectRoot}\demo\d3d11
-      		${user:ProjectRoot}\external\SDL2-2.0.4\include
+          ${user:ProjectRoot}
+          ${user:ProjectRoot}\demo
+          ${user:ProjectRoot}\demo\d3d11
+          ${user:ProjectRoot}\demo\d3d12
+          ${user:ProjectRoot}\external\SDL2-2.0.4\include
+          ${user:ProjectRoot}\external\D3D12\include
         </SearchPaths>
 
         <Libraries>
-          kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib
+          kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib d3dcompiler.lib
         </Libraries>
 		
 		<Libraries platforms="Win32">
           ${user:ProjectRoot}/external/SDL2-2.0.4/lib/x86/SDL2.lib
           ${user:ProjectRoot}/external/SDL2-2.0.4/lib/x86/SDL2main.lib
+		  ${user:ProjectRoot}/external/NvToolsExt/lib/Win32/nvToolsExt32_1.lib
+		  ${user:ProjectRoot}/external/D3D12/libs/x86/d3d12.lib
         </Libraries>
         <Libraries platforms="Win64">
           ${user:ProjectRoot}/external/SDL2-2.0.4/lib/x64/SDL2.lib
           ${user:ProjectRoot}/external/SDL2-2.0.4/lib/x64/SDL2main.lib
+		  ${user:ProjectRoot}/external/NvToolsExt/lib/x64/nvToolsExt64_1.lib
+		  ${user:ProjectRoot}/external/D3D12/libs/x64/d3d12.lib
         </Libraries>
 
       </Config>
@@ -87,14 +97,14 @@
           ${user:ProjectRoot}/lib/win32/NvFlexExtDebugD3D_x86.lib
           ${user:ProjectRoot}/external/SDL2-2.0.4/lib/x86/SDL2.lib
           ${user:ProjectRoot}/external/SDL2-2.0.4/lib/x86/SDL2main.lib
-          ${user:ProjectRoot}/external/glew/lib/win32/glew32.lib
+          ${user:ProjectRoot}/external/NvToolsExt/lib/Win32/nvToolsExt32_1.lib
         </Libraries>
         <Libraries platforms="Win64">
           ${user:ProjectRoot}/lib/win64/NvFlexDebugD3D_x64.lib
           ${user:ProjectRoot}/lib/win64/NvFlexExtDebugD3D_x64.lib
           ${user:ProjectRoot}/external/SDL2-2.0.4/lib/x64/SDL2.lib
           ${user:ProjectRoot}/external/SDL2-2.0.4/lib/x64/SDL2main.lib
-          ${user:ProjectRoot}/external/glew/lib/x64/glew32.lib
+          ${user:ProjectRoot}/external/NvToolsExt/lib/x64/nvToolsExt64_1.lib
         </Libraries>
 
       </Config>
@@ -124,20 +134,67 @@
           ${user:ProjectRoot}/lib/win32/NvFlexExtReleaseD3D_x86.lib
           ${user:ProjectRoot}/external/SDL2-2.0.4/lib/x86/SDL2.lib
           ${user:ProjectRoot}/external/SDL2-2.0.4/lib/x86/SDL2main.lib
-          ${user:ProjectRoot}/external/glew/lib/win32/glew32.lib
+          ${user:ProjectRoot}/external/NvToolsExt/lib/Win32/nvToolsExt32_1.lib
         </Libraries>
         <Libraries platforms="Win64">
           ${user:ProjectRoot}/lib/win64/NvFlexReleaseD3D_x64.lib
           ${user:ProjectRoot}/lib/win64/NvFlexExtReleaseD3D_x64.lib
           ${user:ProjectRoot}/external/SDL2-2.0.4/lib/x64/SDL2.lib
           ${user:ProjectRoot}/external/SDL2-2.0.4/lib/x64/SDL2main.lib
-          ${user:ProjectRoot}/external/glew/lib/x64/glew32.lib
+          ${user:ProjectRoot}/external/NvToolsExt/lib/x64/nvToolsExt64_1.lib
         </Libraries>
 
       </Config>
 
       <!-- Common Source -->
-
+	  
+	  <Files name="NvCommon" type="source" root="${user:ProjectRoot}/external/NvCommon/src">
+		Nv/Common/*.cpp
+		Nv/Common/*.h
+		-Nv/Common/NvCoPathFinder.*
+		-Nv/Common/NvCoMemoryMappedFile.*
+		-Nv/Common/NvCoMemoryReadStream.*
+		-Nv/Common/NvCoMemoryWriteStream.*
+		-Nv/Common/NvCoCircularHeap.*
+		-Nv/Common/NvCoFreeListHeap.*
+		
+		Nv/Common/Platform/Win/*.cpp
+		Nv/Common/Platform/Win/*.h
+		-Nv/Common/Platform/Win/NvCoWinMemoryMappedFile.*
+		-Nv/Common/Platform/Win/NvCoWinPathUtil.*
+		-Nv/Common/Platform/Win/NvCoWinMinimalInclude.*
+		-Nv/Common/Platform/Win/NvCoWinCriticalSection.*
+		
+		Nv/Common/Util/*.cpp
+		Nv/Common/Util/*.h
+		-Nv/Common/Util/NvCoParseUtil.*
+		-Nv/Common/Util/NvCoStringEscapeUtil.*
+		-Nv/Common/Util/NvCoPathUtil.*
+		-Nv/Common/Util/NvCoArgParseUtil.*
+		-Nv/Common/Util/NvCoBitUtil.*
+		
+		-Nv/Common/Random/*.cpp
+		-Nv/Common/Random/*.h
+		
+		Nv/Common/Container/*.cpp
+		Nv/Common/Container/*.h
+		-Nv/Common/Container/NvCoHandleMap.*
+		
+		Nv/Common/Render/Dx/*.cpp
+		Nv/Common/Render/Dx/*.h
+		Nv/Common/Render/Dx12/*.cpp
+		Nv/Common/Render/Dx12/*.h
+		-Nv/Common/Render/Dx/NvCoDxIncludeHandler.*
+		-Nv/Common/Render/Dx/NvCoDxShaderUtil.*
+		-Nv/Common/Render/Dx12/NvCoDx12AsyncManager.*
+		-Nv/Common/Render/Dx12/NvCoDx12DescriptorCache.*
+		
+		Nv/Common/Render/Context/*.cpp
+		Nv/Common/Render/Context/*.h
+		Nv/Common/Render/Context/Dx12/*.cpp
+		Nv/Common/Render/Context/Dx12/*.h
+	  </Files>
+	  
       <Files name="demo" type="source" root="${user:ProjectRoot}/demo">
         *.cpp *.h
         scenes/*.h
@@ -154,41 +211,52 @@
       <Dependencies>
          flexD3D
          flexExtD3D
-       </Dependencies>
+      </Dependencies>
+	  
+  	  <Files name="d3d12" type="source" root="${user:ProjectRoot}/demo/d3d12">
+        *.h
+        *.cpp
+      </Files>
 	  
 	  <Files name="d3d11" type="source" root="${user:ProjectRoot}/demo/d3d11">
         *.h
         *.cpp
       </Files>
 	  
+	  <Files name="d3d" type="source" root="${user:ProjectRoot}/demo/d3d">
+        *.h
+        *.cpp
+      </Files>
 	  
-	  <HLSL Configurations="release" DisableOptim="No" Debug="No" ShaderModel="5.0" Platforms="Win32 Win64" ObjectFileOutput=" " WarningAsErrors="false" OutputHeaderFileName="${user:ProjectRoot}/demo/d3d11/shaders/%(Filename).hlsl.h">
+	  <HLSL Configurations="release" DisableOptim="No" Debug="No" ShaderModel="5.0" Platforms="Win32 Win64" ObjectFileOutput=" " WarningAsErrors="false" OutputHeaderFileName="${user:ProjectRoot}/demo/d3d/shaders/%(Filename).hlsl.h">
 
-        <File  ShaderType="Vertex" EntryPoint="debugLineVS"> "${user:ProjectRoot}/demo/d3d11/shaders/debugLineVS.hlsl" </File>
-        <File  ShaderType="Pixel" EntryPoint="debugLinePS"> "${user:ProjectRoot}/demo/d3d11/shaders/debugLinePS.hlsl" </File>      
+        <File  ShaderType="Vertex" EntryPoint="debugLineVS"> "${user:ProjectRoot}/demo/d3d/shaders/debugLineVS.hlsl" </File>
+        <File  ShaderType="Pixel" EntryPoint="debugLinePS"> "${user:ProjectRoot}/demo/d3d/shaders/debugLinePS.hlsl" </File>      
 
-        <File  ShaderType="Pixel" EntryPoint="imguiPS"> "${user:ProjectRoot}/demo/d3d11/shaders/imguiPS.hlsl" </File>
-        <File  ShaderType="Vertex" EntryPoint="imguiVS"> "${user:ProjectRoot}/demo/d3d11/shaders/imguiVS.hlsl" </File>
+        <File  ShaderType="Pixel" EntryPoint="imguiPS"> "${user:ProjectRoot}/demo/d3d/shaders/imguiPS.hlsl" </File>
+        <File  ShaderType="Vertex" EntryPoint="imguiVS"> "${user:ProjectRoot}/demo/d3d/shaders/imguiVS.hlsl" </File>
 
-        <File  ShaderType="Pixel" EntryPoint="meshPS"> "${user:ProjectRoot}/demo/d3d11/shaders/meshPS.hlsl" </File>
-        <File  ShaderType="Pixel" EntryPoint="meshPS_Shadow"> "${user:ProjectRoot}/demo/d3d11/shaders/meshShadowPS.hlsl" </File>        
-        <File  ShaderType="Vertex" EntryPoint="meshVS"> "${user:ProjectRoot}/demo/d3d11/shaders/meshVS.hlsl" </File>
+        <File  ShaderType="Pixel" EntryPoint="meshPS"> "${user:ProjectRoot}/demo/d3d/shaders/meshPS.hlsl" </File>
+		<File  ShaderType="Pixel" EntryPoint="meshPS"> "${user:ProjectRoot}/demo/d3d/shaders/meshAsyncComputeBenchPS.hlsl" </File>
+        <File  ShaderType="Pixel" EntryPoint="meshPS_Shadow"> "${user:ProjectRoot}/demo/d3d/shaders/meshShadowPS.hlsl" </File>        
+        <File  ShaderType="Vertex" EntryPoint="meshVS"> "${user:ProjectRoot}/demo/d3d/shaders/meshVS.hlsl" </File>
 
-        <File  ShaderType="Vertex" EntryPoint="pointVS"> "${user:ProjectRoot}/demo/d3d11/shaders/pointVS.hlsl" </File>
-        <File  ShaderType="Geometry" EntryPoint="pointGS"> "${user:ProjectRoot}/demo/d3d11/shaders/pointGS.hlsl" </File>
-        <File  ShaderType="Pixel" EntryPoint="pointPS"> "${user:ProjectRoot}/demo/d3d11/shaders/pointPS.hlsl" </File>
+        <File  ShaderType="Vertex" EntryPoint="pointVS"> "${user:ProjectRoot}/demo/d3d/shaders/pointVS.hlsl" </File>
+        <File  ShaderType="Geometry" EntryPoint="pointGS"> "${user:ProjectRoot}/demo/d3d/shaders/pointGS.hlsl" </File>
+        <File  ShaderType="Pixel" EntryPoint="pointPS"> "${user:ProjectRoot}/demo/d3d/shaders/pointPS.hlsl" </File>
+		<File  ShaderType="Pixel" EntryPoint="pointShadowPS"> "${user:ProjectRoot}/demo/d3d/shaders/pointShadowPS.hlsl" </File>
+		
+        <File  ShaderType="Vertex" EntryPoint="diffuseVS"> "${user:ProjectRoot}/demo/d3d/shaders/diffuseVS.hlsl" </File>
+        <File  ShaderType="Geometry" EntryPoint="diffuseGS"> "${user:ProjectRoot}/demo/d3d/shaders/diffuseGS.hlsl" </File>
+        <File  ShaderType="Pixel" EntryPoint="diffusePS"> "${user:ProjectRoot}/demo/d3d/shaders/diffusePS.hlsl" </File>
 
-        <File  ShaderType="Vertex" EntryPoint="diffuseVS"> "${user:ProjectRoot}/demo/d3d11/shaders/diffuseVS.hlsl" </File>
-        <File  ShaderType="Geometry" EntryPoint="diffuseGS"> "${user:ProjectRoot}/demo/d3d11/shaders/diffuseGS.hlsl" </File>
-        <File  ShaderType="Pixel" EntryPoint="diffusePS"> "${user:ProjectRoot}/demo/d3d11/shaders/diffusePS.hlsl" </File>
+        <File  ShaderType="Vertex" EntryPoint="ellipsoidDepthVS"> "${user:ProjectRoot}/demo/d3d/shaders/ellipsoidDepthVS.hlsl" </File>
+        <File  ShaderType="Geometry" EntryPoint="ellipsoidDepthGS"> "${user:ProjectRoot}/demo/d3d/shaders/ellipsoidDepthGS.hlsl" </File>
+        <File  ShaderType="Pixel" EntryPoint="ellipsoidDepthPS"> "${user:ProjectRoot}/demo/d3d/shaders/ellipsoidDepthPS.hlsl" </File>
 
-        <File  ShaderType="Vertex" EntryPoint="ellipsoidDepthVS"> "${user:ProjectRoot}/demo/d3d11/shaders/ellipsoidDepthVS.hlsl" </File>
-        <File  ShaderType="Geometry" EntryPoint="ellipsoidDepthGS"> "${user:ProjectRoot}/demo/d3d11/shaders/ellipsoidDepthGS.hlsl" </File>
-        <File  ShaderType="Pixel" EntryPoint="ellipsoidDepthPS"> "${user:ProjectRoot}/demo/d3d11/shaders/ellipsoidDepthPS.hlsl" </File>
-
-        <File  ShaderType="Vertex" EntryPoint="passThroughVS"> "${user:ProjectRoot}/demo/d3d11/shaders/passThroughVS.hlsl" </File>
-        <File  ShaderType="Pixel" EntryPoint="blurDepthPS"> "${user:ProjectRoot}/demo/d3d11/shaders/blurDepthPS.hlsl" </File>
-        <File  ShaderType="Pixel" EntryPoint="compositePS"> "${user:ProjectRoot}/demo/d3d11/shaders/compositePS.hlsl" </File>
+        <File  ShaderType="Vertex" EntryPoint="passThroughVS"> "${user:ProjectRoot}/demo/d3d/shaders/passThroughVS.hlsl" </File>
+        <File  ShaderType="Pixel" EntryPoint="blurDepthPS"> "${user:ProjectRoot}/demo/d3d/shaders/blurDepthPS.hlsl" </File>
+        <File  ShaderType="Pixel" EntryPoint="compositePS"> "${user:ProjectRoot}/demo/d3d/shaders/compositePS.hlsl" </File>
 
       </HLSL>
 

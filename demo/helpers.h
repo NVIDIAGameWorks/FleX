@@ -214,7 +214,7 @@ void CreateParticleShape(const Mesh* srcMesh, Vec3 lower, Vec3 scale, float rota
 		meshLower -= meshOffset;
 
 		//Voxelize(*mesh, dx, dy, dz, &voxels[0], meshLower - Vec3(spacing*0.05f) , meshLower + Vec3(maxDim*spacing) + Vec3(spacing*0.05f));
-		Voxelize((const float*)&mesh.m_positions[0], mesh.m_positions.size(), (const int*)&mesh.m_indices[0], mesh.m_indices.size(), maxDim, maxDim, maxDim, &voxels[0], meshLower, meshLower + Vec3(maxDim*spacing));
+		Voxelize((const Vec3*)&mesh.m_positions[0], mesh.m_positions.size(), (const int*)&mesh.m_indices[0], mesh.m_indices.size(), maxDim, maxDim, maxDim, &voxels[0], meshLower, meshLower + Vec3(maxDim*spacing));
 
 		vector<int> indices(maxDim*maxDim*maxDim);
 		vector<float> sdf(maxDim*maxDim*maxDim);
@@ -330,7 +330,7 @@ void CreateParticleShape(const Mesh* srcMesh, Vec3 lower, Vec3 scale, float rota
 			float distances[g_numSkinWeights] = {FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX };
 			
 			if (LengthSq(color) == 0.0f)
-				g_mesh->m_colours[i] = 1.25f*colors[phase%7];
+				g_mesh->m_colours[i] = 1.25f*colors[((unsigned int)(phase))%7];
 			else
 				g_mesh->m_colours[i] = Colour(color);
 
@@ -439,7 +439,7 @@ void SkinMesh()
 	}
 }
 
-void AddBox(Vec3 halfEdge = Vec3(2.0f), Vec3 center=Vec3(0.0f), Quat quat=Quat(), bool dynamic=false)
+void AddBox(Vec3 halfEdge = Vec3(2.0f), Vec3 center=Vec3(0.0f), Quat quat=Quat(), bool dynamic=false, int channels=eNvFlexPhaseShapeChannelMask)
 {
 	// transform
 	g_buffers->shapePositions.push_back(Vec4(center.x, center.y, center.z, 0.0f));
@@ -454,7 +454,7 @@ void AddBox(Vec3 halfEdge = Vec3(2.0f), Vec3 center=Vec3(0.0f), Quat quat=Quat()
 	geo.box.halfExtents[2] = halfEdge.z;
 
 	g_buffers->shapeGeometry.push_back(geo);
-	g_buffers->shapeFlags.push_back(NvFlexMakeShapeFlags(eNvFlexShapeBox, dynamic));
+	g_buffers->shapeFlags.push_back(NvFlexMakeShapeFlagsWithChannels(eNvFlexShapeBox, dynamic, channels));
 }
 
 // helper that creates a plinth whose center matches the particle bounds
@@ -513,7 +513,7 @@ void CreateSDF(const Mesh* mesh, uint32_t dim, Vec3 lower, Vec3 upper, float* sd
 		double startVoxelize = GetSeconds();
 
 		uint32_t* volume = new uint32_t[dim*dim*dim];
-		Voxelize((const float*)&mesh->m_positions[0], mesh->m_positions.size(), (const int*)&mesh->m_indices[0], mesh->m_indices.size(), dim, dim, dim, volume, lower, upper);
+		Voxelize((const Vec3*)&mesh->m_positions[0], mesh->m_positions.size(), (const int*)&mesh->m_indices[0], mesh->m_indices.size(), dim, dim, dim, volume, lower, upper);
 
 		printf("End mesh voxelization (%.2fs)\n", (GetSeconds()-startVoxelize));
 	
@@ -1161,14 +1161,11 @@ int PickParticle(Vec3 origin, Vec3 dir, Vec4* particles, int* phases, int n, flo
 	return minIndex;
 }
 
-// calculates local space positions given a set of particles and rigid indices
-void CalculateRigidLocalPositions(const Vec4* restPositions, int numRestPositions, const int* offsets, const int* indices, int numRigids, Vec3* localPositions)
+// calculates the center of mass of every rigid given a set of particle positions and rigid indices
+void CalculateRigidCentersOfMass(const Vec4* restPositions, int numRestPositions, const int* offsets, Vec3* translations, const int* indices, int numRigids)
 {
-
-	// To improve the accuracy of the result, first transform the restPositions to relative coordinates (by finding the mean and subtracting that from all points)
+	// To improve the accuracy of the result, first transform the restPositions to relative coordinates (by finding the mean and subtracting that from all positions)
 	// Note: If this is not done, one might see ghost forces if the mean of the restPositions is far from the origin.
-
-	// Calculate mean
 	Vec3 shapeOffset(0.0f);
 
 	for (int i = 0; i < numRestPositions; i++)
@@ -1178,12 +1175,10 @@ void CalculateRigidLocalPositions(const Vec4* restPositions, int numRestPosition
 
 	shapeOffset /= float(numRestPositions);
 
-	int count = 0;
-
-	for (int r=0; r < numRigids; ++r)
+	for (int i=0; i < numRigids; ++i)
 	{
-		const int startIndex = offsets[r];
-		const int endIndex = offsets[r+1];
+		const int startIndex = offsets[i];
+		const int endIndex = offsets[i+1];
 
 		const int n = endIndex-startIndex;
 
@@ -1191,22 +1186,41 @@ void CalculateRigidLocalPositions(const Vec4* restPositions, int numRestPosition
 
 		Vec3 com;
 	
-		for (int i=startIndex; i < endIndex; ++i)
+		for (int j=startIndex; j < endIndex; ++j)
 		{
-			const int r = indices[i];
+			const int r = indices[j];
 
-			// By substracting meshOffset the calculation is done in relative coordinates
+			// By subtracting shapeOffset the calculation is done in relative coordinates
 			com += Vec3(restPositions[r]) - shapeOffset;
 		}
 
 		com /= float(n);
 
-		for (int i=startIndex; i < endIndex; ++i)
-		{
-			const int r = indices[i];
+		// Add the shapeOffset to switch back to absolute coordinates
+		com += shapeOffset;
 
-			// By substracting meshOffset the calculation is done in relative coordinates
-			localPositions[count++] = (Vec3(restPositions[r]) - shapeOffset) - com;
+		translations[i] = com;
+
+	}
+}
+
+// calculates local space positions given a set of particle positions, rigid indices and centers of mass of the rigids
+void CalculateRigidLocalPositions(const Vec4* restPositions, const int* offsets, const Vec3* translations, const int* indices, int numRigids, Vec3* localPositions)
+{
+	int count = 0;
+
+	for (int i=0; i < numRigids; ++i)
+	{
+		const int startIndex = offsets[i];
+		const int endIndex = offsets[i+1];
+
+		assert(endIndex-startIndex);
+
+		for (int j=startIndex; j < endIndex; ++j)
+		{
+			const int r = indices[j];
+
+			localPositions[count++] = Vec3(restPositions[r]) - translations[i];
 		}
 	}
 }
@@ -1222,6 +1236,48 @@ void DrawImguiString(int x, int y, Vec3 color, int align, const char* s, ...)
 	va_end(args);
 
 	imguiDrawText(x, y, align, buf, imguiRGBA((unsigned char)(color.x*255), (unsigned char)(color.y*255), (unsigned char)(color.z*255)));
+}
+
+enum 
+{
+	HELPERS_SHADOW_OFFSET = 1,
+};
+
+void DrawShadowedText(int x, int y, Vec3 color, int align, const char* s, ...)
+{
+	char buf[2048];
+
+	va_list args;
+
+	va_start(args, s);
+	vsnprintf(buf, 2048, s, args);
+	va_end(args);
+
+
+	imguiDrawText(x + HELPERS_SHADOW_OFFSET, y - HELPERS_SHADOW_OFFSET, align, buf, imguiRGBA(0, 0, 0));
+	imguiDrawText(x, y, align, buf, imguiRGBA((unsigned char)(color.x * 255), (unsigned char)(color.y * 255), (unsigned char)(color.z * 255)));
+}
+
+void DrawRect(float x, float y, float w, float h, Vec3 color)
+{
+	imguiDrawRect(x, y, w, h, imguiRGBA((unsigned char)(color.x * 255), (unsigned char)(color.y * 255), (unsigned char)(color.z * 255)));
+}
+
+void DrawShadowedRect(float x, float y, float w, float h, Vec3 color)
+{
+	imguiDrawRect(x + HELPERS_SHADOW_OFFSET, y - HELPERS_SHADOW_OFFSET, w, h, imguiRGBA(0, 0, 0));
+	imguiDrawRect(x, y, w, h, imguiRGBA((unsigned char)(color.x * 255), (unsigned char)(color.y * 255), (unsigned char)(color.z * 255)));
+}
+
+void DrawLine(float x0, float y0, float x1, float y1, float r, Vec3 color)
+{
+	imguiDrawLine(x0, y0, x1, y1, r, imguiRGBA((unsigned char)(color.x * 255), (unsigned char)(color.y * 255), (unsigned char)(color.z * 255)));
+}
+
+void DrawShadowedLine(float x0, float y0, float x1, float y1, float r, Vec3 color)
+{
+	imguiDrawLine(x0 + HELPERS_SHADOW_OFFSET, y0 - HELPERS_SHADOW_OFFSET, x1 + HELPERS_SHADOW_OFFSET, y1 - HELPERS_SHADOW_OFFSET, r, imguiRGBA(0, 0, 0));
+	imguiDrawLine(x0, y0, x1, y1, r, imguiRGBA((unsigned char)(color.x * 255), (unsigned char)(color.y * 255), (unsigned char)(color.z * 255)));
 }
 
 // Soft body support functions
@@ -1545,7 +1601,7 @@ void SampleMesh(Mesh* mesh, Vec3 lower, Vec3 scale, float rotation, float radius
 		meshLower -= meshOffset;
 
 		//Voxelize(*mesh, dx, dy, dz, &voxels[0], meshLower - Vec3(spacing*0.05f) , meshLower + Vec3(maxDim*spacing) + Vec3(spacing*0.05f));
-		Voxelize((const float*)&mesh->m_positions[0], mesh->m_positions.size(), (const int*)&mesh->m_indices[0], mesh->m_indices.size(), maxDim, maxDim, maxDim, &voxels[0], meshLower, meshLower + Vec3(maxDim*spacing));
+		Voxelize((const Vec3*)&mesh->m_positions[0], mesh->m_positions.size(), (const int*)&mesh->m_indices[0], mesh->m_indices.size(), maxDim, maxDim, maxDim, &voxels[0], meshLower, meshLower + Vec3(maxDim*spacing));
 
 		// sample interior
 		for (int x = 0; x < maxDim; ++x)

@@ -40,7 +40,7 @@ public:
 	{
 		g_buffers->activeIndices = mInitialActive;
 
-		NvFlexSetActive(g_flex, &mInitialActive[0], mInitialActive.size(), eFlexMemoryHost);
+		NvFlexSetActive(g_solver, &mInitialActive[0], mInitialActive.size(), eFlexMemoryHost);
 	}
 
 	virtual Matrix44 GetBasis()
@@ -166,6 +166,8 @@ public:
 		ReadArray(g_buffers->rigidLocalNormals, true);
 
 		ReadArray(g_buffers->rigidCoefficients, true);
+		ReadArray(g_buffers->rigidPlasticThresholds, true);
+		ReadArray(g_buffers->rigidPlasticCreeps, true);
 		ReadArray(g_buffers->rigidOffsets, true);
 		ReadArray(g_buffers->rigidRotations, true);
 		ReadArray(g_buffers->rigidTranslations, true);

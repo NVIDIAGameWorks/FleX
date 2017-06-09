@@ -18,6 +18,9 @@ flexDemoCUDA_cppfiles   += ./../../../core/sdf.cpp
 flexDemoCUDA_cppfiles   += ./../../../core/tga.cpp
 flexDemoCUDA_cppfiles   += ./../../../core/voxelize.cpp
 flexDemoCUDA_cppfiles   += ./../../../external/egl_setup/egl_setup.cpp
+flexDemoCUDA_cppfiles   += ./../../android/android_main.cpp
+flexDemoCUDA_cppfiles   += ./../../android/android_mainRender.cpp
+flexDemoCUDA_cfiles   += ./../../android/android_native_app_glue.c
 
 flexDemoCUDA_cpp_release_dep    = $(addprefix $(DEPSDIR)/flexDemoCUDA/release/, $(subst ./, , $(subst ../, , $(patsubst %.cpp, %.cpp.P, $(flexDemoCUDA_cppfiles)))))
 flexDemoCUDA_cc_release_dep    = $(addprefix $(DEPSDIR)/, $(subst ./, , $(subst ../, , $(patsubst %.cc, %.cc.release.P, $(flexDemoCUDA_ccfiles)))))
@@ -26,15 +29,15 @@ flexDemoCUDA_release_dep      = $(flexDemoCUDA_cpp_release_dep) $(flexDemoCUDA_c
 -include $(flexDemoCUDA_release_dep)
 flexDemoCUDA_release_hpaths    := 
 flexDemoCUDA_release_hpaths    += ./../../..
-flexDemoCUDA_release_hpaths    += $(NDK_ROOT)/$(NDK_VERSION)/platforms/android-15/arch-arm/usr/include
-flexDemoCUDA_release_hpaths    += $(NDK_ROOT)/$(NDK_VERSION)/sources/cxx-stl/stlport/stlport
-flexDemoCUDA_release_hpaths    += $(CUDA_PATH)/targets/armv7-linux-androideabi/include
+flexDemoCUDA_release_hpaths    += ./../../../../../../external/android-ndk/android-ndk-r10e-linux/platforms/android-15/arch-arm/usr/include
+flexDemoCUDA_release_hpaths    += ./../../../../../../external/android-ndk/android-ndk-r10e-linux/sources/cxx-stl/stlport/stlport
+flexDemoCUDA_release_hpaths    += ./../../../../../../external/CUDA/cuda-6.0-linux/targets/armv7-linux-androideabi/include
 flexDemoCUDA_release_hpaths    += ./../../../external/egl_setup
 flexDemoCUDA_release_hpaths    += ./../../../external/regal_static/include
 flexDemoCUDA_release_lpaths    := 
-flexDemoCUDA_release_lpaths    += $(CUDA_PATH)/targets/armv7-linux-androideabi/lib
+flexDemoCUDA_release_lpaths    += ./../../../../../../external/CUDA/cuda-6.0-linux/targets/armv7-linux-androideabi/lib
 flexDemoCUDA_release_lpaths    += ./../../../lib/android
-flexDemoCUDA_release_lpaths    += $(NDK_ROOT)/$(NDK_VERSION)/sources/cxx-stl/stlport/libs/armeabi-v7a
+flexDemoCUDA_release_lpaths    += ./../../../../../../external/android-ndk/android-ndk-r10e-linux/sources/cxx-stl/stlport/libs/armeabi-v7a
 flexDemoCUDA_release_lpaths    += ./../../../external/regal_static/lib/armeabi-v7a
 flexDemoCUDA_release_lpaths    += ./../../../lib/android
 flexDemoCUDA_release_defines   := $(flexDemoCUDA_custom_defines)
@@ -44,6 +47,8 @@ flexDemoCUDA_release_defines   += ANDROID_PLAT=1
 flexDemoCUDA_release_defines   += DISABLE_IMPORTGL
 flexDemoCUDA_release_defines   += NDEBUG
 flexDemoCUDA_release_libraries := 
+flexDemoCUDA_release_libraries += NvFlexReleaseCUDA_armv7l
+flexDemoCUDA_release_libraries += flexDevice_x64
 flexDemoCUDA_release_libraries += flexExt_cuda_release_armv7l
 flexDemoCUDA_release_libraries += android
 flexDemoCUDA_release_libraries += stdc++
@@ -62,14 +67,16 @@ flexDemoCUDA_release_common_cflags	:= $(flexDemoCUDA_custom_cflags)
 flexDemoCUDA_release_common_cflags    += -MMD
 flexDemoCUDA_release_common_cflags    += $(addprefix -D, $(flexDemoCUDA_release_defines))
 flexDemoCUDA_release_common_cflags    += $(addprefix -I, $(flexDemoCUDA_release_hpaths))
-flexDemoCUDA_release_common_cflags  += -std=c++11 -fno-exceptions -fno-rtti
-flexDemoCUDA_release_common_cflags  += -fpic -fPIC -ffunction-sections -funwind-tables -fstack-protector -no-canonical-prefixes -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3-d16 -O2 -g -fomit-frame-pointer -fstrict-aliasing -funswitch-loops -finline-limit=300
 flexDemoCUDA_release_cflags	:= $(flexDemoCUDA_release_common_cflags)
+flexDemoCUDA_release_cflags  += -std=c++11 -fno-exceptions -fno-rtti
+flexDemoCUDA_release_cflags  += -fpic -fPIC -ffunction-sections -funwind-tables -fstack-protector -no-canonical-prefixes -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3-d16 -O2 -g -fomit-frame-pointer -fstrict-aliasing -funswitch-loops -finline-limit=300
 flexDemoCUDA_release_cppflags	:= $(flexDemoCUDA_release_common_cflags)
+flexDemoCUDA_release_cppflags  += -std=c++11 -fno-exceptions -fno-rtti
+flexDemoCUDA_release_cppflags  += -fpic -fPIC -ffunction-sections -funwind-tables -fstack-protector -no-canonical-prefixes -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3-d16 -O2 -g -fomit-frame-pointer -fstrict-aliasing -funswitch-loops -finline-limit=300
 flexDemoCUDA_release_lflags    := $(flexDemoCUDA_custom_lflags)
 flexDemoCUDA_release_lflags    += $(addprefix -L, $(flexDemoCUDA_release_lpaths))
 flexDemoCUDA_release_lflags    += -Wl,--start-group $(addprefix -l, $(flexDemoCUDA_release_libraries)) -Wl,--end-group
-flexDemoCUDA_release_lflags  += --sysroot="$(NDK_ROOT)"/"$(NDK_VERSION)"/platforms/android-15/arch-arm -shared -Wl,--no-undefined
+flexDemoCUDA_release_lflags  += --sysroot=/home/mmacklin/swhost/devrel/libdev/flex/dev/main/../../../external/android-ndk/android-ndk-r10e-linux/platforms/android-15/arch-arm -shared -Wl,--no-undefined
 flexDemoCUDA_release_objsdir  = $(OBJS_DIR)/flexDemoCUDA_release
 flexDemoCUDA_release_cpp_o    = $(addprefix $(flexDemoCUDA_release_objsdir)/, $(subst ./, , $(subst ../, , $(patsubst %.cpp, %.cpp.o, $(flexDemoCUDA_cppfiles)))))
 flexDemoCUDA_release_cc_o    = $(addprefix $(flexDemoCUDA_release_objsdir)/, $(subst ./, , $(subst ../, , $(patsubst %.cc, %.cc.o, $(flexDemoCUDA_ccfiles)))))
@@ -91,7 +98,7 @@ antbuild_flexDemoCUDA_release: preantbuild_flexDemoCUDA_release
 mainbuild_flexDemoCUDA_release: prebuild_flexDemoCUDA_release $(flexDemoCUDA_release_bin)
 prebuild_flexDemoCUDA_release:
 
-$(flexDemoCUDA_release_bin): $(flexDemoCUDA_release_obj) build_flexExtCUDA_release 
+$(flexDemoCUDA_release_bin): $(flexDemoCUDA_release_obj) build_flexCUDA_release build_flexDevice_release build_flexExtCUDA_release 
 	mkdir -p `dirname ./../android/flex_project/libs/armeabi-v7a/libflexDemo.so`
 	$(CXX) -shared $(flexDemoCUDA_release_obj) $(flexDemoCUDA_release_lflags) -lc -o $@ 
 	$(ECHO) building $@ complete!

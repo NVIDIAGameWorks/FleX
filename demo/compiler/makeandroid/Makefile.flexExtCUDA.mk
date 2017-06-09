@@ -24,28 +24,32 @@ flexExtCUDA_debug_dep      = $(flexExtCUDA_cpp_debug_dep) $(flexExtCUDA_cc_debug
 -include $(flexExtCUDA_debug_dep)
 flexExtCUDA_release_hpaths    := 
 flexExtCUDA_release_hpaths    += ./../../..
-flexExtCUDA_release_hpaths    += $(NDK_ROOT)/$(NDK_VERSION)/platforms/android-15/arch-arm/usr/include
-flexExtCUDA_release_hpaths    += $(NDK_ROOT)/$(NDK_VERSION)/sources/cxx-stl/stlport/stlport
-flexExtCUDA_release_hpaths    += $(CUDA_PATH)/targets/armv7-linux-androideabi/include
+flexExtCUDA_release_hpaths    += ./../../../../../../external/android-ndk/android-ndk-r10e-linux/platforms/android-15/arch-arm/usr/include
+flexExtCUDA_release_hpaths    += ./../../../../../../external/android-ndk/android-ndk-r10e-linux/sources/cxx-stl/stlport/stlport
+flexExtCUDA_release_hpaths    += ./../../../../../../external/CUDA/cuda-6.0-linux/targets/armv7-linux-androideabi/include
 flexExtCUDA_release_lpaths    := 
-flexExtCUDA_release_lpaths    += $(CUDA_PATH)/targets/armv7-linux-androideabi/lib
+flexExtCUDA_release_lpaths    += ./../../../../../../external/CUDA/cuda-6.0-linux/targets/armv7-linux-androideabi/lib
 flexExtCUDA_release_lpaths    += ./../../../lib/android
-flexExtCUDA_release_lpaths    += $(NDK_ROOT)/$(NDK_VERSION)/sources/cxx-stl/stlport/libs/armeabi-v7a
+flexExtCUDA_release_lpaths    += ./../../../../../../external/android-ndk/android-ndk-r10e-linux/sources/cxx-stl/stlport/libs/armeabi-v7a
+flexExtCUDA_release_lpaths    += ./../../../lib/android
 flexExtCUDA_release_defines   := $(flexExtCUDA_custom_defines)
 flexExtCUDA_release_defines   += android
 flexExtCUDA_release_defines   += ANDROID=1
 flexExtCUDA_release_defines   += ANDROID_PLAT=1
 flexExtCUDA_release_defines   += DISABLE_IMPORTGL
 flexExtCUDA_release_libraries := 
+flexExtCUDA_release_libraries += NvFlexReleaseCUDA_armv7l
 flexExtCUDA_release_libraries += ./../../../lib/android/libNvFlexRelease_armv7l.a
 flexExtCUDA_release_common_cflags	:= $(flexExtCUDA_custom_cflags)
 flexExtCUDA_release_common_cflags    += -MMD
 flexExtCUDA_release_common_cflags    += $(addprefix -D, $(flexExtCUDA_release_defines))
 flexExtCUDA_release_common_cflags    += $(addprefix -I, $(flexExtCUDA_release_hpaths))
-flexExtCUDA_release_common_cflags  += -Wall -std=c++11 -fpermissive -fno-strict-aliasing -fno-rtti -fno-exceptions
-flexExtCUDA_release_common_cflags  += -O3 -ffast-math
 flexExtCUDA_release_cflags	:= $(flexExtCUDA_release_common_cflags)
+flexExtCUDA_release_cflags  += -Wall -std=c++11 -fpermissive -fno-strict-aliasing -fno-rtti -fno-exceptions
+flexExtCUDA_release_cflags  += -O3 -ffast-math
 flexExtCUDA_release_cppflags	:= $(flexExtCUDA_release_common_cflags)
+flexExtCUDA_release_cppflags  += -Wall -std=c++11 -fpermissive -fno-strict-aliasing -fno-rtti -fno-exceptions
+flexExtCUDA_release_cppflags  += -O3 -ffast-math
 flexExtCUDA_release_lflags    := $(flexExtCUDA_custom_lflags)
 flexExtCUDA_release_lflags    += $(addprefix -L, $(flexExtCUDA_release_lpaths))
 flexExtCUDA_release_lflags    += -Wl,--start-group $(addprefix -l, $(flexExtCUDA_release_libraries)) -Wl,--end-group
@@ -68,15 +72,15 @@ postbuild_flexExtCUDA_release: mainbuild_flexExtCUDA_release
 mainbuild_flexExtCUDA_release: prebuild_flexExtCUDA_release $(flexExtCUDA_release_bin)
 prebuild_flexExtCUDA_release:
 
-$(flexExtCUDA_release_bin): $(flexExtCUDA_release_obj) 
+$(flexExtCUDA_release_bin): $(flexExtCUDA_release_obj) build_flexCUDA_release 
 	mkdir -p `dirname ./../../../lib/android/libflexExt_cuda_release_armv7l.a`
 	@$(AR) rcs $(flexExtCUDA_release_bin) $(flexExtCUDA_release_obj)
 	$(ECHO) building $@ complete!
 
 $(flexExtCUDA_release_cuda_extensions_cuda_flexExt_cu_o): $(flexExtCUDA_cuda_extensions_cuda_flexExt_cu) 
 	@mkdir -p `dirname $(OBJS_DIR)/flexExtCUDA_release/cuda/extensions/cudaflexExt.o`
-	$(ECHO) "$(CUDA_PATH)/bin/nvcc" -ccbin $(NDK_ROOT)/$(NDK_VERSION)/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/arm-linux-androideabi-g++ -target-cpu-arch=ARM -m32 -arch=sm_32 -O3 -Xptxas -dlcm=ca -target-os-variant=Android -I"$(CUDA_PATH)/targets/armv7-linux-androideabi/include" -I"../../.." -I"$(NDK_ROOT)/$(NDK_VERSION)/sources/cxx-stl/stlport/stlport" -I"$(NDK_ROOT)/$(NDK_VERSION)/platforms/android-15/arch-arm/usr/include"  --compile "./../../../extensions/cuda/flexExt.cu" -o "$(OBJS_DIR)/flexExtCUDA_release/cuda/extensions/cudaflexExt.o"
-	"$(CUDA_PATH)/bin/nvcc" -ccbin $(NDK_ROOT)/$(NDK_VERSION)/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/arm-linux-androideabi-g++ -target-cpu-arch=ARM -m32 -arch=sm_32 -O3 -Xptxas -dlcm=ca -target-os-variant=Android -I"$(CUDA_PATH)/targets/armv7-linux-androideabi/include" -I"../../.." -I"$(NDK_ROOT)/$(NDK_VERSION)/sources/cxx-stl/stlport/stlport" -I"$(NDK_ROOT)/$(NDK_VERSION)/platforms/android-15/arch-arm/usr/include"  --compile "./../../../extensions/cuda/flexExt.cu" -o "$(OBJS_DIR)/flexExtCUDA_release/cuda/extensions/cudaflexExt.o"
+	$(ECHO) "../../../../../../external/CUDA/cuda-6.0-linux/bin/nvcc" -ccbin /home/mmacklin/swhost/devrel/libdev/flex/dev/main/../../../external/android-ndk/android-ndk-r10e-linux/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/arm-linux-androideabi-g++ -target-cpu-arch=ARM -m32 -arch=sm_32 -O3 -Xptxas -dlcm=ca -target-os-variant=Android -I"../../../../../../external/CUDA/cuda-6.0-linux/targets/armv7-linux-androideabi/include" -I"../../.." -I"/home/mmacklin/swhost/devrel/libdev/flex/dev/main/../../../external/android-ndk/android-ndk-r10e-linux/sources/cxx-stl/stlport/stlport" -I"/home/mmacklin/swhost/devrel/libdev/flex/dev/main/../../../external/android-ndk/android-ndk-r10e-linux/platforms/android-15/arch-arm/usr/include"  --compile "../../../extensions/cuda/flexExt.cu" -o "$(OBJS_DIR)/flexExtCUDA_release/cuda/extensions/cudaflexExt.o"
+	"../../../../../../external/CUDA/cuda-6.0-linux/bin/nvcc" -ccbin /home/mmacklin/swhost/devrel/libdev/flex/dev/main/../../../external/android-ndk/android-ndk-r10e-linux/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/arm-linux-androideabi-g++ -target-cpu-arch=ARM -m32 -arch=sm_32 -O3 -Xptxas -dlcm=ca -target-os-variant=Android -I"../../../../../../external/CUDA/cuda-6.0-linux/targets/armv7-linux-androideabi/include" -I"../../.." -I"/home/mmacklin/swhost/devrel/libdev/flex/dev/main/../../../external/android-ndk/android-ndk-r10e-linux/sources/cxx-stl/stlport/stlport" -I"/home/mmacklin/swhost/devrel/libdev/flex/dev/main/../../../external/android-ndk/android-ndk-r10e-linux/platforms/android-15/arch-arm/usr/include"  --compile "../../../extensions/cuda/flexExt.cu" -o "$(OBJS_DIR)/flexExtCUDA_release/cuda/extensions/cudaflexExt.o"
 
 flexExtCUDA_release_DEPDIR = $(dir $(@))/$(*F)
 $(flexExtCUDA_release_cpp_o): $(flexExtCUDA_release_objsdir)/%.o:
@@ -111,28 +115,32 @@ $(flexExtCUDA_release_c_o): $(flexExtCUDA_release_objsdir)/%.o:
 
 flexExtCUDA_debug_hpaths    := 
 flexExtCUDA_debug_hpaths    += ./../../..
-flexExtCUDA_debug_hpaths    += $(NDK_ROOT)/$(NDK_VERSION)/platforms/android-15/arch-arm/usr/include
-flexExtCUDA_debug_hpaths    += $(NDK_ROOT)/$(NDK_VERSION)/sources/cxx-stl/stlport/stlport
-flexExtCUDA_debug_hpaths    += $(CUDA_PATH)/targets/armv7-linux-androideabi/include
+flexExtCUDA_debug_hpaths    += ./../../../../../../external/android-ndk/android-ndk-r10e-linux/platforms/android-15/arch-arm/usr/include
+flexExtCUDA_debug_hpaths    += ./../../../../../../external/android-ndk/android-ndk-r10e-linux/sources/cxx-stl/stlport/stlport
+flexExtCUDA_debug_hpaths    += ./../../../../../../external/CUDA/cuda-6.0-linux/targets/armv7-linux-androideabi/include
 flexExtCUDA_debug_lpaths    := 
-flexExtCUDA_debug_lpaths    += $(CUDA_PATH)/targets/armv7-linux-androideabi/lib
+flexExtCUDA_debug_lpaths    += ./../../../../../../external/CUDA/cuda-6.0-linux/targets/armv7-linux-androideabi/lib
 flexExtCUDA_debug_lpaths    += ./../../../lib/android
-flexExtCUDA_debug_lpaths    += $(NDK_ROOT)/$(NDK_VERSION)/sources/cxx-stl/stlport/libs/armeabi-v7a
+flexExtCUDA_debug_lpaths    += ./../../../../../../external/android-ndk/android-ndk-r10e-linux/sources/cxx-stl/stlport/libs/armeabi-v7a
+flexExtCUDA_debug_lpaths    += ./../../../lib/android
 flexExtCUDA_debug_defines   := $(flexExtCUDA_custom_defines)
 flexExtCUDA_debug_defines   += android
 flexExtCUDA_debug_defines   += ANDROID=1
 flexExtCUDA_debug_defines   += ANDROID_PLAT=1
 flexExtCUDA_debug_defines   += DISABLE_IMPORTGL
 flexExtCUDA_debug_libraries := 
+flexExtCUDA_debug_libraries += NvFlexDebugCUDA_armv7l
 flexExtCUDA_debug_libraries += ./../../../lib/android/libNvFlexDebug_armv7l.a
 flexExtCUDA_debug_common_cflags	:= $(flexExtCUDA_custom_cflags)
 flexExtCUDA_debug_common_cflags    += -MMD
 flexExtCUDA_debug_common_cflags    += $(addprefix -D, $(flexExtCUDA_debug_defines))
 flexExtCUDA_debug_common_cflags    += $(addprefix -I, $(flexExtCUDA_debug_hpaths))
-flexExtCUDA_debug_common_cflags  += -Wall -std=c++11 -fpermissive -fno-strict-aliasing -fno-rtti -fno-exceptions
-flexExtCUDA_debug_common_cflags  += -g -O0
 flexExtCUDA_debug_cflags	:= $(flexExtCUDA_debug_common_cflags)
+flexExtCUDA_debug_cflags  += -Wall -std=c++11 -fpermissive -fno-strict-aliasing -fno-rtti -fno-exceptions
+flexExtCUDA_debug_cflags  += -g -O0
 flexExtCUDA_debug_cppflags	:= $(flexExtCUDA_debug_common_cflags)
+flexExtCUDA_debug_cppflags  += -Wall -std=c++11 -fpermissive -fno-strict-aliasing -fno-rtti -fno-exceptions
+flexExtCUDA_debug_cppflags  += -g -O0
 flexExtCUDA_debug_lflags    := $(flexExtCUDA_custom_lflags)
 flexExtCUDA_debug_lflags    += $(addprefix -L, $(flexExtCUDA_debug_lpaths))
 flexExtCUDA_debug_lflags    += -Wl,--start-group $(addprefix -l, $(flexExtCUDA_debug_libraries)) -Wl,--end-group
@@ -155,15 +163,15 @@ postbuild_flexExtCUDA_debug: mainbuild_flexExtCUDA_debug
 mainbuild_flexExtCUDA_debug: prebuild_flexExtCUDA_debug $(flexExtCUDA_debug_bin)
 prebuild_flexExtCUDA_debug:
 
-$(flexExtCUDA_debug_bin): $(flexExtCUDA_debug_obj) 
+$(flexExtCUDA_debug_bin): $(flexExtCUDA_debug_obj) build_flexCUDA_debug 
 	mkdir -p `dirname ./../../../lib/android/libflexExt_cuda_debug_armv7l.a`
 	@$(AR) rcs $(flexExtCUDA_debug_bin) $(flexExtCUDA_debug_obj)
 	$(ECHO) building $@ complete!
 
 $(flexExtCUDA_debug_cuda_extensions_cuda_flexExt_cu_o): $(flexExtCUDA_cuda_extensions_cuda_flexExt_cu) 
 	@mkdir -p `dirname $(OBJS_DIR)/flexExtCUDA_debug/cuda/extensions/cudaflexExt.o`
-	$(ECHO) "$(CUDA_PATH)/bin/nvcc" -ccbin $(NDK_ROOT)/$(NDK_VERSION)/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/arm-linux-androideabi-g++ -target-cpu-arch=ARM -m32 -arch=sm_32 -O3 -Xptxas -dlcm=ca -target-os-variant=Android -I"$(CUDA_PATH)/targets/armv7-linux-androideabi/include" -I"../../.." -I"$(NDK_ROOT)/$(NDK_VERSION)/sources/cxx-stl/stlport/stlport" -I"$(NDK_ROOT)/$(NDK_VERSION)/platforms/android-15/arch-arm/usr/include"  --compile "./../../../extensions/cuda/flexExt.cu" -o "$(OBJS_DIR)/flexExtCUDA_debug/cuda/extensions/cudaflexExt.o"
-	"$(CUDA_PATH)/bin/nvcc" -ccbin $(NDK_ROOT)/$(NDK_VERSION)/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/arm-linux-androideabi-g++ -target-cpu-arch=ARM -m32 -arch=sm_32 -O3 -Xptxas -dlcm=ca -target-os-variant=Android -I"$(CUDA_PATH)/targets/armv7-linux-androideabi/include" -I"../../.." -I"$(NDK_ROOT)/$(NDK_VERSION)/sources/cxx-stl/stlport/stlport" -I"$(NDK_ROOT)/$(NDK_VERSION)/platforms/android-15/arch-arm/usr/include"  --compile "./../../../extensions/cuda/flexExt.cu" -o "$(OBJS_DIR)/flexExtCUDA_debug/cuda/extensions/cudaflexExt.o"
+	$(ECHO) "../../../../../../external/CUDA/cuda-6.0-linux/bin/nvcc" -ccbin /home/mmacklin/swhost/devrel/libdev/flex/dev/main/../../../external/android-ndk/android-ndk-r10e-linux/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/arm-linux-androideabi-g++ -target-cpu-arch=ARM -m32 -arch=sm_32 -O3 -Xptxas -dlcm=ca -target-os-variant=Android -I"../../../../../../external/CUDA/cuda-6.0-linux/targets/armv7-linux-androideabi/include" -I"../../.." -I"/home/mmacklin/swhost/devrel/libdev/flex/dev/main/../../../external/android-ndk/android-ndk-r10e-linux/sources/cxx-stl/stlport/stlport" -I"/home/mmacklin/swhost/devrel/libdev/flex/dev/main/../../../external/android-ndk/android-ndk-r10e-linux/platforms/android-15/arch-arm/usr/include"  --compile "../../../extensions/cuda/flexExt.cu" -o "$(OBJS_DIR)/flexExtCUDA_debug/cuda/extensions/cudaflexExt.o"
+	"../../../../../../external/CUDA/cuda-6.0-linux/bin/nvcc" -ccbin /home/mmacklin/swhost/devrel/libdev/flex/dev/main/../../../external/android-ndk/android-ndk-r10e-linux/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/arm-linux-androideabi-g++ -target-cpu-arch=ARM -m32 -arch=sm_32 -O3 -Xptxas -dlcm=ca -target-os-variant=Android -I"../../../../../../external/CUDA/cuda-6.0-linux/targets/armv7-linux-androideabi/include" -I"../../.." -I"/home/mmacklin/swhost/devrel/libdev/flex/dev/main/../../../external/android-ndk/android-ndk-r10e-linux/sources/cxx-stl/stlport/stlport" -I"/home/mmacklin/swhost/devrel/libdev/flex/dev/main/../../../external/android-ndk/android-ndk-r10e-linux/platforms/android-15/arch-arm/usr/include"  --compile "../../../extensions/cuda/flexExt.cu" -o "$(OBJS_DIR)/flexExtCUDA_debug/cuda/extensions/cudaflexExt.o"
 
 flexExtCUDA_debug_DEPDIR = $(dir $(@))/$(*F)
 $(flexExtCUDA_debug_cpp_o): $(flexExtCUDA_debug_objsdir)/%.o:

@@ -12,9 +12,9 @@ public:
 	{
 		float radius = 0.1f;
 
-		float dimx = 1.0f;
-		float dimy = 5.0f;
-		float dimz = 1.0f;
+		float dimx = 3.0f;
+		float dimy = 3.0f;
+		float dimz = 3.0f;
 
 		CreateParticleShape(GetFilePathByPlatform("../../data/box.ply").c_str(), Vec3(0.0f, 1.0f, 0.0f), Vec3(dimx, dimy, dimz)*radius, 0.0f, radius, Vec3(0.0f), 1.0f, true, 1.0f, 0, true, 0.0f, 0.0f, 0.0f);
 
@@ -22,7 +22,7 @@ public:
 		g_params.gravity[1] = 0;
 
 		g_params.numIterations = 1;
-		g_numSubsteps = 1;
+		g_numSubsteps = 3;
 
 		g_pause = true;
 
@@ -39,17 +39,19 @@ public:
 
 			Vec3 center = (lower + upper)*0.5f;
 
-			Matrix44 rotation = RotationMatrix(DegToRad(95.0f), Vec3(0.0f, 0.0f, 1.0f));
+			//Matrix44 rotation = RotationMatrix(DegToRad(40.0f), Vec3(0.0f, 0.0f, 1.0f));
 
 			for (int i = 0; i < int(g_buffers->positions.size()); ++i)
 			{
 				Vec3 delta = Vec3(g_buffers->positions[i]) - center;
 
-				delta = Vec3(rotation*Vec4(delta, 1.0f));
+				//delta = Vec3(rotation*Vec4(delta, 1.0f));
 
-				g_buffers->positions[i].x = center.x + delta.x;
-				g_buffers->positions[i].y = center.y + delta.y;
-				g_buffers->positions[i].z = center.z + delta.z;
+				//g_buffers->positions[i].x = center.x + delta.x;
+				//g_buffers->positions[i].y = center.y + delta.y;
+				//g_buffers->positions[i].z = center.z + delta.z;
+
+				g_buffers->velocities[i] = Cross(delta, Vec3(0.0f, 0.0f, 1.0f))*10.0f;
 			}
 		}
 	}

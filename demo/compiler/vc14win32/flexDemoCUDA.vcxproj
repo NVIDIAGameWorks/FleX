@@ -55,7 +55,7 @@
 			<PrecompiledHeaderFile></PrecompiledHeaderFile>
 		</ClCompile>
 		<Link>
-			<AdditionalDependencies>cudart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;./../../../lib/win32/NvFlexDebugCUDA_x86.lib;./../../../lib/win32/NvFlexExtDebugCUDA_x86.lib;./../../../lib/win32/NvFlexDeviceDebug_x86.lib;./../../../external/SDL2-2.0.4/lib/x86/SDL2.lib;./../../../external/SDL2-2.0.4/lib/x86/SDL2main.lib;./../../../external/glew/lib/win32/glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+			<AdditionalDependencies>cudart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;./../../../lib/win32/NvFlexDebugCUDA_x86.lib;./../../../lib/win32/NvFlexExtDebugCUDA_x86.lib;./../../../lib/win32/NvFlexDeviceDebug_x86.lib;./../../../external/SDL2-2.0.4/lib/x86/SDL2.lib;./../../../external/SDL2-2.0.4/lib/x86/SDL2main.lib;./../../../external/NvToolsExt/lib/Win32/nvToolsExt32_1.lib;./../../../external/glew/lib/win32/glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
 			<OutputFile>$(OutDir)NvFlexDemoDebugCUDA_x86.exe</OutputFile>
 			<AdditionalLibraryDirectories>$(CUDA_PATH)/lib/win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
 			<ProgramDatabaseFile>$(OutDir)/NvFlexDemoDebugCUDA_x86.exe.pdb</ProgramDatabaseFile>
@@ -95,7 +95,7 @@
 			<PrecompiledHeaderFile></PrecompiledHeaderFile>
 		</ClCompile>
 		<Link>
-			<AdditionalDependencies>cudart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;./../../../lib/win32/NvFlexReleaseCUDA_x86.lib;./../../../lib/win32/NvFlexExtReleaseCUDA_x86.lib;./../../../lib/win32/NvFlexDeviceRelease_x86.lib;./../../../external/SDL2-2.0.4/lib/x86/SDL2.lib;./../../../external/SDL2-2.0.4/lib/x86/SDL2main.lib;./../../../external/glew/lib/win32/glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+			<AdditionalDependencies>cudart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;./../../../lib/win32/NvFlexReleaseCUDA_x86.lib;./../../../lib/win32/NvFlexExtReleaseCUDA_x86.lib;./../../../lib/win32/NvFlexDeviceRelease_x86.lib;./../../../external/SDL2-2.0.4/lib/x86/SDL2.lib;./../../../external/SDL2-2.0.4/lib/x86/SDL2main.lib;./../../../external/NvToolsExt/lib/Win32/nvToolsExt32_1.lib;./../../../external/glew/lib/win32/glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
 			<OutputFile>$(OutDir)NvFlexDemoReleaseCUDA_x86.exe</OutputFile>
 			<AdditionalLibraryDirectories>$(CUDA_PATH)/lib/win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
 			<ProgramDatabaseFile>$(OutDir)/NvFlexDemoReleaseCUDA_x86.exe.pdb</ProgramDatabaseFile>
@@ -184,8 +184,6 @@
 		</ClInclude>
 		<ClInclude Include="..\..\scenes\plasticbody.h">
 		</ClInclude>
-		<ClInclude Include="..\..\scenes\plasticstack.h">
-		</ClInclude>
 		<ClInclude Include="..\..\scenes\player.h">
 		</ClInclude>
 		<ClInclude Include="..\..\scenes\potpourri.h">
@@ -205,6 +203,8 @@
 		<ClInclude Include="..\..\scenes\rockpool.h">
 		</ClInclude>
 		<ClInclude Include="..\..\scenes\sdfcollision.h">
+		</ClInclude>
+		<ClInclude Include="..\..\scenes\shapechannels.h">
 		</ClInclude>
 		<ClInclude Include="..\..\scenes\shapecollision.h">
 		</ClInclude>

@@ -65,7 +65,6 @@ public:
 
 		g_numSubsteps = 2;
 
-		g_params.fluid = false;
 		g_params.radius = radius;
 		g_params.dynamicFriction = 0.f;
 		g_params.restitution = 0.0f;

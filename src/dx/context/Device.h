@@ -2,6 +2,9 @@
 
 #include "Context.h"
 
+// For NvFlexErrorCallback
+#include "../../include/NvFlex.h" 
+
 #include <d3d11.h>
 #include <d3d11_1.h>
 
@@ -16,17 +19,20 @@
 #include <vector>
 
 #define ENABLE_LIVE_DEVICE_OBJECTS_REPORTING 0	// Provides detailed report of D3D object reference counts
-#define USE_NVAPI_DEVICE 0						// Enable this for D3D11 SCG
+#define USE_NVAPI_DEVICE 1						// Enable this for D3D11 SCG
 
 struct FlexDeviceDesc
 {
-	FlexDeviceDesc() : mDeviceNumber(-1), mDevice(nullptr), mCommandQueue(nullptr), useComputeQueue(false), enablePresent(false) {}
+	FlexDeviceDesc() : mDeviceNumber(-1), mDevice(nullptr), mComputeCommandQueue(nullptr), mRenderCommandQueue(nullptr), useComputeQueue(false), enablePresent(false) {}
 	virtual ~FlexDeviceDesc() {}
 	unsigned int mDeviceNumber;  //!< Compute device number
 	void * mDevice;				 //!< pointer to existing device
-	void * mCommandQueue;		 //!< pointer to existing command queue for DX12
+	void * mComputeCommandQueue; //!< pointer to existing command queue for DX12
+	void * mRenderCommandQueue;  //!< pointer to existing command queue for DX12
 	bool useComputeQueue;		 //!< Use the compute queue instead of the graphics queue for DX12
 	bool enablePresent;			 //!< Present after each frame to that APIC and PB dump work
+
+	NvFlexErrorCallback mErrorFunc;
 };
 
 namespace NvFlex

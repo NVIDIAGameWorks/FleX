@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2017, NVIDIA CORPORATION.  All rights reserved.
+ * Copyright (c) 2014-2017, NVIDIA CORPORATION.  All rights reserved.
  *
  * NVIDIA CORPORATION and its licensors retain all intellectual property
  * and proprietary rights in and to this software, related documentation
@@ -13,12 +13,12 @@
 
 #include <stdint.h>
 
-#include "imguiGraph.h"
+#include "../d3d/imguiGraph.h"
 
 struct ID3D11Device;
 struct ID3D11DeviceContext;
 
-struct ImguiGraphDesc
+struct ImguiGraphDescD3D11
 {
 	ID3D11Device* device = nullptr;
 	ID3D11DeviceContext* deviceContext = nullptr;
@@ -27,41 +27,49 @@ struct ImguiGraphDesc
 
 	uint32_t maxVertices = 64 * 4096u;
 
-	ImguiGraphDesc() {}
+	ImguiGraphDescD3D11() {}
 };
 
-// Below are the functions that must be implemented per graphics API
+inline const ImguiGraphDescD3D11* cast_to_imguiGraphDescD3D11(const ImguiGraphDesc* desc)
+{
+	return (const ImguiGraphDescD3D11*)(desc);
+}
 
-void imguiGraphContextInit(const ImguiGraphDesc* desc);
+inline ImguiGraphDesc* cast_from_imguiGraphDescD3D11(ImguiGraphDescD3D11* desc)
+{
+	return (ImguiGraphDesc*)(desc);
+}
 
-void imguiGraphContextUpdate(const ImguiGraphDesc* desc);
+IMGUI_GRAPH_API void imguiGraphContextInitD3D11(const ImguiGraphDesc* desc);
 
-void imguiGraphContextDestroy();
+IMGUI_GRAPH_API void imguiGraphContextUpdateD3D11(const ImguiGraphDesc* desc);
 
-void imguiGraphRecordBegin();
+IMGUI_GRAPH_API void imguiGraphContextDestroyD3D11();
 
-void imguiGraphRecordEnd();
+IMGUI_GRAPH_API void imguiGraphRecordBeginD3D11();
 
-void imguiGraphVertex2f(float x, float y);
+IMGUI_GRAPH_API void imguiGraphRecordEndD3D11();
 
-void imguiGraphVertex2fv(const float* v);
+IMGUI_GRAPH_API void imguiGraphVertex2fD3D11(float x, float y);
 
-void imguiGraphTexCoord2f(float u, float v);
+IMGUI_GRAPH_API void imguiGraphVertex2fvD3D11(const float* v);
 
-void imguiGraphColor4ub(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha);
+IMGUI_GRAPH_API void imguiGraphTexCoord2fD3D11(float u, float v);
 
-void imguiGraphColor4ubv(const uint8_t* v);
+IMGUI_GRAPH_API void imguiGraphColor4ubD3D11(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha);
 
-void imguiGraphFontTextureEnable();
+IMGUI_GRAPH_API void imguiGraphColor4ubvD3D11(const uint8_t* v);
 
-void imguiGraphFontTextureDisable();
+IMGUI_GRAPH_API void imguiGraphFontTextureEnableD3D11();
 
-void imguiGraphEnableScissor(int x, int y, int width, int height);
+IMGUI_GRAPH_API void imguiGraphFontTextureDisableD3D11();
 
-void imguiGraphDisableScissor();
+IMGUI_GRAPH_API void imguiGraphEnableScissorD3D11(int x, int y, int width, int height);
 
-void imguiGraphFontTextureInit(unsigned char* data);
+IMGUI_GRAPH_API void imguiGraphDisableScissorD3D11();
 
-void imguiGraphFontTextureRelease();
+IMGUI_GRAPH_API void imguiGraphFontTextureInitD3D11(unsigned char* data);
+
+IMGUI_GRAPH_API void imguiGraphFontTextureReleaseD3D11();
 
 #endif

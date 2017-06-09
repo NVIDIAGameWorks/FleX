@@ -21,7 +21,6 @@ public:
 
 		g_params.radius = radius;
 		g_params.dynamicFriction = 1.0f;
-		g_params.fluid = false;
 		g_params.fluidRestDistance = radius;
 		g_params.viscosity = 0.0f;
 		g_params.numIterations = 4;

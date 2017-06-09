@@ -112,7 +112,7 @@ public:
 			// emit new debris
 			int numToEmit = 1;//Rand()%8;
 
-			int particleOffset = NvFlexGetActiveCount(g_flex);
+			int particleOffset = NvFlexGetActiveCount(g_solver);
 
 			for (int i = 0; i < numToEmit; ++i)
 			{
@@ -265,7 +265,7 @@ public:
 
 	virtual void Sync()
 	{
-		NvFlexSetRigids(g_flex, g_buffers->rigidOffsets.buffer, g_buffers->rigidIndices.buffer, g_buffers->rigidLocalPositions.buffer, g_buffers->rigidLocalNormals.buffer, g_buffers->rigidCoefficients.buffer, g_buffers->rigidRotations.buffer, g_buffers->rigidTranslations.buffer, g_buffers->rigidOffsets.size() - 1, g_buffers->rigidIndices.size());
+		NvFlexSetRigids(g_solver, g_buffers->rigidOffsets.buffer, g_buffers->rigidIndices.buffer, g_buffers->rigidLocalPositions.buffer, g_buffers->rigidLocalNormals.buffer, g_buffers->rigidCoefficients.buffer, g_buffers->rigidPlasticThresholds.buffer, g_buffers->rigidPlasticCreeps.buffer,   g_buffers->rigidRotations.buffer, g_buffers->rigidTranslations.buffer, g_buffers->rigidOffsets.size() - 1, g_buffers->rigidIndices.size());
 	}
 
 	virtual void KeyDown(int key)
@@ -303,8 +303,7 @@ public:
 		{
 			if (mBatches[b].mInstanceTransforms.size())
 			{
-				extern Colour gColors[];
-				DrawGpuMeshInstances(mBatches[b].mMesh, &mBatches[b].mInstanceTransforms[0], mBatches[b].mInstanceTransforms.size(), Vec3(gColors[b % 8]));
+				DrawGpuMeshInstances(mBatches[b].mMesh, &mBatches[b].mInstanceTransforms[0], mBatches[b].mInstanceTransforms.size(), Vec3(g_colors[b % 8]));
 			}
 		}
 	}

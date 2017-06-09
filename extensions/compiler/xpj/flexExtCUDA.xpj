@@ -12,7 +12,7 @@
 		</Conditional>
 
 		<Export platforms="Win32 Win64">../${xpj:TOOL}${xpj:PLATFORM}</Export>
-		<Export platform="android{x}" tool="make">../makeandroid</Export>
+		<Export platform="android_aarch64" tool="make">../makeandroid_aarch64</Export>
 		<Export platform="Linux64" tool="make">../makelinux64</Export>
 
 		<Target name="flexExtCUDA">
@@ -118,47 +118,43 @@
 
 			</Config>
 
-			<!-- Android -->
+			<!-- Android aarch64-->
 
-			<Config name="default" type="lib" platforms="android{x}">
+			<Config name="default" type="lib" platforms="android_aarch64">
 
-				<apply-template name="android-common"/>
+				<apply-template name="android-aarch64-common"/>
 
 				<FileTemplate name="cuda" command='${user:NVCC} ${user:NVCCInclude} --compile "%s" -o "%o"' buildtype="CustomBuild" />
 
-				<OutDir platforms="android{x}" tool="make">${user:ProjectRoot}/lib/android</OutDir>
+				<OutDir platforms="android_aarch64" tool="make">${user:ProjectRoot}/lib/android_aarch64</OutDir>
 
-				<Preprocessor type="define" platform="android{x}">
-					android 
+				<Preprocessor type="define" platform="android_aarch64">
+					android
 					ANDROID=1
 					ANDROID_PLAT=1
 					DISABLE_IMPORTGL
 				</Preprocessor>
 
-				<CFlags tool="make">
-					-Wall -std=c++11 -fpermissive -fno-strict-aliasing -fno-rtti -fno-exceptions
-				</CFlags>
-
+				<CFlags tool="make">-Wall -std=c++11 -fpermissive -fno-strict-aliasing -fno-rtti -fno-exceptions</CFlags>
+				
 			</Config>
 
-			<Config name="release" type="lib" platforms="android{x}">
+			<Config name="release" type="lib" platforms="android_aarch64">
 				<cflags> -O3 -ffast-math </cflags>
-				<OutFile>libflexExt_cuda_release_armv7l.a</OutFile>
-
+				<OutFile>libNvFlexExtReleaseCUDA_aarch64.a</OutFile>
+				
 				<Libraries>
-					${user:ProjectRoot}/lib/android/libNvFlexRelease_armv7l.a
-				</Libraries>
-
+					${user:ProjectRoot}/lib/android_aarch64/libNvFlexRelease_aarch64.a
+				</Libraries>				
 			</Config>
 
-			<Config name="debug" type="lib" platforms="android{x}">
+			<Config name="debug" type="lib" platforms="android_aarch64">
 				<cflags> -g -O0 </cflags>
-				<OutFile>libflexExt_cuda_debug_armv7l.a</OutFile>
-
+				<OutFile>libNvFlexExtDebugCUDA_aarch64.a</OutFile>
+				
 				<Libraries>
-					${user:ProjectRoot}/lib/android/libNvFlexDebug_armv7l.a
-				</Libraries>
-
+					${user:ProjectRoot}/lib/android_aarch64/libNvFlexDebug_aarch64.a
+				</Libraries>				
 			</Config>
 
 

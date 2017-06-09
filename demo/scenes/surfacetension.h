@@ -17,7 +17,6 @@ public:
 
 		g_params.radius = radius;
 
-		g_params.fluid = true;
 		g_params.numIterations = 3;
 		g_params.vorticityConfinement = 0.0f;
 		g_params.fluidRestDistance = restDistance;
