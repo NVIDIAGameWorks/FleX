@@ -751,7 +751,7 @@ NV_FLEX_API void NvFlexDestroyTriangleMesh(NvFlexLibrary* lib, NvFlexTriangleMes
  * 
  * @param[in] lib The library instance to use
  * @param[in] mesh A triangle mesh created with NvFlexCreateTriangleMesh()
- * @param[in] vertices Pointer to a buffer of float3 vertex positions
+ * @param[in] vertices Pointer to a buffer of float4 vertex positions
  * @param[in] indices Pointer to a buffer of triangle indices, should be length numTriangles*3
  * @param[in] numVertices The number of vertices in the vertices array
  * @param[in] numTriangles The number of triangles in the mesh

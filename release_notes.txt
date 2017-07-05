@@ -1,5 +1,13 @@
-1.2.0 (beta)
-------------
+1.2.0 (beta 2)
+--------------
+
+- NvFlexUpdateTriangleMesh() now takes vertices with 16-byte stride to remove CPU synchronization step in D3D implementations
+- Fix for NvFlexGetTimers() reporting incorrect values on D3D12
+- Fix for vsync in D3D12
+- Fix for crash when using Flex with NVIDIA driver 384.76
+
+1.2.0 (beta 1)
+--------------
 
 - New API to retrieve particle neighbor information, see NvFlexGetNeighbors()
 - New API to support shape collision filtering, collision channels can be assigned to particles and shapes to specify which pairs collide, see NvFlexPhase
@@ -20,7 +28,6 @@ Known Issues
 ------------
 
 - Demo rendering artifacts in D3D12 fullscreen on AMD platforms
-- NvFlexGetTimers() may report incorrect values on D3D12
 - Crash on inflatable test scenes on some Kepler class GPUs
 
 1.1.0

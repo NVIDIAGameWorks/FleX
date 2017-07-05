@@ -74,11 +74,42 @@ DemoContextD3D12::DemoContextD3D12()
 
 	// Allocate space for all debug vertices
 	m_debugLineVertices.resize(MAX_DEBUG_LINE_SIZE);
+
+	m_renderStateManager = new RenderStateManagerD3D12;
+}
+
+template <class T>
+void inline COMRelease(T& t)
+{
+	if (t) t->Release();
+	t = nullptr;
 }
 
 DemoContextD3D12::~DemoContextD3D12()
 {
 	imguiGraphDestroy();
+
+	AppGraphCtxRelease(m_appGraphCtx);
+
+	delete m_renderStateManager;
+
+	COMRelease(m_graphicsCompleteFence);
+	COMRelease(m_queryHeap);
+	COMRelease(m_queryResults);
+
+	// Explicitly delete these, so we can call D3D memory leak checker at bottom of this destructor
+	m_meshPipeline.reset();
+	m_pointPipeline.reset();
+	m_fluidPointPipeline.reset();
+	m_fluidSmoothPipeline.reset();
+	m_fluidCompositePipeline.reset();
+	m_diffusePointPipeline.reset();
+	m_linePipeline.reset();
+	m_fluidPointRenderTarget.reset();
+	m_fluidSmoothRenderTarget.reset();
+	m_fluidResolvedTarget.reset();					
+	m_screenQuadMesh.reset();
+	m_shadowMap.reset();
 }
 
 bool DemoContextD3D12::initialize(const RenderInitOptions& options)
@@ -183,8 +214,8 @@ int DemoContextD3D12::_initRenderResources(const RenderInitOptions& options)
 
 	{
 		// Make enough space for largest _single_ dynamic buffer allocation
-		NV_RETURN_ON_FAIL(m_renderStateManager.initialize(renderContext, 16 * 1024 * 1024));
-		m_renderState = m_renderStateManager.getState();
+		NV_RETURN_ON_FAIL(m_renderStateManager->initialize(renderContext, 16 * 1024 * 1024));
+		m_renderState = m_renderStateManager->getState();
 	}
 
 	// Create the renderer
@@ -465,7 +496,7 @@ void DemoContextD3D12::startFrame(FlexVec4 colorIn)
 	AppGraphCtxD3D12* renderContext = getRenderContext();
 
 	// Work out what what can be recovered, as GPU no longer accessing 
-	m_renderStateManager.updateCompleted();
+	m_renderStateManager->updateCompleted();
 
 	AppGraphColor clearColor = { colorIn.x, colorIn.y, colorIn.z, colorIn.w };
 	AppGraphCtxFrameStart(cast_from_AppGraphCtxD3D12(renderContext), clearColor);
@@ -529,11 +560,11 @@ void DemoContextD3D12::endFrame()
 	renderContext->m_commandListOpenCount = 0;
 
 	// Inform the manager that the work has been submitted
-	m_renderStateManager.onGpuWorkSubmitted(renderContext->m_commandQueue);
+	m_renderStateManager->onGpuWorkSubmitted(renderContext->m_commandQueue);
 
 	HANDLE completeEvent = m_graphicsCompleteEvent;
 
-	renderContext->m_commandQueue->Signal(m_graphicsCompleteFence.Get(), m_graphicsCompleteFenceValue);
+	renderContext->m_commandQueue->Signal(m_graphicsCompleteFence, m_graphicsCompleteFenceValue);
 }
 
 void DemoContextD3D12::getRenderDevice(void** device, void** context)
@@ -1060,15 +1091,15 @@ void DemoContextD3D12::graphicsTimerBegin()
 {
 	ID3D12GraphicsCommandList* commandList = m_renderContext->m_commandList;
 
-	commandList->EndQuery(m_queryHeap.Get(), D3D12_QUERY_TYPE_TIMESTAMP, 0);
+	commandList->EndQuery(m_queryHeap, D3D12_QUERY_TYPE_TIMESTAMP, 0);
 }
 
 void DemoContextD3D12::graphicsTimerEnd()
 {
 	ID3D12GraphicsCommandList* commandList = m_renderContext->m_commandList;
 
-	commandList->EndQuery(m_queryHeap.Get(), D3D12_QUERY_TYPE_TIMESTAMP, 1);
-	commandList->ResolveQueryData(m_queryHeap.Get(), D3D12_QUERY_TYPE_TIMESTAMP, 0, 2, m_queryResults.Get(), 0);
+	commandList->EndQuery(m_queryHeap, D3D12_QUERY_TYPE_TIMESTAMP, 1);
+	commandList->ResolveQueryData(m_queryHeap, D3D12_QUERY_TYPE_TIMESTAMP, 0, 2, m_queryResults, 0);
 }
 
 float DemoContextD3D12::rendererGetDeviceTimestamps(unsigned long long* begin, unsigned long long* end, unsigned long long* freq)
@@ -1086,10 +1117,9 @@ float DemoContextD3D12::rendererGetDeviceTimestamps(unsigned long long* begin, u
 		commandQueue->GetTimestampFrequency(&frequency);
 	}
 
-	//Get render timestamps
+	// Get render timestamps
 	uint64_t* times;
-	//m_queryResults->Map(0, nullptr, (void**)&times);
-	D3D12_RANGE readRange = { 0, 1 };
+	D3D12_RANGE readRange = { 0, 2 };
 	m_queryResults->Map(0, &readRange, (void**)&times);
 	uint64_t renderBegin = times[0];
 	uint64_t renderEnd = times[1];

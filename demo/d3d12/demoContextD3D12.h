@@ -232,7 +232,7 @@ public:
 	std::wstring m_executablePath;
 	std::wstring m_shadersPath;
 
-	RenderStateManagerD3D12 m_renderStateManager;
+	RenderStateManagerD3D12* m_renderStateManager;
 	RenderStateD3D12 m_renderState;
 
 	SDL_Window* m_window;
@@ -241,11 +241,11 @@ public:
 	int m_msaaSamples;
 
 	// Synchronization and timing for async compute benchmarking
-	ComPtr<ID3D12Fence>     m_graphicsCompleteFence;
-	HANDLE				    m_graphicsCompleteEvent;
-	UINT64					m_graphicsCompleteFenceValue;
-	ComPtr<ID3D12QueryHeap> m_queryHeap;
-	ComPtr<ID3D12Resource>  m_queryResults;
+	ID3D12Fence*     m_graphicsCompleteFence;
+	HANDLE			 m_graphicsCompleteEvent;
+	UINT64			 m_graphicsCompleteFenceValue;
+	ID3D12QueryHeap* m_queryHeap;
+	ID3D12Resource*  m_queryResults;
 
 	bool m_inLineDraw;
 	std::vector<LineData::Vertex> m_debugLineVertices;

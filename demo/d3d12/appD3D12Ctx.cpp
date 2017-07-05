@@ -310,7 +310,7 @@ void AppGraphCtxInitRenderTargetD3D12(AppGraphCtx* contextIn, SDL_Window* window
 
 		hr = pFactory->CreateSwapChain(context->m_commandQueue, &desc, (IDXGISwapChain**)&context->m_swapChain);
 
-		if(hr != S_OK)
+		if (hr != S_OK)
 		{
 			COMRelease(context->m_swapChain);
 			context->m_fullscreen = false;
@@ -378,7 +378,7 @@ void AppGraphCtxInitRenderTargetD3D12(AppGraphCtx* contextIn, SDL_Window* window
 				D3D12_RESOURCE_DESC desc = backBuffer->GetDesc();
 
 				DXGI_FORMAT resourceFormat;
-				
+
 				if (desc.Format == DXGI_FORMAT_R32_FLOAT || desc.Format == DXGI_FORMAT_D32_FLOAT)
 				{
 					resourceFormat = DXGI_FORMAT_R32_TYPELESS;
@@ -449,7 +449,7 @@ void AppGraphCtxInitRenderTargetD3D12(AppGraphCtx* contextIn, SDL_Window* window
 			D3D12_RESOURCE_STATE_DEPTH_WRITE,
 			&clearValue,
 			IID_PPV_ARGS(&context->m_depthStencil)
-			))
+		))
 		{
 			return;
 		}
@@ -457,7 +457,7 @@ void AppGraphCtxInitRenderTargetD3D12(AppGraphCtx* contextIn, SDL_Window* window
 		// create the depth stencil view
 		D3D12_DEPTH_STENCIL_VIEW_DESC viewDesc = {};
 		viewDesc.Format = context->m_dsv_format; // DXGI_FORMAT_D32_FLOAT;
-		viewDesc.ViewDimension = (context->m_numMsaaSamples>1) ? D3D12_DSV_DIMENSION_TEXTURE2DMS : D3D12_DSV_DIMENSION_TEXTURE2D;
+		viewDesc.ViewDimension = (context->m_numMsaaSamples > 1) ? D3D12_DSV_DIMENSION_TEXTURE2DMS : D3D12_DSV_DIMENSION_TEXTURE2D;
 		viewDesc.Flags = D3D12_DSV_FLAG_NONE;
 		viewDesc.Texture2D.MipSlice = 0;
 
@@ -621,8 +621,10 @@ void AppGraphCtxFramePresentD3D12(AppGraphCtx* contextIn, bool fullsync)
 	auto context = cast_to_AppGraphCtxD3D12(contextIn);
 
 	// check if now is good time to present
+#if 0 // disable frame latency waitable object check because it will cause vsync to fail
 	bool shouldPresent = context->m_fullscreen ? true : WaitForSingleObjectEx(context->m_swapChainWaitableObject, 0, TRUE) != WAIT_TIMEOUT;
 	if (shouldPresent)
+#endif
 	{
 		context->m_swapChain->Present(fullsync, 0);
 		context->m_renderTargetID++;

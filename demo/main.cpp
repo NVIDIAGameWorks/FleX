@@ -559,6 +559,13 @@ void Init(int scene, bool centerCamera = true)
 {
 	RandInit();
 
+	if (g_buffers)
+	{
+		// Wait for any running GPU work to finish
+		MapBuffers(g_buffers);
+		UnmapBuffers(g_buffers);
+	}
+
 	if (g_solver)
 	{
 		if (g_buffers)
@@ -2037,13 +2044,13 @@ void UpdateFrame()
 
 	// Getting timers causes CPU/GPU sync, so we do it after a map
 	float newSimLatency = NvFlexGetDeviceLatency(g_solver, &g_GpuTimers.computeBegin, &g_GpuTimers.computeEnd, &g_GpuTimers.computeFreq);
-	float newGfxLatency = RendererGetDeviceTimestamps(&g_GpuTimers.renderBegin, &g_GpuTimers.renderEnd,&g_GpuTimers.renderFreq);
+	float newGfxLatency = RendererGetDeviceTimestamps(&g_GpuTimers.renderBegin, &g_GpuTimers.renderEnd, &g_GpuTimers.renderFreq);
 	(void)newGfxLatency;
 
 	UpdateCamera();
 
-	if (!g_pause || g_step)	
-	{	
+	if (!g_pause || g_step)
+	{
 		UpdateEmitters();
 		UpdateMouse();
 		UpdateWind();
@@ -2073,14 +2080,14 @@ void UpdateFrame()
 	// main scene render
 	RenderScene();
 	RenderDebug();
-	
+
 	int newScene = DoUI();
 
 	EndFrame();
 
 	// If user has disabled async compute, ensure that no compute can overlap 
 	// graphics by placing a sync between them	
-	if (!g_useAsyncCompute) 
+	if (!g_useAsyncCompute)
 		NvFlexComputeWaitForGraphics(g_flexLib);
 
 	UnmapBuffers(g_buffers);
@@ -2111,7 +2118,7 @@ void UpdateFrame()
 	double renderEndTime = GetSeconds();
 
 	// if user requested a scene reset process it now
-	if (g_resetScene) 
+	if (g_resetScene)
 	{
 		Reset();
 		g_resetScene = false;
@@ -2196,7 +2203,7 @@ void UpdateFrame()
 	else
 	{
 		// read back just the new diffuse particle count, render buffers will be updated during rendering
-		NvFlexGetDiffuseParticles(g_solver, NULL, NULL, g_buffers->diffuseCount.buffer);	
+		NvFlexGetDiffuseParticles(g_solver, NULL, NULL, g_buffers->diffuseCount.buffer);
 	}
 
 
@@ -2216,8 +2223,12 @@ void UpdateFrame()
 	g_renderTime = (g_renderTime == 0.0f) ? newRenderTime : Lerp(g_renderTime, newRenderTime, timerSmoothing);
 	g_waitTime = (g_waitTime == 0.0f) ? newWaitTime : Lerp(g_waitTime, newWaitTime, timerSmoothing);
 	g_simLatency = (g_simLatency == 0.0f) ? newSimLatency : Lerp(g_simLatency, newSimLatency, timerSmoothing);
-	
-	if(g_benchmark) newScene = BenchmarkUpdate();
+
+	if (g_benchmark) newScene = BenchmarkUpdate();
+
+	// flush out the last frame before freeing up resources in the event of a scene change
+	// this is necessary for d3d12
+	PresentFrame(g_vsync);
 
 	// if gui or benchmark requested a scene change process it now
 	if (newScene != -1)
@@ -2225,8 +2236,6 @@ void UpdateFrame()
 		g_scene = newScene;
 		Init(g_scene);
 	}
-
-	PresentFrame(g_vsync);
 }
 
 void ReshapeWindow(int width, int height)
@@ -2961,13 +2970,13 @@ int main(int argc, char* argv[])
 	SoftBody* plasticStackScene = new SoftBody("Plastic Stack");
 	plasticStackScene->AddInstance(stackBox);
 	plasticStackScene->AddInstance(stackSphere);
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < 3; i++)
+	{
 		stackBox.mTranslation[1] += 2.0f;
 		stackSphere.mTranslation[1] += 2.0f;
 		plasticStackScene->AddInstance(stackBox);
 		plasticStackScene->AddInstance(stackSphere);
 	}
-
 
 	g_scenes.push_back(softOctopusSceneNew);
 	g_scenes.push_back(softTeapotSceneNew);
@@ -2982,7 +2991,6 @@ int main(int argc, char* argv[])
 	g_scenes.push_back(plasticComparisonScene);
 	g_scenes.push_back(plasticStackScene);
 
-
 	// collision scenes
 	g_scenes.push_back(new FrictionRamp("Friction Ramp"));
 	g_scenes.push_back(new FrictionMovingShape("Friction Moving Box", 0));
@@ -2995,7 +3003,6 @@ int main(int argc, char* argv[])
 	g_scenes.push_back(new LocalSpaceCloth("Local Space Cloth"));	
 	g_scenes.push_back(new CCDFluid("World Space Fluid"));
 
-
 	// cloth scenes
 	g_scenes.push_back(new EnvironmentalCloth("Env Cloth Small", 6, 6, 40, 16));
 	g_scenes.push_back(new EnvironmentalCloth("Env Cloth Large", 16, 32, 10, 3));
@@ -3005,7 +3012,6 @@ int main(int argc, char* argv[])
 	g_scenes.push_back(new SphereCloth("Sphere Cloth"));
 	g_scenes.push_back(new Tearing("Tearing"));	
 	g_scenes.push_back(new Pasta("Pasta"));
-
 
 	// game mesh scenes
 	g_scenes.push_back(new GameMesh("Game Mesh Rigid", 0));

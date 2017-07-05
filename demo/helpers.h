@@ -708,10 +708,15 @@ NvFlexTriangleMeshId CreateTriangleMesh(Mesh* m)
 	Vec3 lower, upper;
 	m->GetBounds(lower, upper);
 
-	NvFlexVector<Vec3> positions(g_flexLib);
+	NvFlexVector<Vec4> positions(g_flexLib, m->m_positions.size());
+	positions.map();
 	NvFlexVector<int> indices(g_flexLib);
 
-	positions.assign((Vec3*)&m->m_positions[0], m->m_positions.size());
+	for (int i = 0; i < int(m->m_positions.size()); ++i)
+	{
+		Vec3 vertex = Vec3(m->m_positions[i]);
+		positions[i] = Vec4(vertex, 0.0f);
+	}
 	indices.assign((int*)&m->m_indices[0], m->m_indices.size());
 
 	positions.unmap();
