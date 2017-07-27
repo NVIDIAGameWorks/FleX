@@ -6,6 +6,11 @@
 - Fix for vsync in D3D12
 - Fix for crash when using Flex with NVIDIA driver 384.76
 
+Known Issues
+------------
+
+- NVIDIA driver 384.94 can cause a crash on exit when D3D11 async compute is enabled. If using D3D11 with this driver, please disable async compute by setting runOnRenderContext=true in the NvFlexInitDesc you pass to FlexInit. D3D12 async compute is unaffected by the bug, and does not require this workaround.
+
 1.2.0 (beta 1)
 --------------
 
