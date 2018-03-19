@@ -25,7 +25,6 @@ public:
 		g_params.viscosity = 0.0f;
 		g_params.numIterations = 4;
 		g_params.vorticityConfinement = 0.f;
-		g_params.anisotropyScale = 20.0f;
 		g_params.numPlanes = 1;
 		g_params.collisionDistance = radius*0.5f;
 		g_params.shockPropagation = 5.0f;

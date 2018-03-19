@@ -73,6 +73,7 @@ Matrix44 RenderParamsUtilD3D::convertGLToD3DProjection(const Matrix44& proj)
 /* static */void RenderParamsUtilD3D::calcFluidConstantBuffer(const FluidDrawParamsD3D& params, Hlsl::FluidShaderConst& constBuf)
 {
 	constBuf.modelViewProjection = (Hlsl::float4x4&)(XMMatrixMultiply(XMMatrixMultiply(params.model, params.view), params.projection));
+	constBuf.modelView = (Hlsl::float4x4&)XMMatrixMultiply(params.model, params.view);
 	constBuf.projection = (Hlsl::float4x4&)params.projection;
 	constBuf.inverseModelView = (Hlsl::float4x4&)XMMatrixInverse(nullptr, XMMatrixMultiply(params.model, params.view));
 	constBuf.inverseProjection = (Hlsl::float4x4&)XMMatrixInverse(nullptr, params.projection);
@@ -85,6 +86,8 @@ Matrix44 RenderParamsUtilD3D::convertGLToD3DProjection(const Matrix44& proj)
 	constBuf.blurScale = params.blurScale;
 	constBuf.blurFalloff = params.blurFalloff;
 	constBuf.debug = params.debug;
+
+	constBuf.pointRadius = params.pointRadius;
 }
 
 /* static */void RenderParamsUtilD3D::calcDiffuseConstantBuffer(const DiffuseDrawParamsD3D& params, Hlsl::DiffuseShaderConst& constBuf)

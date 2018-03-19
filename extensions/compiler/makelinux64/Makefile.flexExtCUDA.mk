@@ -23,12 +23,12 @@ flexExtCUDA_c_debug_dep      = $(addprefix $(DEPSDIR)/flexExtCUDA/debug/, $(subs
 flexExtCUDA_debug_dep      = $(flexExtCUDA_cpp_debug_dep) $(flexExtCUDA_cc_debug_dep) $(flexExtCUDA_c_debug_dep)
 -include $(flexExtCUDA_debug_dep)
 flexExtCUDA_release_hpaths    := 
-flexExtCUDA_release_hpaths    += $(CUDA_PATH)/include
-flexExtCUDA_release_hpaths    += $(CUDA_PATH)/extras/cupti/include
+flexExtCUDA_release_hpaths    += /usr/local/cuda/include
+flexExtCUDA_release_hpaths    += /usr/local/cuda/extras/cupti/include
 flexExtCUDA_release_hpaths    += ./../../..
 flexExtCUDA_release_hpaths    += ./../../../external/freeglut/include
 flexExtCUDA_release_lpaths    := 
-flexExtCUDA_release_lpaths    += $(CUDA_PATH)/lib64
+flexExtCUDA_release_lpaths    += /usr/local/cuda/lib64
 flexExtCUDA_release_defines   := $(flexExtCUDA_custom_defines)
 flexExtCUDA_release_libraries := 
 flexExtCUDA_release_libraries += ./../../../lib/linux64/NvFlexReleaseCUDA_x64.a
@@ -71,8 +71,8 @@ $(flexExtCUDA_release_bin): $(flexExtCUDA_release_obj)
 
 $(flexExtCUDA_release_cuda_cuda_flexExt_cu_o): $(flexExtCUDA_cuda_cuda_flexExt_cu) 
 	@mkdir -p `dirname $(OBJS_DIR)/flexExtCUDA_release/cuda/cudaflexExt.o`
-	$(ECHO) $(CUDA_PATH)/bin/nvcc -O3 -g -arch=sm_30 -m64 -Xcompiler -fPIC -D_FORCE_INLINES  -I../../.. -I../../../external -I$(CUDA_PATH)/include -I../../../external/cub-1.3.2  --compile "./../../cuda/flexExt.cu" -o "$(OBJS_DIR)/flexExtCUDA_release/cuda/cudaflexExt.o"
-	$(CUDA_PATH)/bin/nvcc -O3 -g -arch=sm_30 -m64 -Xcompiler -fPIC -D_FORCE_INLINES  -I../../.. -I../../../external -I$(CUDA_PATH)/include -I../../../external/cub-1.3.2  --compile "./../../cuda/flexExt.cu" -o "$(OBJS_DIR)/flexExtCUDA_release/cuda/cudaflexExt.o"
+	$(ECHO) /usr/local/cuda/bin/nvcc -O3 -g -arch=sm_30 -m64 -Xcompiler -fPIC -D_FORCE_INLINES  -I../../.. -I../../../external -I/usr/local/cuda/include -I../../../external/cub-1.3.2  --compile "./../../cuda/flexExt.cu" -o "$(OBJS_DIR)/flexExtCUDA_release/cuda/cudaflexExt.o"
+	/usr/local/cuda/bin/nvcc -O3 -g -arch=sm_30 -m64 -Xcompiler -fPIC -D_FORCE_INLINES  -I../../.. -I../../../external -I/usr/local/cuda/include -I../../../external/cub-1.3.2  --compile "./../../cuda/flexExt.cu" -o "$(OBJS_DIR)/flexExtCUDA_release/cuda/cudaflexExt.o"
 
 flexExtCUDA_release_DEPDIR = $(dir $(@))/$(*F)
 $(flexExtCUDA_release_cpp_o): $(flexExtCUDA_release_objsdir)/%.o:
@@ -106,12 +106,12 @@ $(flexExtCUDA_release_c_o): $(flexExtCUDA_release_objsdir)/%.o:
 	  rm -f $(flexExtCUDA_release_DEPDIR).d
 
 flexExtCUDA_debug_hpaths    := 
-flexExtCUDA_debug_hpaths    += $(CUDA_PATH)/include
-flexExtCUDA_debug_hpaths    += $(CUDA_PATH)/extras/cupti/include
+flexExtCUDA_debug_hpaths    += /usr/local/cuda/include
+flexExtCUDA_debug_hpaths    += /usr/local/cuda/extras/cupti/include
 flexExtCUDA_debug_hpaths    += ./../../..
 flexExtCUDA_debug_hpaths    += ./../../../external/freeglut/include
 flexExtCUDA_debug_lpaths    := 
-flexExtCUDA_debug_lpaths    += $(CUDA_PATH)/lib64
+flexExtCUDA_debug_lpaths    += /usr/local/cuda/lib64
 flexExtCUDA_debug_defines   := $(flexExtCUDA_custom_defines)
 flexExtCUDA_debug_libraries := 
 flexExtCUDA_debug_libraries += ./../../../lib/linux64/NvFlexDebugCUDA_x64.a
@@ -154,8 +154,8 @@ $(flexExtCUDA_debug_bin): $(flexExtCUDA_debug_obj)
 
 $(flexExtCUDA_debug_cuda_cuda_flexExt_cu_o): $(flexExtCUDA_cuda_cuda_flexExt_cu) 
 	@mkdir -p `dirname $(OBJS_DIR)/flexExtCUDA_debug/cuda/cudaflexExt.o`
-	$(ECHO) $(CUDA_PATH)/bin/nvcc -O3 -g -arch=sm_30 -m64 -Xcompiler -fPIC -D_FORCE_INLINES  -I../../.. -I../../../external -I$(CUDA_PATH)/include -I../../../external/cub-1.3.2  --compile "./../../cuda/flexExt.cu" -o "$(OBJS_DIR)/flexExtCUDA_debug/cuda/cudaflexExt.o"
-	$(CUDA_PATH)/bin/nvcc -O3 -g -arch=sm_30 -m64 -Xcompiler -fPIC -D_FORCE_INLINES  -I../../.. -I../../../external -I$(CUDA_PATH)/include -I../../../external/cub-1.3.2  --compile "./../../cuda/flexExt.cu" -o "$(OBJS_DIR)/flexExtCUDA_debug/cuda/cudaflexExt.o"
+	$(ECHO) /usr/local/cuda/bin/nvcc -O3 -g -arch=sm_30 -m64 -Xcompiler -fPIC -D_FORCE_INLINES  -I../../.. -I../../../external -I/usr/local/cuda/include -I../../../external/cub-1.3.2  --compile "./../../cuda/flexExt.cu" -o "$(OBJS_DIR)/flexExtCUDA_debug/cuda/cudaflexExt.o"
+	/usr/local/cuda/bin/nvcc -O3 -g -arch=sm_30 -m64 -Xcompiler -fPIC -D_FORCE_INLINES  -I../../.. -I../../../external -I/usr/local/cuda/include -I../../../external/cub-1.3.2  --compile "./../../cuda/flexExt.cu" -o "$(OBJS_DIR)/flexExtCUDA_debug/cuda/cudaflexExt.o"
 
 flexExtCUDA_debug_DEPDIR = $(dir $(@))/$(*F)
 $(flexExtCUDA_debug_cpp_o): $(flexExtCUDA_debug_objsdir)/%.o:

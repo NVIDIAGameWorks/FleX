@@ -1,34 +1,29 @@
-1.2.0 (beta 2)
---------------
+1.2.0 
+------
 
-- NvFlexUpdateTriangleMesh() now takes vertices with 16-byte stride to remove CPU synchronization step in D3D implementations
-- Fix for NvFlexGetTimers() reporting incorrect values on D3D12
-- Fix for vsync in D3D12
-- Fix for crash when using Flex with NVIDIA driver 384.76
-
-1.2.0 (beta 1)
---------------
-
+- Improved collision against moving shapes, solver now correctly interpolates shape transforms for substeps
+- Improved Linux support, removed GLUT/GLEW dependencies
+- New API for adding soft-joints (dynamic shape-matching constraints) via. the extensions API, see NvFlexExtCreateSoftJoint()
 - New API to retrieve particle neighbor information, see NvFlexGetNeighbors()
 - New API to support shape collision filtering, collision channels can be assigned to particles and shapes to specify which pairs collide, see NvFlexPhase
 - New API to support per-shape plastic deformation, it is now possible to specify plastic creep and threshold coefficient on a per-shape basis (previous global settings), see NvFlexSetRigids()
 - New API to selectively disable solver features, this can lead to improved performance, see NvFlexFeatureMode, replaces global FlexParams::fluid option
 - New API to allow sub-range particle buffer updates, see NvFlexCopyDesc
 - New API for asynchronous compute, see NvFlexInitDesc
+- New API change, NvFlexUpdateTriangleMesh() now takes vertices with 16-byte stride to remove CPU synchronization step in D3D implementations
+- Fix for NvFlexParams::anisotropyScale, this change improves the fitting of ellipsoids to fluid particle distributions, it should now typically be left at 1.0
+- Fix for NvFlexGetTimers() reporting incorrect values on D3D12
+- Fix for vsync in D3D12
+- Fix for crash when using Flex with NVIDIA driver 384.76
 - Fix for unnecessary synchronization when calling NvFlexMap() on a device buffer
 - Fix numerical precision for shape-matching constraints with large coordinates
 - Fix for uninitialized contact indices returned from NvFlexGetContacts() if NvFlexUpdateSolver() has not been called
 - Fix for SDF collision in D3D12
+- Fix for free after delete in CUDA when using SDFs
 - Fix for D3D warning when using NvFlexSetRigids()
 - Add D3D12 rendering support to the demo
 - Add support for device NvFlexBuffers on D3D
-- Enable NvToolkit profiling zones so to provide annotations in NSight profiles by default
-
-Known Issues
-------------
-
-- Demo rendering artifacts in D3D12 fullscreen on AMD platforms
-- Crash on inflatable test scenes on some Kepler class GPUs
+- Enable NvToolkit profiling zones so to provide annotations in NSight profiles by default, this requires nvToolsExt64_1.dll be present
 
 1.1.0
 -----

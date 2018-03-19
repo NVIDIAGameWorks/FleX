@@ -14,6 +14,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <malloc.h>
 
 #include "imguiGraph.h"
 
@@ -25,7 +26,11 @@ void* imguimalloc(size_t size, void* userptr);
 
 #define STBTT_malloc(x,y)    imguimalloc(x,y)
 #define STBTT_free(x,y)      imguifree(x,y)
+#if FLEX_DX
 #define STB_TRUETYPE_IMPLEMENTATION
+#else
+#define STBTT_ifloor
+#endif
 #include "stb_truetype.h"
 
 void imguifree(void* ptr, void* /*userptr*/)
@@ -185,7 +190,6 @@ static void drawRoundedRect(float x, float y, float w, float h, float r, float f
 	drawPolygon(verts, (n + 1) * 4, fth, col);
 }
 
-
 static void drawLine(float x0, float y0, float x1, float y1, float r, float fth, unsigned int col)
 {
 	float dx = x1 - x0;
@@ -290,8 +294,8 @@ static void getBakedQuad(stbtt_bakedchar *chardata, int pw, int ph, int char_ind
 	float *xpos, float *ypos, stbtt_aligned_quad *q)
 {
 	stbtt_bakedchar *b = chardata + char_index;
-	int round_x = STBTT_ifloor(*xpos + b->xoff);
-	int round_y = STBTT_ifloor(*ypos - b->yoff);
+	int round_x = (int)STBTT_ifloor(*xpos + b->xoff);
+	int round_y = (int)STBTT_ifloor(*ypos - b->yoff);
 
 	q->x0 = (float)round_x;
 	q->y0 = (float)round_y;
@@ -329,7 +333,7 @@ static float getTextLength(stbtt_bakedchar *chardata, const char* text)
 		else if (c >= 32 && c < 128)
 		{
 			stbtt_bakedchar *b = chardata + c - 32;
-			int round_x = STBTT_ifloor((xpos + b->xoff) + 0.5);
+			int round_x = (int)STBTT_ifloor((xpos + b->xoff) + 0.5);
 			len = round_x + b->x1 - b->x0 + 0.5f;
 			xpos += b->xadvance;
 		}

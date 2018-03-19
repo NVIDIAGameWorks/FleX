@@ -1,12 +1,10 @@
-
-// this
 #include "pipelineUtilD3D12.h"
 
 namespace NvCo = nvidia::Common;
 
 namespace FlexSample {
 
-/* static */void PipelineUtilD3D::initRasterizerDesc(FrontWindingType winding, D3D12_RASTERIZER_DESC& desc)
+void PipelineUtilD3D::initRasterizerDesc(FrontWindingType winding, D3D12_RASTERIZER_DESC& desc)
 {
 	desc.FillMode = D3D12_FILL_MODE_SOLID;
 	desc.CullMode = D3D12_CULL_MODE_NONE;
@@ -23,7 +21,7 @@ namespace FlexSample {
 	desc.ConservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
 }
 
-/* static */void PipelineUtilD3D::initSolidBlendDesc(D3D12_BLEND_DESC& desc)
+void PipelineUtilD3D::initSolidBlendDesc(D3D12_BLEND_DESC& desc)
 {
 	desc.AlphaToCoverageEnable = FALSE;
 	desc.IndependentBlendEnable = FALSE;
@@ -41,7 +39,7 @@ namespace FlexSample {
 	}
 }
 
-/* static */void PipelineUtilD3D::initTargetFormat(NvCo::Dx12RenderTarget* renderTarget, AppGraphCtxD3D12* renderContext, D3D12_GRAPHICS_PIPELINE_STATE_DESC& psoDesc)
+void PipelineUtilD3D::initTargetFormat(NvCo::Dx12RenderTarget* renderTarget, AppGraphCtxD3D12* renderContext, D3D12_GRAPHICS_PIPELINE_STATE_DESC& psoDesc)
 {
 	psoDesc.DepthStencilState.DepthEnable = TRUE;
 	psoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;

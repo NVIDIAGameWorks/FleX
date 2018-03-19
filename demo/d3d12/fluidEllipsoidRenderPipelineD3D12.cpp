@@ -169,7 +169,7 @@ int FluidEllipsoidRenderPipelineD3D12::draw(const RenderAllocation& allocIn, siz
 
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
 
-	commandList->DrawIndexedInstanced((UINT)allocIn.m_numPrimitives, 1, 0, 0, 0);
+	commandList->DrawIndexedInstanced((UINT)allocIn.m_numPrimitives, 1, (UINT)allocIn.m_offset, 0, 0);
 	return NV_OK;
 }
 

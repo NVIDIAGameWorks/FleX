@@ -47,7 +47,7 @@
 			<FloatingPointModel>Precise</FloatingPointModel>
 			<AdditionalOptions> /d2Zi+</AdditionalOptions>
 			<Optimization>Disabled</Optimization>
-			<AdditionalIncludeDirectories>$(CUDA_PATH)/include;$(CUDA_PATH)/extras/cupti/include;./../../../../..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+			<AdditionalIncludeDirectories>$(CUDA_PATH)/include;$(CUDA_PATH)/extras/cupti/include;./../../..;./../..;./../../d3d11;./../../d3d12;./../../../external/SDL2-2.0.4/include;./../../../external/D3D12/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 			<PreprocessorDefinitions>_CONSOLE;WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
 			<WarningLevel>Level3</WarningLevel>
 			<RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -55,7 +55,8 @@
 			<PrecompiledHeaderFile></PrecompiledHeaderFile>
 		</ClCompile>
 		<Link>
-			<AdditionalDependencies>cudart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;./../../../lib/win32/NvFlexDebugCUDA_x86.lib;./../../../lib/win32/NvFlexExtDebugCUDA_x86.lib;./../../../lib/win32/NvFlexDeviceDebug_x86.lib;./../../../external/SDL2-2.0.4/lib/x86/SDL2.lib;./../../../external/SDL2-2.0.4/lib/x86/SDL2main.lib;./../../../external/NvToolsExt/lib/Win32/nvToolsExt32_1.lib;./../../../external/glew/lib/win32/glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+			<AdditionalOptions>/DELAYLOAD:d3d11.dll /DELAYLOAD:d3d12.dll /DELAYLOAD:dxgi.dll</AdditionalOptions>
+			<AdditionalDependencies>cudart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;d3dcompiler.lib;delayimp.lib;./../../../external/SDL2-2.0.4/lib/x86/SDL2.lib;./../../../external/SDL2-2.0.4/lib/x86/SDL2main.lib;./../../../external/NvToolsExt/lib/Win32/nvToolsExt32_1.lib;./../../../external/D3D12/libs/x86/d3d12.lib;./../../../lib/win32/NvFlexDebugCUDA_x86.lib;./../../../lib/win32/NvFlexExtDebugCUDA_x86.lib;./../../../lib/win32/NvFlexDeviceDebug_x86.lib;%(AdditionalDependencies)</AdditionalDependencies>
 			<OutputFile>$(OutDir)NvFlexDemoDebugCUDA_x86.exe</OutputFile>
 			<AdditionalLibraryDirectories>$(CUDA_PATH)/lib/win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
 			<ProgramDatabaseFile>$(OutDir)/NvFlexDemoDebugCUDA_x86.exe.pdb</ProgramDatabaseFile>
@@ -87,7 +88,7 @@
 			<FloatingPointModel>Fast</FloatingPointModel>
 			<AdditionalOptions> /d2Zi+</AdditionalOptions>
 			<Optimization>Full</Optimization>
-			<AdditionalIncludeDirectories>$(CUDA_PATH)/include;$(CUDA_PATH)/extras/cupti/include;./../../../../..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+			<AdditionalIncludeDirectories>$(CUDA_PATH)/include;$(CUDA_PATH)/extras/cupti/include;./../../..;./../..;./../../d3d11;./../../d3d12;./../../../external/SDL2-2.0.4/include;./../../../external/D3D12/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 			<PreprocessorDefinitions>_CONSOLE;WIN32;_CRT_SECURE_NO_WARNINGS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
 			<WarningLevel>Level3</WarningLevel>
 			<RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -95,7 +96,8 @@
 			<PrecompiledHeaderFile></PrecompiledHeaderFile>
 		</ClCompile>
 		<Link>
-			<AdditionalDependencies>cudart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;./../../../lib/win32/NvFlexReleaseCUDA_x86.lib;./../../../lib/win32/NvFlexExtReleaseCUDA_x86.lib;./../../../lib/win32/NvFlexDeviceRelease_x86.lib;./../../../external/SDL2-2.0.4/lib/x86/SDL2.lib;./../../../external/SDL2-2.0.4/lib/x86/SDL2main.lib;./../../../external/NvToolsExt/lib/Win32/nvToolsExt32_1.lib;./../../../external/glew/lib/win32/glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+			<AdditionalOptions>/DELAYLOAD:d3d11.dll /DELAYLOAD:d3d12.dll /DELAYLOAD:dxgi.dll</AdditionalOptions>
+			<AdditionalDependencies>cudart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;d3dcompiler.lib;delayimp.lib;./../../../external/SDL2-2.0.4/lib/x86/SDL2.lib;./../../../external/SDL2-2.0.4/lib/x86/SDL2main.lib;./../../../external/NvToolsExt/lib/Win32/nvToolsExt32_1.lib;./../../../external/D3D12/libs/x86/d3d12.lib;./../../../lib/win32/NvFlexReleaseCUDA_x86.lib;./../../../lib/win32/NvFlexExtReleaseCUDA_x86.lib;./../../../lib/win32/NvFlexDeviceRelease_x86.lib;%(AdditionalDependencies)</AdditionalDependencies>
 			<OutputFile>$(OutDir)NvFlexDemoReleaseCUDA_x86.exe</OutputFile>
 			<AdditionalLibraryDirectories>$(CUDA_PATH)/lib/win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
 			<ProgramDatabaseFile>$(OutDir)/NvFlexDemoReleaseCUDA_x86.exe.pdb</ProgramDatabaseFile>
@@ -182,8 +184,6 @@
 		</ClInclude>
 		<ClInclude Include="..\..\scenes\pasta.h">
 		</ClInclude>
-		<ClInclude Include="..\..\scenes\plasticbody.h">
-		</ClInclude>
 		<ClInclude Include="..\..\scenes\player.h">
 		</ClInclude>
 		<ClInclude Include="..\..\scenes\potpourri.h">
@@ -191,8 +191,6 @@
 		<ClInclude Include="..\..\scenes\rayleightaylor.h">
 		</ClInclude>
 		<ClInclude Include="..\..\scenes\restitution.h">
-		</ClInclude>
-		<ClInclude Include="..\..\scenes\ridigbody.h">
 		</ClInclude>
 		<ClInclude Include="..\..\scenes\rigidfluidcoupling.h">
 		</ClInclude>
@@ -232,7 +230,11 @@
 		</ClCompile>
 		<ClCompile Include="..\..\main.cpp">
 		</ClCompile>
+		<ClCompile Include="..\..\shadersDemoContext.cpp">
+		</ClCompile>
 		<ClInclude Include="..\..\benchmark.h">
+		</ClInclude>
+		<ClInclude Include="..\..\demoContext.h">
 		</ClInclude>
 		<ClInclude Include="..\..\helpers.h">
 		</ClInclude>
@@ -242,19 +244,9 @@
 		</ClInclude>
 		<ClInclude Include="..\..\shaders.h">
 		</ClInclude>
+		<ClInclude Include="..\..\shadersDemoContext.h">
+		</ClInclude>
 		<ClInclude Include="..\..\stb_truetype.h">
-		</ClInclude>
-	</ItemGroup>
-	<ItemGroup>
-		<ClCompile Include="..\..\opengl\imguiRenderGL.cpp">
-		</ClCompile>
-		<ClCompile Include="..\..\opengl\shader.cpp">
-		</ClCompile>
-		<ClCompile Include="..\..\opengl\shadersGL.cpp">
-		</ClCompile>
-		<ClInclude Include="..\..\opengl\imguiRenderGL.h">
-		</ClInclude>
-		<ClInclude Include="..\..\opengl\shader.h">
 		</ClInclude>
 	</ItemGroup>
 	<ItemGroup>
@@ -281,6 +273,8 @@
 		<ClCompile Include="..\..\..\core\pfm.cpp">
 		</ClCompile>
 		<ClCompile Include="..\..\..\core\platform.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\..\core\png.cpp">
 		</ClCompile>
 		<ClCompile Include="..\..\..\core\sdf.cpp">
 		</ClCompile>
@@ -316,13 +310,13 @@
 		</ClInclude>
 		<ClInclude Include="..\..\..\core\platform.h">
 		</ClInclude>
+		<ClInclude Include="..\..\..\core\png.h">
+		</ClInclude>
 		<ClInclude Include="..\..\..\core\point3.h">
 		</ClInclude>
 		<ClInclude Include="..\..\..\core\quat.h">
 		</ClInclude>
 		<ClInclude Include="..\..\..\core\sdf.h">
-		</ClInclude>
-		<ClInclude Include="..\..\..\core\skylight.h">
 		</ClInclude>
 		<ClInclude Include="..\..\..\core\tga.h">
 		</ClInclude>
@@ -336,6 +330,640 @@
 		</ClInclude>
 		<ClInclude Include="..\..\..\core\voxelize.h">
 		</ClInclude>
+	</ItemGroup>
+	<ItemGroup>
+		<ClCompile Include="..\..\opengl\imguiRenderGL.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\opengl\shader.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\opengl\shadersGL.cpp">
+		</ClCompile>
+		<ClInclude Include="..\..\opengl\demoContextOGL.h">
+		</ClInclude>
+		<ClInclude Include="..\..\opengl\imguiRenderGL.h">
+		</ClInclude>
+		<ClInclude Include="..\..\opengl\shader.h">
+		</ClInclude>
+		<ClInclude Include="..\..\opengl\utilsGL.h">
+		</ClInclude>
+	</ItemGroup>
+	<ItemGroup>
+		<ClCompile Include="..\..\d3d11\appD3D11Ctx.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d11\debugLineRenderD3D11.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d11\demoContextD3D11.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d11\diffuseRenderD3D11.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d11\fluidRenderD3D11.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d11\imguiGraphD3D11.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d11\imguiInteropD3D11.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d11\meshRenderD3D11.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d11\pointRenderD3D11.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d11\renderTargetD3D11.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d11\shadowMapD3D11.cpp">
+		</ClCompile>
+		<ClInclude Include="..\..\d3d11\appD3D11Ctx.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d11\debugLineRenderD3D11.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d11\demoContextD3D11.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d11\diffuseRenderD3D11.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d11\fluidRenderD3D11.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d11\imguiGraphD3D11.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d11\meshRenderD3D11.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d11\pointRenderD3D11.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d11\renderTargetD3D11.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d11\shadowMapD3D11.h">
+		</ClInclude>
+	</ItemGroup>
+	<ItemGroup>
+		<ClInclude Include="..\..\d3d12\appD3D12Ctx.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\bufferD3D12.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\demoContextD3D12.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\diffusePointRenderPipelineD3D12.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\fluidCompositeRenderPipelineD3D12.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\fluidEllipsoidRenderPipelineD3D12.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\fluidSmoothRenderPipelineD3D12.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\fluidThicknessRenderPipelineD3D12.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\imguiGraphD3D12.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\lineRenderPipelineD3D12.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\meshRenderer.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\meshRendererD3D12.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\meshRenderPipelineD3D12.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\meshUtil.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\NvCoDx12CircularResourceHeap.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\NvCoDx12CounterFence.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\NvCoDx12DescriptorHeap.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\NvCoDx12Handle.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\NvCoDx12HelperUtil.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\NvCoDx12RenderTarget.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\NvCoDx12Resource.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\NvCoDx12ResourceScopeManager.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\NvCoDxDebugUtil.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\NvCoDxFormatUtil.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\NvCoFreeList.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\NvResult.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\pipelineUtilD3D12.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\pointRenderPipelineD3D12.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\renderStateD3D12.h">
+		</ClInclude>
+		<ClCompile Include="..\..\d3d12\appD3D12Ctx.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\bufferD3D12.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\demoContextD3D12.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\diffusePointRenderPipelineD3D12.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\fluidCompositeRenderPipelineD3D12.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\fluidEllipsoidRenderPipelineD3D12.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\fluidSmoothRenderPipelineD3D12.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\fluidThicknessRenderPipelineD3D12.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\imguiGraphD3D12.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\imguiInteropD3D12.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\lineRenderPipelineD3D12.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\meshRenderer.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\meshRendererD3D12.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\meshRenderPipelineD3D12.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\meshUtil.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\NvCoDx12CircularResourceHeap.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\NvCoDx12CounterFence.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\NvCoDx12DescriptorHeap.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\NvCoDx12HelperUtil.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\NvCoDx12RenderTarget.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\NvCoDx12Resource.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\NvCoDx12ResourceScopeManager.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\NvCoDxDebugUtil.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\NvCoDxFormatUtil.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\NvCoFreeList.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\pipelineUtilD3D12.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\pointRenderPipelineD3D12.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\renderStateD3D12.cpp">
+		</ClCompile>
+	</ItemGroup>
+	<ItemGroup>
+		<ClCompile Include="..\..\d3d\appGraphCtxLoader.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d\imguiGraph.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d\imguiGraphLoader.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d\loader.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d\renderParamsD3D.cpp">
+		</ClCompile>
+		<ClInclude Include="..\..\d3d\appGraphCtx.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d\imguiGraph.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d\loader.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d\loaderMacros.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d\renderParamsD3D.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d\shaderCommonD3D.h">
+		</ClInclude>
+	</ItemGroup>
+	<ItemGroup>
+		<FxCompile Include="./../../d3d/shaders/debugLineVS.hlsl">
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Vertex</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">debugLineVS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'"> </ObjectFileOutput>
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|Win32'">Vertex</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|Win32'">debugLineVS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'"> </ObjectFileOutput>
+		</FxCompile>
+		<FxCompile Include="./../../d3d/shaders/debugLinePS.hlsl">
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Pixel</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">debugLinePS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'"> </ObjectFileOutput>
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|Win32'">Pixel</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|Win32'">debugLinePS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'"> </ObjectFileOutput>
+		</FxCompile>
+		<FxCompile Include="./../../d3d/shaders/imguiPS.hlsl">
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Pixel</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">imguiPS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'"> </ObjectFileOutput>
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|Win32'">Pixel</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|Win32'">imguiPS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'"> </ObjectFileOutput>
+		</FxCompile>
+		<FxCompile Include="./../../d3d/shaders/imguiVS.hlsl">
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Vertex</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">imguiVS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'"> </ObjectFileOutput>
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|Win32'">Vertex</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|Win32'">imguiVS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'"> </ObjectFileOutput>
+		</FxCompile>
+		<FxCompile Include="./../../d3d/shaders/meshPS.hlsl">
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Pixel</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">meshPS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'"> </ObjectFileOutput>
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|Win32'">Pixel</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|Win32'">meshPS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'"> </ObjectFileOutput>
+		</FxCompile>
+		<FxCompile Include="./../../d3d/shaders/meshAsyncComputeBenchPS.hlsl">
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Pixel</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">meshPS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'"> </ObjectFileOutput>
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|Win32'">Pixel</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|Win32'">meshPS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'"> </ObjectFileOutput>
+		</FxCompile>
+		<FxCompile Include="./../../d3d/shaders/meshShadowPS.hlsl">
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Pixel</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">meshPS_Shadow</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'"> </ObjectFileOutput>
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|Win32'">Pixel</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|Win32'">meshPS_Shadow</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'"> </ObjectFileOutput>
+		</FxCompile>
+		<FxCompile Include="./../../d3d/shaders/meshVS.hlsl">
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Vertex</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">meshVS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'"> </ObjectFileOutput>
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|Win32'">Vertex</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|Win32'">meshVS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'"> </ObjectFileOutput>
+		</FxCompile>
+		<FxCompile Include="./../../d3d/shaders/pointVS.hlsl">
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Vertex</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">pointVS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'"> </ObjectFileOutput>
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|Win32'">Vertex</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|Win32'">pointVS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'"> </ObjectFileOutput>
+		</FxCompile>
+		<FxCompile Include="./../../d3d/shaders/pointGS.hlsl">
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Geometry</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">pointGS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'"> </ObjectFileOutput>
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|Win32'">Geometry</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|Win32'">pointGS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'"> </ObjectFileOutput>
+		</FxCompile>
+		<FxCompile Include="./../../d3d/shaders/pointPS.hlsl">
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Pixel</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">pointPS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'"> </ObjectFileOutput>
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|Win32'">Pixel</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|Win32'">pointPS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'"> </ObjectFileOutput>
+		</FxCompile>
+		<FxCompile Include="./../../d3d/shaders/pointShadowPS.hlsl">
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Pixel</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">pointShadowPS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'"> </ObjectFileOutput>
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|Win32'">Pixel</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|Win32'">pointShadowPS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'"> </ObjectFileOutput>
+		</FxCompile>
+		<FxCompile Include="./../../d3d/shaders/diffuseVS.hlsl">
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Vertex</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">diffuseVS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'"> </ObjectFileOutput>
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|Win32'">Vertex</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|Win32'">diffuseVS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'"> </ObjectFileOutput>
+		</FxCompile>
+		<FxCompile Include="./../../d3d/shaders/diffuseGS.hlsl">
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Geometry</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">diffuseGS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'"> </ObjectFileOutput>
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|Win32'">Geometry</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|Win32'">diffuseGS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'"> </ObjectFileOutput>
+		</FxCompile>
+		<FxCompile Include="./../../d3d/shaders/diffusePS.hlsl">
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Pixel</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">diffusePS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'"> </ObjectFileOutput>
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|Win32'">Pixel</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|Win32'">diffusePS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'"> </ObjectFileOutput>
+		</FxCompile>
+		<FxCompile Include="./../../d3d/shaders/ellipsoidDepthVS.hlsl">
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Vertex</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">ellipsoidDepthVS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'"> </ObjectFileOutput>
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|Win32'">Vertex</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|Win32'">ellipsoidDepthVS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'"> </ObjectFileOutput>
+		</FxCompile>
+		<FxCompile Include="./../../d3d/shaders/ellipsoidDepthGS.hlsl">
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Geometry</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">ellipsoidDepthGS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'"> </ObjectFileOutput>
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|Win32'">Geometry</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|Win32'">ellipsoidDepthGS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'"> </ObjectFileOutput>
+		</FxCompile>
+		<FxCompile Include="./../../d3d/shaders/ellipsoidDepthPS.hlsl">
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Pixel</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">ellipsoidDepthPS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'"> </ObjectFileOutput>
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|Win32'">Pixel</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|Win32'">ellipsoidDepthPS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'"> </ObjectFileOutput>
+		</FxCompile>
+		<FxCompile Include="./../../d3d/shaders/passThroughVS.hlsl">
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Vertex</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">passThroughVS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'"> </ObjectFileOutput>
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|Win32'">Vertex</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|Win32'">passThroughVS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'"> </ObjectFileOutput>
+		</FxCompile>
+		<FxCompile Include="./../../d3d/shaders/blurDepthPS.hlsl">
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Pixel</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">blurDepthPS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'"> </ObjectFileOutput>
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|Win32'">Pixel</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|Win32'">blurDepthPS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'"> </ObjectFileOutput>
+		</FxCompile>
+		<FxCompile Include="./../../d3d/shaders/compositePS.hlsl">
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Pixel</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">compositePS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'"> </ObjectFileOutput>
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|Win32'">Pixel</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|Win32'">compositePS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'"> </ObjectFileOutput>
+		</FxCompile>
+		<FxCompile Include="./../../d3d/shaders/pointThicknessVS.hlsl">
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Vertex</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">pointThicknessVS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'"> </ObjectFileOutput>
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|Win32'">Vertex</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|Win32'">pointThicknessVS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'"> </ObjectFileOutput>
+		</FxCompile>
+		<FxCompile Include="./../../d3d/shaders/pointThicknessGS.hlsl">
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Geometry</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">pointThicknessGS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'"> </ObjectFileOutput>
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|Win32'">Geometry</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|Win32'">pointThicknessGS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'"> </ObjectFileOutput>
+		</FxCompile>
+		<FxCompile Include="./../../d3d/shaders/pointThicknessPS.hlsl">
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Pixel</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">pointThicknessPS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|Win32'"> </ObjectFileOutput>
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|Win32'">Pixel</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|Win32'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|Win32'">pointThicknessPS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|Win32'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|Win32'"> </ObjectFileOutput>
+		</FxCompile>
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="./../../../extensions/compiler/vc12win32/flexExtCUDA.vcxproj">

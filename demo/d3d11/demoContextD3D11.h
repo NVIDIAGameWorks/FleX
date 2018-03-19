@@ -20,6 +20,7 @@ public:
 	virtual void startFrame(Vec4 colorIn);
 	virtual void endFrame();
 	virtual void presentFrame(bool fullsync);
+	virtual void readFrame(int* backbuffer, int width, int height);
 	virtual void getViewRay(int x, int y, Vec3& origin, Vec3& dir);
 	virtual void setView(Matrix44 view, Matrix44 projection);
 	virtual void renderEllipsoids(FluidRenderer* renderer, FluidRenderBuffers* buffers, int n, int offset, float radius, float screenWidth, float screenAspect, float fov, Vec3 lightPos, Vec3 lightTarget, Matrix44 lightTransform, ::ShadowMap* shadowMap, Vec4 color, float blur, float ior, bool debug);
@@ -85,6 +86,7 @@ protected:
 	// Target texture resolved/copied to for combination rendering from for water surface
 	ID3D11Texture2D* m_fluidResolvedTarget;
 	ID3D11ShaderResourceView* m_fluidResolvedTargetSRV;
+	ID3D11Texture2D* m_fluidResolvedStage;
 
 	AppGraphCtx* m_appGraphCtx;
 	AppGraphCtxD3D11* m_appGraphCtxD3D11;

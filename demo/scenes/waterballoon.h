@@ -81,7 +81,6 @@ public:
 		g_params.particleCollisionMargin = g_params.radius*0.05f;
 		g_params.relaxationFactor = 1.0f;
 		g_params.drag = 0.0f;
-		g_params.anisotropyScale = 25.0f;
 		g_params.smoothing = 1.f;
 		g_params.maxSpeed = 0.5f*g_numSubsteps*radius / g_dt;
 		g_params.gravity[1] *= 1.0f;

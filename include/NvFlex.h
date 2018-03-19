@@ -161,7 +161,7 @@ enum NvFlexPhase
 {
 	eNvFlexPhaseGroupMask			= 0x000fffff,	//!< Bits [ 0, 19] represent the particle group for controlling collisions
 	eNvFlexPhaseFlagsMask			= 0x00f00000,	//!< Bits [20, 23] hold flags about how the particle behave 
-	eNvFlexPhaseShapeChannelMask	= 0xff000000,	//!< Bits [24, 31] hold flags representing what shape collision channels particles will collide with, see NvFlexMakeShapeFlags()
+	eNvFlexPhaseShapeChannelMask	= 0x7f000000,	//!< Bits [24, 30] hold flags representing what shape collision channels particles will collide with, see NvFlexMakeShapeFlags() (highest bit reserved for now)
 	
 	eNvFlexPhaseSelfCollide			= 1 << 20,		//!< If set this particle will interact with particles of the same group
 	eNvFlexPhaseSelfCollideFilter	= 1 << 21,		//!< If set this particle will ignore collisions with particles closer than the radius in the rest pose, this flag should not be specified unless valid rest positions have been specified using NvFlexSetRestParticles()
@@ -174,8 +174,7 @@ enum NvFlexPhase
 	eNvFlexPhaseShapeChannel3		= 1 << 27,		//!< Particle will collide with shapes with channel 3 set (see NvFlexMakeShapeFlags())
 	eNvFlexPhaseShapeChannel4		= 1 << 28,		//!< Particle will collide with shapes with channel 4 set (see NvFlexMakeShapeFlags())
 	eNvFlexPhaseShapeChannel5		= 1 << 29,		//!< Particle will collide with shapes with channel 5 set (see NvFlexMakeShapeFlags())
-	eNvFlexPhaseShapeChannel6		= 1 << 30,		//!< Particle will collide with shapes with channel 6 set (see NvFlexMakeShapeFlags())
-	eNvFlexPhaseShapeChannel7		= 1 << 31,		//!< Particle will collide with shapes with channel 7 set (see NvFlexMakeShapeFlags())
+	eNvFlexPhaseShapeChannel6		= 1 << 30,		//!< Particle will collide with shapes with channel 6 set (see NvFlexMakeShapeFlags())	
 };
 
 
@@ -368,6 +367,7 @@ struct NvFlexSolverDesc
 	int maxParticles;				//!< Maximum number of regular particles in the solver
 	int maxDiffuseParticles;		//!< Maximum number of diffuse particles in the solver
 	int maxNeighborsPerParticle;	//!< Maximum number of neighbors per-particle, for solids this can be around 32, for fluids up to 128 may be necessary depending on smoothing radius
+	int maxContactsPerParticle;		//!< Maximum number of collision contacts per-particle
 };
 
 /**
@@ -383,12 +383,24 @@ NV_FLEX_API void NvFlexSetSolverDescDefaults(NvFlexSolverDesc* desc);
  * @param[in] desc Pointer to a solver description structure used to create the solver
  */
 NV_FLEX_API NvFlexSolver* NvFlexCreateSolver(NvFlexLibrary* lib, const NvFlexSolverDesc* desc);
+
 /**
  * Delete a particle solver
  *
  * @param[in] solver A valid solver pointer created from NvFlexCreateSolver()
  */
 NV_FLEX_API void NvFlexDestroySolver(NvFlexSolver* solver);
+
+/**
+* Get the list of active solvers in the library
+* If the size of the array is smaller than the number of active solvers, only the first n entries are copied.
+*
+* @param[in] lib The library instance to use
+* @param[in] solvers Pointer to array
+* @param[in] n Size of array
+* @return The number of active solvers in the library
+*/
+NV_FLEX_API int NvFlexGetSolvers(NvFlexLibrary* lib, NvFlexSolver** solvers, int n);
 
 /**
  * Return the library associated with a solver
@@ -517,7 +529,7 @@ NV_FLEX_API void NvFlexSetActive(NvFlexSolver* solver, NvFlexBuffer* indices, co
  * Return the active particle indices
  * 
  * @param[in] solver A valid solver
- * @param[out] indices a buffer of indices at least activeCount in length
+ * @param[out] indices a buffer of indices at least activeCount in length. Default values are successive numbers from 0 to maxParticles-1
  * @param[in] desc Describes the copy region, if NULL the solver will try to access the entire buffer (maxParticles length)
  */
 NV_FLEX_API void NvFlexGetActive(NvFlexSolver* solver, NvFlexBuffer* indices, const NvFlexCopyDesc* desc);
@@ -746,6 +758,17 @@ NV_FLEX_API NvFlexTriangleMeshId NvFlexCreateTriangleMesh(NvFlexLibrary* lib);
 NV_FLEX_API void NvFlexDestroyTriangleMesh(NvFlexLibrary* lib, NvFlexTriangleMeshId mesh);
 
 /**
+* Get the list of triangle meshes in the library
+* If the size of the array is smaller than the number of triangle meshes, only the first n entries are copied.
+*
+* @param[in] lib The library instance to use
+* @param[in] meshes Pointer to array
+* @param[in] n Size of array
+* @return The number of triangle meshes in the library
+*/
+NV_FLEX_API int NvFlexGetTriangleMeshes(NvFlexLibrary* lib, NvFlexTriangleMeshId* meshes, int n);
+
+/**
  * Specifies the triangle mesh geometry (vertices and indices), this method will cause any internal
  * data structures (e.g.: bounding volume hierarchies) to be rebuilt.
  * 
@@ -787,6 +810,17 @@ NV_FLEX_API NvFlexDistanceFieldId NvFlexCreateDistanceField(NvFlexLibrary* lib);
 NV_FLEX_API void NvFlexDestroyDistanceField(NvFlexLibrary* lib, NvFlexDistanceFieldId sdf);
 
 /**
+* Get the list of signed distance fields in the library
+* If the size of the array is smaller than the number of signed distance fields, only the first n entries are copied.
+*
+* @param[in] lib The library instance to use
+* @param[in] sdfs Pointer to array
+* @param[in] n Size of array
+* @return The number of signed distance fields in the library
+*/
+NV_FLEX_API int NvFlexGetDistanceFields(NvFlexLibrary* lib, NvFlexDistanceFieldId* sdfs, int n);
+
+/**
  * Update the signed distance field volume data, this method will upload
  * the field data to a 3D texture on the GPU
  * 
@@ -814,6 +848,17 @@ NV_FLEX_API NvFlexConvexMeshId NvFlexCreateConvexMesh(NvFlexLibrary* lib);
  * @param[in] convex A a convex mesh created with NvFlexCreateConvexMesh()
  */
 NV_FLEX_API void NvFlexDestroyConvexMesh(NvFlexLibrary* lib, NvFlexConvexMeshId convex);
+
+/**
+* Get the list of convex meshes in the library
+* If the size of the array is smaller than the number of convex meshes, only the first n entries are copied.
+*
+* @param[in] lib The library instance to use
+* @param[in] meshes Pointer to array
+* @param[in] n Size of array
+* @return The number of convex meshes in the library
+*/
+NV_FLEX_API int NvFlexGetConvexMeshes(NvFlexLibrary* lib, NvFlexConvexMeshId* meshes, int n);
 
 /**
  * Update the convex mesh geometry
@@ -1041,10 +1086,10 @@ NV_FLEX_API void NvFlexSetDiffuseParticles(NvFlexSolver* solver, NvFlexBuffer* p
  * Get the particle contact planes. Note this will only include contacts that were active on the last substep of an update, and will include all contact planes generated within NvFlexParams::shapeCollisionMargin.
  *
  * @param[in] solver A valid solver
- * @param[out] planes Pointer to a destination buffer containing the contact planes for the particle, each particle can have up to 6 contact planes so this buffer should be 4*6*maxParticles floats in length
- * @param[out] velocities Pointer to a destination buffer containing the velocity of the contact point on the shape in world space, the index of the shape (corresponding to the shape in NvFlexSetShapes() is stored in the w component), each particle can have up to 6 contact planes so this buffer should be 4*6*maxParticles floats in length
- * @param[out] indices Pointer to a buffer of indices into the contacts buffer, the first contact plane for the i'th particle is given by planes[indices[i]*sizeof(float)*4*6] and subsequent contact planes for that particle are stored sequentially, this array should be maxParticles in length
- * @param[out] counts Pointer to a buffer of contact counts for each particle (will be <= 6), this buffer should be maxParticles in length
+ * @param[out] planes Pointer to a destination buffer containing the contact planes for the particle, each particle can have up to maxContactsPerParticle contact planes (see NvFlexSolverDesc) so this buffer should be 4*maxContactsPerParticle*maxParticles floats in length
+ * @param[out] velocities Pointer to a destination buffer containing the velocity of the contact point on the shape in world space, the index of the shape (corresponding to the shape in NvFlexSetShapes() is stored in the w component), each particle can have up to maxContactsPerParticle contact planes so this buffer should be 4*maxContactsPerParticle*maxParticles floats in length
+ * @param[out] indices Pointer to a buffer of indices into the contacts buffer, the first contact plane for the i'th particle is given by planes[indices[i]*sizeof(float)*4*maxContactsPerParticle] and subsequent contact planes for that particle are stored sequentially, this array should be maxParticles in length
+ * @param[out] counts Pointer to a buffer of contact counts for each particle (will be <= maxContactsPerParticle), this buffer should be maxParticles in length
  */
 NV_FLEX_API void NvFlexGetContacts(NvFlexSolver* solver, NvFlexBuffer* planes, NvFlexBuffer* velocities, NvFlexBuffer* indices, NvFlexBuffer* counts);
 
@@ -1053,11 +1098,12 @@ NV_FLEX_API void NvFlexGetContacts(NvFlexSolver* solver, NvFlexBuffer* planes, N
  *
 \code{.c}
 
-	NvFlexGetNeighbors(solver, neighborsBuffer, countsBuffer, indicesBuffer);
+	NvFlexGetNeighbors(solver, neighborsBuffer, countsBuffer, apiToInternalBuffer, internalToApiBuffer);
 
 	int* neighbors = (int*)NvFlexMap(neighborsBuffer, 0);
 	int* counts = (int*)NvFlexMap(countsBuffer, 0);
-	int* remap = (int*)NvFlexMap(remapBuffer, 0);
+	int* apiToInternal = (int*)NvFlexMap(apiToInternalBuffer, 0);
+	int* internalToApi = (int*)NvFlexMap(internalToApiBuffer, 0);
 
 	// neighbors are stored in a strided format so that the first neighbor
 	// of each particle is stored sequentially, then the second, and so on
@@ -1067,12 +1113,12 @@ NV_FLEX_API void NvFlexGetContacts(NvFlexSolver* solver, NvFlexBuffer* planes, N
 	for (int i=0; i < maxParticles; ++i)
 	{
 		// find offset in the neighbors buffer
-		int offset = remap[i];
+		int offset = apiToInternal[i];
 		int count = counts[offset];
 
 		for (int c=0; c < count; ++c)
 		{
-			int neighbor = remap[neighbors[c*stride + offset]];
+			int neighbor = internalToApi[neighbors[c*stride + offset]];
 
 			printf("Particle %d's neighbor %d is particle %d\n", i, c, neighbor);
 		}
@@ -1080,18 +1126,20 @@ NV_FLEX_API void NvFlexGetContacts(NvFlexSolver* solver, NvFlexBuffer* planes, N
 
 	NvFlexUnmap(neighborsBuffer);
 	NvFlexUnmap(countsBuffer);
-	NvFlexUnmap(remapBuffer);
+	NvFlexUnmap(apiToInternalBuffer);
+	NvFlexUnmap(internalToApiBuffer);
 
 \endcode
  *
  * @param[in] solver A valid solver
  * @param[out] neighbors Pointer to a destination buffer containing the the neighbors for all particles, this should be maxParticles*maxParticleNeighbors ints (passed to NvFlexInit() in length)
  * @param[out] counts Pointer to a buffer of neighbor counts per-particle, should be maxParticles ints in length
- * @param[out] remap Pointer to a buffer of indices, because Flex internally re-orders particles these are used to map from an API particle index to it internal index
+ * @param[out] apiToInternal Pointer to a buffer of indices, because Flex internally re-orders particles these are used to map from an API particle index to it internal index
+ * @param[out] internalToApi Pointer to a buffer of indices, because Flex internally re-orders particles these are used to map from an internal index to an API index
  *
  * @note Neighbors are only valid after a call to NvFlexUpdateSolver() has completed, the returned neighbors correspond to the last substep of the last update
  */
-NV_FLEX_API void NvFlexGetNeighbors(NvFlexSolver* solver, NvFlexBuffer* neighbors, NvFlexBuffer* counts, NvFlexBuffer* remap);
+NV_FLEX_API void NvFlexGetNeighbors(NvFlexSolver* solver, NvFlexBuffer* neighbors, NvFlexBuffer* counts, NvFlexBuffer* apiToInternal, NvFlexBuffer* internalToApi);
 
 /**
  * Get the world space AABB of all particles in the solver, note that the bounds are calculated during the update (see NvFlexUpdateSolver()) so only become valid after an update has been performed.
@@ -1295,6 +1343,7 @@ NV_FLEX_API void NvFlexGetShapeBVH(NvFlexSolver* solver, void* bvh);
 NV_FLEX_API void NvFlexCopySolver(NvFlexSolver* dst, NvFlexSolver* src);
 NV_FLEX_API void NvFlexCopyDeviceToHost(NvFlexSolver* solver, NvFlexBuffer* pDevice, void* pHost, int size, int stride);
 NV_FLEX_API void NvFlexComputeWaitForGraphics(NvFlexLibrary* lib);
+NV_FLEX_API void NvFlexGetDataAftermath(NvFlexLibrary* lib, void* pDataOut, void* pStatusOut);
 
 //! \endcond
 

@@ -7,6 +7,7 @@
 
 #include "meshRenderPipelineD3D12.h"
 #include "pointRenderPipelineD3D12.h"
+#include "fluidThicknessRenderPipelineD3D12.h"
 #include "fluidEllipsoidRenderPipelineD3D12.h"
 #include "fluidSmoothRenderPipelineD3D12.h"
 #include "fluidCompositeRenderPipelineD3D12.h"
@@ -20,7 +21,7 @@
 // SDL
 #include <SDL_syswm.h>
 
-#include "d3d/shadersDemoContext.h"
+#include "shadersDemoContext.h"
 
 // Flex
 #include "core/maths.h"
@@ -97,6 +98,8 @@ DemoContextD3D12::~DemoContextD3D12()
 	COMRelease(m_queryHeap);
 	COMRelease(m_queryResults);
 
+	COMRelease(m_bufferStage);
+
 	// Explicitly delete these, so we can call D3D memory leak checker at bottom of this destructor
 	m_meshPipeline.reset();
 	m_pointPipeline.reset();
@@ -105,6 +108,7 @@ DemoContextD3D12::~DemoContextD3D12()
 	m_fluidCompositePipeline.reset();
 	m_diffusePointPipeline.reset();
 	m_linePipeline.reset();
+	m_fluidThicknessRenderTarget.reset();
 	m_fluidPointRenderTarget.reset();
 	m_fluidSmoothRenderTarget.reset();
 	m_fluidResolvedTarget.reset();					
@@ -188,7 +192,7 @@ bool DemoContextD3D12::initialize(const RenderInitOptions& options)
 			desc.dynamicHeapCbvSrvUav.userdata = this;
 			desc.dynamicHeapCbvSrvUav.reserveDescriptors = NULL;
 
-			int defaultFontHeight = (options.defaultFontHeight <= 0) ? 13 : options.defaultFontHeight;
+			int defaultFontHeight = (options.defaultFontHeight <= 0) ? 15 : options.defaultFontHeight;
 			
 			if (!imguiGraphInit("../../data/DroidSans.ttf", float(defaultFontHeight), (ImguiGraphDesc*)&desc))
 			{
@@ -240,7 +244,7 @@ int DemoContextD3D12::_initRenderResources(const RenderInitOptions& options)
 				D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
 				0.0f, 0, D3D12_COMPARISON_FUNC_LESS_EQUAL,
 				0.0f, 0.0f, 0.0f, 0.0f,
-				0.0f, 0.0f, 
+				0.0f, 0.0f,
 			};
 			device->CreateSampler(&desc, m_renderState.m_samplerDescriptorHeap->getCpuHandle(m_shadowMapLinearSamplerIndex));
 		}
@@ -254,7 +258,7 @@ int DemoContextD3D12::_initRenderResources(const RenderInitOptions& options)
 				D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
 				0.0, 0, D3D12_COMPARISON_FUNC_NEVER,
 				0.0f, 0.0f, 0.0f, 0.0f,
-				0.0f, 0.0f, 
+				0.0f, 0.0f,
 			};
 			device->CreateSampler(&desc, m_renderState.m_samplerDescriptorHeap->getCpuHandle(m_linearSamplerIndex));
 		}
@@ -283,7 +287,7 @@ int DemoContextD3D12::_initRenderResources(const RenderInitOptions& options)
 		if (m_shadowMap->allocateSrvView(NvCo::Dx12RenderTarget::BUFFER_DEPTH_STENCIL, device, *m_renderState.m_srvCbvUavDescriptorHeap) < 0)
 		{
 			printf("Unable to allocate shadow buffer srv index");
-			
+
 			return NV_FAIL;
 		}
 	}
@@ -305,6 +309,12 @@ int DemoContextD3D12::_initRenderResources(const RenderInitOptions& options)
 			std::unique_ptr<PointRenderPipelineD3D12> pipeline(new PointRenderPipelineD3D12);
 			NV_RETURN_ON_FAIL(pipeline->initialize(m_renderState, m_shadersPath, m_shadowMapLinearSamplerIndex, m_shadowMap.get()));
 			m_pointPipeline = std::move(pipeline);
+		}
+		// FluidThickness
+		{
+			std::unique_ptr<FluidThicknessRenderPipelineD3D12> pipeline(new FluidThicknessRenderPipelineD3D12);
+			NV_RETURN_ON_FAIL(pipeline->initialize(m_renderState, m_shadersPath, m_fluidThicknessRenderTarget.get()));
+			m_fluidThicknessPipeline = std::move(pipeline);
 		}
 		// FluidPoint
 		{
@@ -405,6 +415,41 @@ int DemoContextD3D12::_initRenderResources(const RenderInitOptions& options)
 			D3D12_RESOURCE_STATE_COPY_DEST,
 			nullptr,
 			IID_PPV_ARGS(&m_queryResults)));
+
+		D3D12_RESOURCE_DESC texDesc = {};
+		texDesc.MipLevels = 1u;
+		texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		texDesc.Width = renderContext->m_winW;
+		texDesc.Height = renderContext->m_winH;
+		texDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
+		texDesc.DepthOrArraySize = 1u;
+		texDesc.SampleDesc.Count = 1u;
+		texDesc.SampleDesc.Quality = 0u;
+		texDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+
+		// get footprint information
+		m_footprint = {};
+		UINT64 uploadHeapSize = 0u;
+		device->GetCopyableFootprints(&texDesc, 0u, 1u, 0u, &m_footprint, nullptr, nullptr, &uploadHeapSize);
+
+		D3D12_RESOURCE_DESC bufferDesc = texDesc;
+		bufferDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+		bufferDesc.Alignment = 0u;
+		bufferDesc.Width = uploadHeapSize;
+		bufferDesc.Height = 1u;
+		bufferDesc.DepthOrArraySize = 1u;
+		bufferDesc.MipLevels = 1;
+		bufferDesc.Format = DXGI_FORMAT_UNKNOWN;
+		bufferDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+		bufferDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
+
+		NV_RETURN_ON_FAIL(device->CreateCommittedResource(
+			&heapProps,
+			D3D12_HEAP_FLAG_NONE,
+			&bufferDesc,
+			D3D12_RESOURCE_STATE_COPY_DEST,
+			nullptr,
+			IID_PPV_ARGS(&m_bufferStage)));
 	}
 	return NV_OK;
 }
@@ -414,20 +459,34 @@ int DemoContextD3D12::_initFluidRenderTargets()
 	AppGraphCtxD3D12* renderContext = getRenderContext();
 	ID3D12Device* device = renderContext->m_device;
 
+	// Fluid thickness
+	{
+		{
+			std::unique_ptr<NvCo::Dx12RenderTarget> target(new NvCo::Dx12RenderTarget);
+			NvCo::Dx12RenderTarget::Desc desc;
+			desc.init(renderContext->m_winW, renderContext->m_winH, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_TYPELESS);
+			for (int i = 0; i != 4; i++) desc.m_targetClearColor[i] = 0;
+
+			NV_RETURN_ON_FAIL(target->init(renderContext, desc));
+
+			target->setDebugName(L"Fluid Thickness");
+			m_fluidThicknessRenderTarget = std::move(target);
+		}
+	}
+
 	// Fluid point render target
 	{
 		{
 			std::unique_ptr<NvCo::Dx12RenderTarget> target(new NvCo::Dx12RenderTarget);
 			NvCo::Dx12RenderTarget::Desc desc;
 			desc.init(renderContext->m_winW, renderContext->m_winH, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_TYPELESS);
-			for(int i=0;i!=4;i++) desc.m_targetClearColor[i] = 0;
+			for (int i = 0; i != 4; i++) desc.m_targetClearColor[i] = 0;
 
 			NV_RETURN_ON_FAIL(target->init(renderContext, desc));
 
 			target->setDebugName(L"Fluid Point");
 			m_fluidPointRenderTarget = std::move(target);
 		}
-		
 	}
 
 	// Fluid smooth 
@@ -458,12 +517,12 @@ int DemoContextD3D12::_initFluidRenderTargets()
 	}
 
 	// Init all of the srvs!!!!
-
 	{
 		NvCo::Dx12DescriptorHeap& heap = *m_renderState.m_srvCbvUavDescriptorHeap;
 		// Set up the srv for accessing this buffer
 		{
 			m_fluidPointRenderTarget->createSrv(device, heap, NvCo::Dx12RenderTarget::BUFFER_TARGET, m_fluidPointDepthSrvIndex);
+			m_fluidThicknessRenderTarget->createSrv(device, heap, NvCo::Dx12RenderTarget::BUFFER_TARGET, m_fluidPointDepthSrvIndex + 1);
 		}
 
 		{
@@ -483,9 +542,12 @@ int DemoContextD3D12::_initFluidRenderTargets()
 void DemoContextD3D12::onSizeChanged(int width, int height, bool minimized)
 {
 	// Free any set render targets
+	m_fluidThicknessRenderTarget.reset();
 	m_fluidPointRenderTarget.reset();
 	m_fluidSmoothRenderTarget.reset();
 	m_fluidResolvedTarget.reset();
+
+	AppGraphCtxUpdateSize(m_appGraphCtx, m_window, false, m_msaaSamples);
 
 	// Will need to create the render targets..
 	_initFluidRenderTargets();
@@ -546,6 +608,24 @@ void DemoContextD3D12::endFrame()
 		renderContext->m_commandList->ResolveSubresource(backBuffer, 0, renderTarget, 0, renderContext->m_targetInfo.m_renderTargetFormats[0]);
 	}
 
+	// copy to staging buffer
+	{
+		{
+			nvidia::Common::Dx12BarrierSubmitter submitter(renderContext->m_commandList);
+			backBuffer.transition(D3D12_RESOURCE_STATE_COPY_SOURCE, submitter);
+		}
+
+		D3D12_TEXTURE_COPY_LOCATION dstCopy = {};
+		D3D12_TEXTURE_COPY_LOCATION srcCopy = {};
+		dstCopy.pResource = m_bufferStage;
+		dstCopy.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
+		dstCopy.PlacedFootprint = m_footprint;
+		srcCopy.pResource = backBuffer;
+		srcCopy.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
+		srcCopy.SubresourceIndex = 0u;
+		renderContext->m_commandList->CopyTextureRegion(&dstCopy, 0, 0, 0, &srcCopy, nullptr);
+	}
+
 	{
 		nvidia::Common::Dx12BarrierSubmitter submitter(renderContext->m_commandList);
 		backBuffer.transition(D3D12_RESOURCE_STATE_PRESENT, submitter);
@@ -588,6 +668,22 @@ void DemoContextD3D12::presentFrame(bool fullsync)
 	AppGraphCtxFramePresent(cast_from_AppGraphCtxD3D12(m_renderContext), fullsync);
 }
 
+void DemoContextD3D12::readFrame(int* buffer, int width, int height)
+{
+	AppGraphCtxD3D12* renderContext = getRenderContext();
+	
+	AppGraphCtxWaitForGPU(renderContext);
+
+	int *pData;
+	m_bufferStage->Map(0, nullptr, (void**)&pData);
+	// y-coordinate is flipped for DirectX
+	for (int i = 0; i < height; i++)
+	{
+		memcpy(buffer + (width * i), ((int *)pData) + (width * (height - i)), width * sizeof(int));
+	}
+	m_bufferStage->Unmap(0, nullptr);
+}
+
 void DemoContextD3D12::getViewRay(int x, int y, FlexVec3& origin, FlexVec3& dir)
 {
 	//using namespace DirectX;
@@ -628,8 +724,9 @@ void DemoContextD3D12::renderEllipsoids(FluidRenderer* renderer, FluidRenderBuff
 	Alloc alloc;
 	alloc.init(PRIMITIVE_POINT);
 
-	alloc.m_numPrimitives = buffers.m_numParticles;
-	alloc.m_numPositions = 0; ///? We don't know here yet...
+	alloc.m_numPrimitives = n;
+	alloc.m_numPositions = 0;	// unused param
+	alloc.m_offset = offset;
 
 	alloc.m_indexBufferView = buffers.m_indicesView;
 	alloc.m_vertexBufferViews[Alloc::VERTEX_VIEW_DENSITY] = buffers.m_densitiesView;
@@ -643,21 +740,34 @@ void DemoContextD3D12::renderEllipsoids(FluidRenderer* renderer, FluidRenderBuff
 	FluidDrawParamsD3D params;
 
 	params.renderMode = FLUID_RENDER_SOLID;
-	params.cullMode = FLUID_CULL_BACK;
+	params.cullMode = FLUID_CULL_NONE;// FLUID_CULL_BACK;
 	params.model = XMMatrixIdentity();
 	params.view = (XMMATRIX&)m_view;
 	params.projection = (XMMATRIX&)m_proj;
 
-	params.offset = offset;
-	params.n = n;
+	//params.offset = offset;
+	//params.n = n;
 	params.renderStage = FLUID_DRAW_LIGHT;
 
 	const float viewHeight = tanf(fov / 2.0f);
 	params.invViewport = Hlsl::float3(1.0f / screenWidth, screenAspect / screenWidth, 1.0f);
 	params.invProjection = Hlsl::float3(screenAspect * viewHeight, viewHeight, 1.0f);
-	params.debug = 0;
 
+	// make sprites larger to get smoother thickness texture
+	const float thicknessScale = 4.0f;
+	params.pointRadius = thicknessScale * radius;
+
+	params.debug = 0;
 	params.shadowMap = nullptr;
+
+	{
+		m_fluidThicknessRenderTarget->toWritable(renderContext);
+		m_fluidThicknessRenderTarget->bindAndClear(renderContext);
+
+		m_meshRenderer->drawTransitory(alloc, sizeof(Alloc), m_fluidThicknessPipeline.get(), &params);
+
+		m_fluidThicknessRenderTarget->toReadable(renderContext);
+	}
 
 	{
 		m_fluidPointRenderTarget->toWritable(renderContext);
@@ -681,6 +791,7 @@ void DemoContextD3D12::renderEllipsoids(FluidRenderer* renderer, FluidRenderBuff
 		params.invTexScale = Hlsl::float4(1.0f / screenAspect, 1.0f, 0.0f, 0.0f);
 		params.blurFalloff = blur;
 		params.debug = debug;
+		params.m_sampleDescriptorBase = m_linearSamplerIndex;
 
 		m_meshRenderer->draw(m_screenQuadMesh.get(), m_fluidSmoothPipeline.get(), &params);
 
@@ -707,11 +818,6 @@ void DemoContextD3D12::renderEllipsoids(FluidRenderer* renderer, FluidRenderBuff
 			// Do the resolve
 			const DXGI_FORMAT format = fluidResolvedTarget.getResource()->GetDesc().Format;
 			commandList->ResolveSubresource(fluidResolvedTarget, 0, *targetResource, 0, format);
-			{
-				NvCo::Dx12BarrierSubmitter submitter(commandList);
-				targetResource->transition(D3D12_RESOURCE_STATE_RENDER_TARGET, submitter);
-				fluidResolvedTarget.transition(D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, submitter);
-			}
 		}
 		else
 		{
@@ -721,6 +827,12 @@ void DemoContextD3D12::renderEllipsoids(FluidRenderer* renderer, FluidRenderBuff
 				fluidResolvedTarget.transition(D3D12_RESOURCE_STATE_COPY_DEST, submitter);
 			}
 			commandList->CopyResource(fluidResolvedTarget, *targetResource);
+		}
+
+		{
+			NvCo::Dx12BarrierSubmitter submitter(commandList);
+			targetResource->transition(D3D12_RESOURCE_STATE_RENDER_TARGET, submitter);
+			fluidResolvedTarget.transition(D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, submitter);
 		}
 	}
 
@@ -1038,10 +1150,12 @@ void DemoContextD3D12::drawPoints(FluidRenderBuffers* buffersIn, int n, int offs
 	pointAlloc.m_vertexBufferViews[PointRenderAllocationD3D12::VERTEX_VIEW_POSITION] = buffers->m_positionsView;
 	// It says 'color' as the parameter but actually its the 'density' parameter that is passed in here
 	pointAlloc.m_vertexBufferViews[PointRenderAllocationD3D12::VERTEX_VIEW_DENSITY] = buffers->m_densitiesView;
+	pointAlloc.m_vertexBufferViews[PointRenderAllocationD3D12::VERTEX_VIEW_PHASE] = buffers->m_densitiesView;
 	pointAlloc.m_indexBufferView = buffers->m_indicesView;
-	// TODO: JS - I don't know the amount of positions/colors... but the render call doesn't need to know. So just set to 0 for now
-	pointAlloc.m_numPositions = 0; 
+
 	pointAlloc.m_numPrimitives = n;
+	pointAlloc.m_numPositions = 0;	// unused param
+	pointAlloc.m_offset = offset;
 	
 	PointDrawParamsD3D params;
 
@@ -1208,8 +1322,10 @@ void DemoContextD3D12::drawDiffuse(FluidRenderer* render, const DiffuseRenderBuf
 	Alloc alloc;
 	alloc.init(PRIMITIVE_POINT);
 
-	alloc.m_numPrimitives = buffers.m_numParticles;
-	alloc.m_numPositions = 0; // ! We don't know
+	alloc.m_numPrimitives = n;
+	alloc.m_numPositions = 0;	// unused param
+	alloc.m_offset = 0;			// unused param
+
 	alloc.m_indexBufferView = buffers.m_indicesView;
 	alloc.m_vertexBufferViews[Alloc::VERTEX_VIEW_POSITION] = buffers.m_positionsView;
 	alloc.m_vertexBufferViews[Alloc::VERTEX_VIEW_ANISOTROPY1] = buffers.m_velocitiesView;			// Velocity stored in ANISO1
@@ -1363,7 +1479,6 @@ void DemoContextD3D12::destroyGpuMesh(GpuMesh* m)
 	delete reinterpret_cast<RenderMesh*>(m);
 }
 
-
 DiffuseRenderBuffers* DemoContextD3D12::createDiffuseRenderBuffers(int numDiffuseParticles, bool& enableInterop)
 {
 	return reinterpret_cast<DiffuseRenderBuffers*>(new DiffuseRenderBuffersD3D12(numDiffuseParticles));
@@ -1427,14 +1542,6 @@ void DemoContextD3D12::setCullMode(bool enabled)
 void DemoContextD3D12::drawImguiGraph()
 {
 	imguiGraphDraw();
-	/* 
-	const imguiGfxCmd* cmds = imguiGetRenderQueue();
-	int numCmds = imguiGetRenderQueueSize();
-	m_imguiGraphContext->draw(cmds, numCmds); */
 }
 
-
 } // namespace FlexSample 
-
-
-

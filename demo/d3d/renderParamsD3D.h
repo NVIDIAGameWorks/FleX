@@ -104,6 +104,8 @@ struct FluidDrawParamsD3D
 	float spotMax;
 	float ior;
 
+	float pointRadius;
+
 	ShadowMapD3D* shadowMap;
 
 	// Used on D3D12

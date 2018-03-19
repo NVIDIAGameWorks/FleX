@@ -31,8 +31,7 @@ public:
 		g_params.relaxationFactor = 1.0f;
 
 		g_params.smoothing = 0.4f;
-		g_params.anisotropyScale = 3.0f / radius;
-
+		
 		g_params.viscosity = 0.001f;
 		g_params.cohesion = 0.1f;
 		g_params.vorticityConfinement = 80.0f;

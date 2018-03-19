@@ -26,7 +26,7 @@ float shadowSample(float3 worldPos, out float attenuation)
 	pos /= pos.w;
 	float3 uvw = (pos.xyz * float3(0.5, 0.5, 1.0)) + float3(0.5, 0.5, 0.0);
 
-	attenuation = 1.0;//max(smoothstep(spotMax, spotMin, dot(pos.xy, pos.xy)), 0.05);
+	attenuation = max(smoothstep(gParams.spotMax, gParams.spotMin, dot(pos.xy, pos.xy)), 0.05);
 
 	// user clip
 	if (uvw.x  < 0.0 || uvw.x > 1.0)
@@ -89,7 +89,7 @@ float4 compositePS(PassthroughVertexOut input, out float depthOut : SV_DEPTH) : 
 
 	float eyeZ = depthTex.Sample(texSampler, uvCoord).x;
 
-	if (eyeZ == 0.0)
+	if (eyeZ >= 0.0)
 		discard;
 
 	// reconstruct eye space pos from depth

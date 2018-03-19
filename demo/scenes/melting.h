@@ -15,7 +15,6 @@ public:
 		g_params.viscosity = 0.0f;
 		g_params.cohesion = 0.0f;
 		g_params.fluidRestDistance = g_params.radius*0.6f;
-		g_params.anisotropyScale = 4.0f / g_params.radius;
 		g_params.smoothing = 0.5f;
 
 		const float spacing = g_params.radius*0.5f;

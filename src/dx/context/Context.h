@@ -18,7 +18,7 @@
 #include <map>
 
  // NV shader extensions
-#include "../../../external/nvapi/include/nvShaderExtnEnums.h"
+#include <external/nvapi/include/nvShaderExtnEnums.h>
 
 
 #define ENABLE_AMD_AGS 1 // enable AMD AGS shader extensions, used for warp shuffle based reductions
@@ -29,6 +29,16 @@
 
 #define USE_GPUBB 0 //Used for D3D12 shader debugging
 #define ENABLE_D3D12 1
+
+#ifndef _DEBUG
+#define ENABLE_AFTERMATH_SUPPORT 1
+#endif
+
+#if ENABLE_AFTERMATH_SUPPORT
+#include <d3d11.h>
+#include <d3d12.h>
+#include <external/GFSDK_Aftermath_v1.21/include/GFSDK_Aftermath.h>
+#endif
 
 enum GpuVendorId
 {
@@ -90,15 +100,15 @@ namespace NvFlex
 		std::atomic_uint32_t m_refCount = 1u;
 	};
 
-	#define NV_FLEX_OBJECT_IMPL \
+#define NV_FLEX_OBJECT_IMPL \
 	virtual NvFlexUint addRef() { return Object::addRefInternal(); } \
 	virtual NvFlexUint release() { return Object::releaseInternal(); }
 
-	#define NV_FLEX_DISPATCH_MAX_READ_TEXTURES ( 32u )
-	#define NV_FLEX_DISPATCH_MAX_WRITE_TEXTURES ( 8u )
+#define NV_FLEX_DISPATCH_MAX_READ_TEXTURES ( 32u )
+#define NV_FLEX_DISPATCH_MAX_WRITE_TEXTURES ( 8u )
 
-	#define NV_FLEX_DRAW_MAX_READ_TEXTURES ( 8u )
-	#define NV_FLEX_DRAW_MAX_WRITE_TEXTURES ( 1u )
+#define NV_FLEX_DRAW_MAX_READ_TEXTURES ( 8u )
+#define NV_FLEX_DRAW_MAX_WRITE_TEXTURES ( 1u )
 
 	struct ConstantBufferDesc
 	{
@@ -154,7 +164,7 @@ namespace NvFlex
 	struct ComputeShaderDesc
 	{
 		ComputeShaderDesc() : cs(nullptr), cs_length(0), label(L""), NvAPI_Slot(~0u) {}
-		ComputeShaderDesc(void* shaderByteCode, NvFlexUint64 byteCodeLength, wchar_t* shaderLabel = L"", NvFlexUint nvApiSlot = ~0u): cs(shaderByteCode), cs_length (byteCodeLength), label(shaderLabel), NvAPI_Slot(nvApiSlot){}
+		ComputeShaderDesc(void* shaderByteCode, NvFlexUint64 byteCodeLength, wchar_t* shaderLabel = L"", NvFlexUint nvApiSlot = ~0u) : cs(shaderByteCode), cs_length(byteCodeLength), label(shaderLabel), NvAPI_Slot(nvApiSlot) {}
 		const void* cs;
 		NvFlexUint64 cs_length;
 		const wchar_t* label;
@@ -205,7 +215,7 @@ namespace NvFlex
 	};
 
 	/// Staging resource
-	struct Stage : public NvFlexObject 
+	struct Stage : public NvFlexObject
 	{
 		virtual ~Stage() {}
 		BufferDesc m_desc;
@@ -325,7 +335,7 @@ namespace NvFlex
 		// ************ public interface *****************
 
 		virtual void updateContext(const NvFlexContextDesc* desc) = 0;
-		
+
 		//virtual void updateBufferViewDesc(NvFlexBuffer* buffer, NvFlexBufferViewDesc* desc) = 0;
 
 		//virtual void updateTexture3DViewDesc(NvFlexTexture3D* buffer, NvFlexTexture3DViewDesc* desc) = 0;
@@ -344,7 +354,7 @@ namespace NvFlex
 
 		virtual Buffer* createBufferView(Buffer* buffer, const BufferViewDesc* desc) = 0;
 
-		virtual void* map(Buffer* buffer, MapType type = eMapReadWrite, bool wait=true) = 0;
+		virtual void* map(Buffer* buffer, MapType type = eMapReadWrite, bool wait = true) = 0;
 
 		virtual void unmap(Buffer* buffer) = 0;
 
@@ -393,7 +403,7 @@ namespace NvFlex
 		virtual void dispatch(const DispatchParams* params) = 0;
 
 		virtual void dispatchIndirect(const DispatchParams* params) = 0;
-		
+
 		virtual TimerPool * createTimerPool() = 0;
 
 		virtual Fence* createFence() = 0;
@@ -412,6 +422,10 @@ namespace NvFlex
 
 		// ***************** Profiling ****************
 
+		virtual void pixBeginEvent(const wchar_t* label) = 0;
+
+		virtual void pixEndEvent() = 0;
+
 		virtual void eventMarker(const wchar_t* label) = 0;
 
 		virtual void contextPush() = 0;
@@ -422,6 +436,14 @@ namespace NvFlex
 
 		NameToTimerMapW mNameToInternalTimerMap;
 		NameToTimerMap mNameToExternalTimerMap;
+
+		// ***************** Debugging ****************
+
+#if ENABLE_AFTERMATH_SUPPORT
+		// Aftermath
+		virtual int setEventMarkerAftermath(void* markerData, unsigned int markerSize) = 0;
+		virtual int getDataAftermath(GFSDK_Aftermath_ContextData* pContextDataOut, GFSDK_Aftermath_Status* pStatusOut) = 0;
+#endif
 
 		Context();
 		virtual ~Context();

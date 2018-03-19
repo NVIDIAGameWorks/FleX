@@ -549,7 +549,7 @@ void imguiGraphFontTextureInitD3D12(unsigned char* data)
 			D3D12_RESOURCE_STATE_COPY_DEST,
 			nullptr,
 			IID_PPV_ARGS(&m_texture)
-			))
+		))
 		{
 			return;
 		}
@@ -578,7 +578,7 @@ void imguiGraphFontTextureInitD3D12(unsigned char* data)
 			D3D12_RESOURCE_STATE_GENERIC_READ,
 			nullptr,
 			IID_PPV_ARGS(&m_textureUploadHeap)
-			))
+		))
 		{
 			return;
 		}
@@ -655,7 +655,6 @@ void imguiGraphFontTextureInitD3D12(unsigned char* data)
 
 		m_desc.device->CreateShaderResourceView(m_texture, &srvDesc, srvUavHandle);
 	}
-
 }
 
 void imguiGraphFontTextureReleaseD3D12()

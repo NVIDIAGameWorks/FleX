@@ -9,7 +9,7 @@ Supported Platforms
 -------------------
 
 * Windows 32/64 bit (CUDA, DX11, DX12)
-* Linux 64 bit (CUDA, tested with Ubuntu 14.04 LTS and Mint 17.2 Rafaela)
+* Linux 64 bit (CUDA, tested with Ubuntu 16.04 LTS and Mint 17.2 Rafaela)
 
 Requirements
 ------------
@@ -28,7 +28,7 @@ To build the demo at least one of the following is required:
 
 And either: 
 
-* CUDA 8.0.44 toolkit
+* CUDA 9.1.85 toolkit
 * DirectX 11/12 SDK
 
 Demo 

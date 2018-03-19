@@ -814,7 +814,7 @@ Mesh* CreateDiscMesh(float radius, uint32_t segments)
 
 	Mesh* m = new Mesh();
 	m->m_positions.resize(numVerts);
-	m->m_normals.resize(numVerts);
+	m->m_normals.resize(numVerts, Vec3(0.0f, 1.0f, 0.0f));
 
 	m->m_positions[0] = Point3(0.0f);
 	m->m_positions[1] = Point3(0.0f, 0.0f, radius);
@@ -827,7 +827,6 @@ Mesh* CreateDiscMesh(float radius, uint32_t segments)
 			nextVert = 1;
 		
 		m->m_positions[nextVert] = Point3(radius*Sin((float(i)/segments)*k2Pi), 0.0f, radius*Cos((float(i)/segments)*k2Pi));
-		m->m_normals[nextVert] = Vector3(0.0f, 1.0f, 0.0f);
 
 		m->m_indices.push_back(0);
 		m->m_indices.push_back(i);

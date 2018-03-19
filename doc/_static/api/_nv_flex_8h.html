@@ -125,7 +125,7 @@ Enumerations</h2></td></tr>
 <br />
 &#160;&#160;<a class="el" href="_nv_flex_8h.html#a5ad2a7745fcb4d4afd5b5f1bda074644a7b776084468bae4e3566484cf34d0154">eNvFlexPhaseFlagsMask</a> = 0x00f00000, 
 <br />
-&#160;&#160;<a class="el" href="_nv_flex_8h.html#a5ad2a7745fcb4d4afd5b5f1bda074644ae4ea43366942f719f40e8526ad21a038">eNvFlexPhaseShapeChannelMask</a> = 0xff000000, 
+&#160;&#160;<a class="el" href="_nv_flex_8h.html#a5ad2a7745fcb4d4afd5b5f1bda074644ae4ea43366942f719f40e8526ad21a038">eNvFlexPhaseShapeChannelMask</a> = 0x7f000000, 
 <br />
 &#160;&#160;<a class="el" href="_nv_flex_8h.html#a5ad2a7745fcb4d4afd5b5f1bda074644a453a23cc8e9d2e6097b5be187f3c6977">eNvFlexPhaseSelfCollide</a> = 1 &lt;&lt; 20, 
 <br />
@@ -147,9 +147,7 @@ Enumerations</h2></td></tr>
 <br />
 &#160;&#160;<a class="el" href="_nv_flex_8h.html#a5ad2a7745fcb4d4afd5b5f1bda074644a92bbb75d47ea0058a9a89deb0abec67f">eNvFlexPhaseShapeChannel5</a> = 1 &lt;&lt; 29, 
 <br />
-&#160;&#160;<a class="el" href="_nv_flex_8h.html#a5ad2a7745fcb4d4afd5b5f1bda074644a0c8d08e646d2713e34d7e2dd6e7b21f2">eNvFlexPhaseShapeChannel6</a> = 1 &lt;&lt; 30, 
-<br />
-&#160;&#160;<a class="el" href="_nv_flex_8h.html#a5ad2a7745fcb4d4afd5b5f1bda074644a0679f1deab7afc547900e30aae0b711a">eNvFlexPhaseShapeChannel7</a> = 1 &lt;&lt; 31
+&#160;&#160;<a class="el" href="_nv_flex_8h.html#a5ad2a7745fcb4d4afd5b5f1bda074644a0c8d08e646d2713e34d7e2dd6e7b21f2">eNvFlexPhaseShapeChannel6</a> = 1 &lt;&lt; 30
 <br />
  }</td></tr>
 <tr class="separator:a5ad2a7745fcb4d4afd5b5f1bda074644"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -244,6 +242,8 @@ Functions</h2></td></tr>
 <tr class="separator:a9e925acbc34675dfe247da017cbd855f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1d755d7b090f7ed5c4c50d2d3fef1558"><td class="memItemLeft" align="right" valign="top">NV_FLEX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_flex_8h.html#a1d755d7b090f7ed5c4c50d2d3fef1558">NvFlexDestroySolver</a> (<a class="el" href="_nv_flex_8h.html#afaeb57f4ee7e54b1ae1b912a465ed39e">NvFlexSolver</a> *solver)</td></tr>
 <tr class="separator:a1d755d7b090f7ed5c4c50d2d3fef1558"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad53909027df03c6a352746d8ddc088ef"><td class="memItemLeft" align="right" valign="top">NV_FLEX_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_flex_8h.html#ad53909027df03c6a352746d8ddc088ef">NvFlexGetSolvers</a> (<a class="el" href="_nv_flex_8h.html#a3078976e98f370a9fbdb11db80f1f318">NvFlexLibrary</a> *lib, <a class="el" href="_nv_flex_8h.html#afaeb57f4ee7e54b1ae1b912a465ed39e">NvFlexSolver</a> **solvers, int n)</td></tr>
+<tr class="separator:ad53909027df03c6a352746d8ddc088ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae0d57e4fc2b3b51ec08f7da0a28ff343"><td class="memItemLeft" align="right" valign="top">NV_FLEX_API <a class="el" href="_nv_flex_8h.html#a3078976e98f370a9fbdb11db80f1f318">NvFlexLibrary</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_flex_8h.html#ae0d57e4fc2b3b51ec08f7da0a28ff343">NvFlexGetSolverLibrary</a> (<a class="el" href="_nv_flex_8h.html#afaeb57f4ee7e54b1ae1b912a465ed39e">NvFlexSolver</a> *solver)</td></tr>
 <tr class="separator:ae0d57e4fc2b3b51ec08f7da0a28ff343"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afd6aff58269d6c359df2453c96397840"><td class="memItemLeft" align="right" valign="top">NV_FLEX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_flex_8h.html#afd6aff58269d6c359df2453c96397840">NvFlexGetSolverDesc</a> (<a class="el" href="_nv_flex_8h.html#afaeb57f4ee7e54b1ae1b912a465ed39e">NvFlexSolver</a> *solver, <a class="el" href="_nv_flex_8h.html#struct_nv_flex_solver_desc">NvFlexSolverDesc</a> *desc)</td></tr>
@@ -298,6 +298,8 @@ Functions</h2></td></tr>
 <tr class="separator:afdda5a5210938a1e8a7c3a8218ad468e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4cb4462803ebff105d151fd45b4efad6"><td class="memItemLeft" align="right" valign="top">NV_FLEX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_flex_8h.html#a4cb4462803ebff105d151fd45b4efad6">NvFlexDestroyTriangleMesh</a> (<a class="el" href="_nv_flex_8h.html#a3078976e98f370a9fbdb11db80f1f318">NvFlexLibrary</a> *lib, <a class="el" href="_nv_flex_8h.html#a2aea4c3d772b4dbccb7dd9ba37c1bdc0">NvFlexTriangleMeshId</a> mesh)</td></tr>
 <tr class="separator:a4cb4462803ebff105d151fd45b4efad6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1924ab797971290931b32258b847767"><td class="memItemLeft" align="right" valign="top">NV_FLEX_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_flex_8h.html#ab1924ab797971290931b32258b847767">NvFlexGetTriangleMeshes</a> (<a class="el" href="_nv_flex_8h.html#a3078976e98f370a9fbdb11db80f1f318">NvFlexLibrary</a> *lib, <a class="el" href="_nv_flex_8h.html#a2aea4c3d772b4dbccb7dd9ba37c1bdc0">NvFlexTriangleMeshId</a> *meshes, int n)</td></tr>
+<tr class="separator:ab1924ab797971290931b32258b847767"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4958c555f0ed65dee54c37af32529356"><td class="memItemLeft" align="right" valign="top">NV_FLEX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_flex_8h.html#a4958c555f0ed65dee54c37af32529356">NvFlexUpdateTriangleMesh</a> (<a class="el" href="_nv_flex_8h.html#a3078976e98f370a9fbdb11db80f1f318">NvFlexLibrary</a> *lib, <a class="el" href="_nv_flex_8h.html#a2aea4c3d772b4dbccb7dd9ba37c1bdc0">NvFlexTriangleMeshId</a> mesh, <a class="el" href="_nv_flex_8h.html#a50a3933d3f7b77d0500c702b1fa9ba9a">NvFlexBuffer</a> *vertices, <a class="el" href="_nv_flex_8h.html#a50a3933d3f7b77d0500c702b1fa9ba9a">NvFlexBuffer</a> *indices, int numVertices, int numTriangles, const float *lower, const float *upper)</td></tr>
 <tr class="separator:a4958c555f0ed65dee54c37af32529356"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a60794d849b4184335e2a0ddec0a9e6a2"><td class="memItemLeft" align="right" valign="top">NV_FLEX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_flex_8h.html#a60794d849b4184335e2a0ddec0a9e6a2">NvFlexGetTriangleMeshBounds</a> (<a class="el" href="_nv_flex_8h.html#a3078976e98f370a9fbdb11db80f1f318">NvFlexLibrary</a> *lib, const <a class="el" href="_nv_flex_8h.html#a2aea4c3d772b4dbccb7dd9ba37c1bdc0">NvFlexTriangleMeshId</a> mesh, float *lower, float *upper)</td></tr>
@@ -306,12 +308,16 @@ Functions</h2></td></tr>
 <tr class="separator:a5c28caf6d5d513c5adacd4fbc782f308"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab11bdd7f778d17af16cefea33265cb65"><td class="memItemLeft" align="right" valign="top">NV_FLEX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_flex_8h.html#ab11bdd7f778d17af16cefea33265cb65">NvFlexDestroyDistanceField</a> (<a class="el" href="_nv_flex_8h.html#a3078976e98f370a9fbdb11db80f1f318">NvFlexLibrary</a> *lib, <a class="el" href="_nv_flex_8h.html#a56e990c5bfbc89677988cbf2471c0ade">NvFlexDistanceFieldId</a> sdf)</td></tr>
 <tr class="separator:ab11bdd7f778d17af16cefea33265cb65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a554d54b930dad17e638ddd30c6dac46f"><td class="memItemLeft" align="right" valign="top">NV_FLEX_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_flex_8h.html#a554d54b930dad17e638ddd30c6dac46f">NvFlexGetDistanceFields</a> (<a class="el" href="_nv_flex_8h.html#a3078976e98f370a9fbdb11db80f1f318">NvFlexLibrary</a> *lib, <a class="el" href="_nv_flex_8h.html#a56e990c5bfbc89677988cbf2471c0ade">NvFlexDistanceFieldId</a> *sdfs, int n)</td></tr>
+<tr class="separator:a554d54b930dad17e638ddd30c6dac46f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a584ffb275b9986fd5444ed1a7ea247d9"><td class="memItemLeft" align="right" valign="top">NV_FLEX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_flex_8h.html#a584ffb275b9986fd5444ed1a7ea247d9">NvFlexUpdateDistanceField</a> (<a class="el" href="_nv_flex_8h.html#a3078976e98f370a9fbdb11db80f1f318">NvFlexLibrary</a> *lib, <a class="el" href="_nv_flex_8h.html#a56e990c5bfbc89677988cbf2471c0ade">NvFlexDistanceFieldId</a> sdf, int dimx, int dimy, int dimz, <a class="el" href="_nv_flex_8h.html#a50a3933d3f7b77d0500c702b1fa9ba9a">NvFlexBuffer</a> *field)</td></tr>
 <tr class="separator:a584ffb275b9986fd5444ed1a7ea247d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afbaafe2b1006352002b03aabaca531cc"><td class="memItemLeft" align="right" valign="top">NV_FLEX_API <a class="el" href="_nv_flex_8h.html#a7ab5aa68da7ca1f69211a900f1a1c586">NvFlexConvexMeshId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_flex_8h.html#afbaafe2b1006352002b03aabaca531cc">NvFlexCreateConvexMesh</a> (<a class="el" href="_nv_flex_8h.html#a3078976e98f370a9fbdb11db80f1f318">NvFlexLibrary</a> *lib)</td></tr>
 <tr class="separator:afbaafe2b1006352002b03aabaca531cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac85b6372e5c7bfc508ecb7b8c59c72a0"><td class="memItemLeft" align="right" valign="top">NV_FLEX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_flex_8h.html#ac85b6372e5c7bfc508ecb7b8c59c72a0">NvFlexDestroyConvexMesh</a> (<a class="el" href="_nv_flex_8h.html#a3078976e98f370a9fbdb11db80f1f318">NvFlexLibrary</a> *lib, <a class="el" href="_nv_flex_8h.html#a7ab5aa68da7ca1f69211a900f1a1c586">NvFlexConvexMeshId</a> convex)</td></tr>
 <tr class="separator:ac85b6372e5c7bfc508ecb7b8c59c72a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa392608715b2304f06606d498bd69312"><td class="memItemLeft" align="right" valign="top">NV_FLEX_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_flex_8h.html#aa392608715b2304f06606d498bd69312">NvFlexGetConvexMeshes</a> (<a class="el" href="_nv_flex_8h.html#a3078976e98f370a9fbdb11db80f1f318">NvFlexLibrary</a> *lib, <a class="el" href="_nv_flex_8h.html#a7ab5aa68da7ca1f69211a900f1a1c586">NvFlexConvexMeshId</a> *meshes, int n)</td></tr>
+<tr class="separator:aa392608715b2304f06606d498bd69312"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab452c355f92dda050d4b4dafb8e71b03"><td class="memItemLeft" align="right" valign="top">NV_FLEX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_flex_8h.html#ab452c355f92dda050d4b4dafb8e71b03">NvFlexUpdateConvexMesh</a> (<a class="el" href="_nv_flex_8h.html#a3078976e98f370a9fbdb11db80f1f318">NvFlexLibrary</a> *lib, <a class="el" href="_nv_flex_8h.html#a7ab5aa68da7ca1f69211a900f1a1c586">NvFlexConvexMeshId</a> convex, <a class="el" href="_nv_flex_8h.html#a50a3933d3f7b77d0500c702b1fa9ba9a">NvFlexBuffer</a> *planes, int numPlanes, const float *lower, const float *upper)</td></tr>
 <tr class="separator:ab452c355f92dda050d4b4dafb8e71b03"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad56e661161763579afb375b3841eb5ff"><td class="memItemLeft" align="right" valign="top">NV_FLEX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_flex_8h.html#ad56e661161763579afb375b3841eb5ff">NvFlexGetConvexMeshBounds</a> (<a class="el" href="_nv_flex_8h.html#a3078976e98f370a9fbdb11db80f1f318">NvFlexLibrary</a> *lib, <a class="el" href="_nv_flex_8h.html#a7ab5aa68da7ca1f69211a900f1a1c586">NvFlexConvexMeshId</a> mesh, float *lower, float *upper)</td></tr>
@@ -338,8 +344,8 @@ Functions</h2></td></tr>
 <tr class="separator:a5a7213593dd9a23d9d67f8517d1da9de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7edac9cf450917147b83e98f5cb09f5d"><td class="memItemLeft" align="right" valign="top">NV_FLEX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_flex_8h.html#a7edac9cf450917147b83e98f5cb09f5d">NvFlexGetContacts</a> (<a class="el" href="_nv_flex_8h.html#afaeb57f4ee7e54b1ae1b912a465ed39e">NvFlexSolver</a> *solver, <a class="el" href="_nv_flex_8h.html#a50a3933d3f7b77d0500c702b1fa9ba9a">NvFlexBuffer</a> *planes, <a class="el" href="_nv_flex_8h.html#a50a3933d3f7b77d0500c702b1fa9ba9a">NvFlexBuffer</a> *velocities, <a class="el" href="_nv_flex_8h.html#a50a3933d3f7b77d0500c702b1fa9ba9a">NvFlexBuffer</a> *indices, <a class="el" href="_nv_flex_8h.html#a50a3933d3f7b77d0500c702b1fa9ba9a">NvFlexBuffer</a> *counts)</td></tr>
 <tr class="separator:a7edac9cf450917147b83e98f5cb09f5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ade1ef600ada4d7567e515258b289e209"><td class="memItemLeft" align="right" valign="top">NV_FLEX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_flex_8h.html#ade1ef600ada4d7567e515258b289e209">NvFlexGetNeighbors</a> (<a class="el" href="_nv_flex_8h.html#afaeb57f4ee7e54b1ae1b912a465ed39e">NvFlexSolver</a> *solver, <a class="el" href="_nv_flex_8h.html#a50a3933d3f7b77d0500c702b1fa9ba9a">NvFlexBuffer</a> *neighbors, <a class="el" href="_nv_flex_8h.html#a50a3933d3f7b77d0500c702b1fa9ba9a">NvFlexBuffer</a> *counts, <a class="el" href="_nv_flex_8h.html#a50a3933d3f7b77d0500c702b1fa9ba9a">NvFlexBuffer</a> *remap)</td></tr>
-<tr class="separator:ade1ef600ada4d7567e515258b289e209"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbee38b5413bbfd1db914c66fcdfc616"><td class="memItemLeft" align="right" valign="top">NV_FLEX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_flex_8h.html#abbee38b5413bbfd1db914c66fcdfc616">NvFlexGetNeighbors</a> (<a class="el" href="_nv_flex_8h.html#afaeb57f4ee7e54b1ae1b912a465ed39e">NvFlexSolver</a> *solver, <a class="el" href="_nv_flex_8h.html#a50a3933d3f7b77d0500c702b1fa9ba9a">NvFlexBuffer</a> *neighbors, <a class="el" href="_nv_flex_8h.html#a50a3933d3f7b77d0500c702b1fa9ba9a">NvFlexBuffer</a> *counts, <a class="el" href="_nv_flex_8h.html#a50a3933d3f7b77d0500c702b1fa9ba9a">NvFlexBuffer</a> *apiToInternal, <a class="el" href="_nv_flex_8h.html#a50a3933d3f7b77d0500c702b1fa9ba9a">NvFlexBuffer</a> *internalToApi)</td></tr>
+<tr class="separator:abbee38b5413bbfd1db914c66fcdfc616"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab1eec84a21b1872fba11c9b4cc1d1629"><td class="memItemLeft" align="right" valign="top">NV_FLEX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_flex_8h.html#ab1eec84a21b1872fba11c9b4cc1d1629">NvFlexGetBounds</a> (<a class="el" href="_nv_flex_8h.html#afaeb57f4ee7e54b1ae1b912a465ed39e">NvFlexSolver</a> *solver, <a class="el" href="_nv_flex_8h.html#a50a3933d3f7b77d0500c702b1fa9ba9a">NvFlexBuffer</a> *lower, <a class="el" href="_nv_flex_8h.html#a50a3933d3f7b77d0500c702b1fa9ba9a">NvFlexBuffer</a> *upper)</td></tr>
 <tr class="separator:ab1eec84a21b1872fba11c9b4cc1d1629"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa77d2a4edd4ccd79c9389854dca80613"><td class="memItemLeft" align="right" valign="top">NV_FLEX_API float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_flex_8h.html#aa77d2a4edd4ccd79c9389854dca80613">NvFlexGetDeviceLatency</a> (<a class="el" href="_nv_flex_8h.html#afaeb57f4ee7e54b1ae1b912a465ed39e">NvFlexSolver</a> *solver, unsigned long long *begin, unsigned long long *end, unsigned long long *frequency)</td></tr>
@@ -926,11 +932,11 @@ computeContext</td>
 <td class="fielddoc">
 Direct3D context to use for simulation, if none is specified a new context will be created, in DirectX 12 this should be a pointer to the ID3D12CommandQueue where compute operations will take place. </td></tr>
 <tr><td class="fieldtype">
-<a class="anchor" id="a77687a448947946483c73f7cc94932c6"></a>bool</td>
+<a class="anchor" id="ad9503e8b23e084c0f940be3dcca9af2e"></a>bool</td>
 <td class="fieldname">
-useComputeQueue</td>
+runOnRenderContext</td>
 <td class="fielddoc">
-If true, run Flex on a D3D12 compute queue, or vendor specific D3D11 compute queue. This allows compute and graphics to run in parallel on some GPUs. </td></tr>
+If true, run Flex on D3D11 render context, or D3D12 direct queue. If false, run on a D3D12 compute queue, or vendor specific D3D11 compute queue, allowing compute and graphics to run in parallel on some GPUs. </td></tr>
 <tr><td class="fieldtype">
 <a class="anchor" id="aeeeaf91dad0804d1dd3125e592a3260b"></a><a class="el" href="_nv_flex_8h.html#a9b2d3dc5ac42011aeec4e13be2e14252">NvFlexComputeType</a></td>
 <td class="fieldname">
@@ -977,6 +983,12 @@ Maximum number of diffuse particles in the solver. </td></tr>
 maxNeighborsPerParticle</td>
 <td class="fielddoc">
 Maximum number of neighbors per-particle, for solids this can be around 32, for fluids up to 128 may be necessary depending on smoothing radius. </td></tr>
+<tr><td class="fieldtype">
+<a class="anchor" id="a97d23c69cd4f343be14dedd911605276"></a>int</td>
+<td class="fieldname">
+maxContactsPerParticle</td>
+<td class="fielddoc">
+Maximum number of collision contacts per-particle. </td></tr>
 </table>
 
 </div>
@@ -1425,7 +1437,7 @@ time</td>
 <p>Bits [20, 23] hold flags about how the particle behave. </p>
 </td></tr>
 <tr><td class="fieldname"><a class="anchor" id="a5ad2a7745fcb4d4afd5b5f1bda074644ae4ea43366942f719f40e8526ad21a038"></a>eNvFlexPhaseShapeChannelMask&#160;</td><td class="fielddoc">
-<p>Bits [24, 31] hold flags representing what shape collision channels particles will collide with, see <a class="el" href="_nv_flex_8h.html#ad6ee1e23e0c49aad63df8f605182de3a">NvFlexMakeShapeFlags()</a> </p>
+<p>Bits [24, 30] hold flags representing what shape collision channels particles will collide with, see <a class="el" href="_nv_flex_8h.html#ad6ee1e23e0c49aad63df8f605182de3a">NvFlexMakeShapeFlags()</a> (highest bit reserved for now) </p>
 </td></tr>
 <tr><td class="fieldname"><a class="anchor" id="a5ad2a7745fcb4d4afd5b5f1bda074644a453a23cc8e9d2e6097b5be187f3c6977"></a>eNvFlexPhaseSelfCollide&#160;</td><td class="fielddoc">
 <p>If set this particle will interact with particles of the same group. </p>
@@ -1459,9 +1471,6 @@ time</td>
 </td></tr>
 <tr><td class="fieldname"><a class="anchor" id="a5ad2a7745fcb4d4afd5b5f1bda074644a0c8d08e646d2713e34d7e2dd6e7b21f2"></a>eNvFlexPhaseShapeChannel6&#160;</td><td class="fielddoc">
 <p>Particle will collide with shapes with channel 6 set (see <a class="el" href="_nv_flex_8h.html#ad6ee1e23e0c49aad63df8f605182de3a">NvFlexMakeShapeFlags()</a>) </p>
-</td></tr>
-<tr><td class="fieldname"><a class="anchor" id="a5ad2a7745fcb4d4afd5b5f1bda074644a0679f1deab7afc547900e30aae0b711a"></a>eNvFlexPhaseShapeChannel7&#160;</td><td class="fielddoc">
-<p>Particle will collide with shapes with channel 7 set (see <a class="el" href="_nv_flex_8h.html#ad6ee1e23e0c49aad63df8f605182de3a">NvFlexMakeShapeFlags()</a>) </p>
 </td></tr>
 </table>
 
@@ -1880,6 +1889,48 @@ time</td>
 
 </div>
 </div>
+<a class="anchor" id="ad53909027df03c6a352746d8ddc088ef"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">NV_FLEX_API int NvFlexGetSolvers </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="_nv_flex_8h.html#a3078976e98f370a9fbdb11db80f1f318">NvFlexLibrary</a> *&#160;</td>
+          <td class="paramname"><em>lib</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="_nv_flex_8h.html#afaeb57f4ee7e54b1ae1b912a465ed39e">NvFlexSolver</a> **&#160;</td>
+          <td class="paramname"><em>solvers</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Get the list of active solvers in the library If the size of the array is smaller than the number of active solvers, only the first n entries are copied.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">lib</td><td>The library instance to use </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">solvers</td><td>Pointer to array </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">n</td><td>Size of array </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The number of active solvers in the library </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="ae0d57e4fc2b3b51ec08f7da0a28ff343"></a>
 <div class="memitem">
 <div class="memproto">
@@ -2215,7 +2266,7 @@ time</td>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">solver</td><td>A valid solver </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">indices</td><td>a buffer of indices at least activeCount in length </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">indices</td><td>a buffer of indices at least activeCount in length. Default values are successive numbers from 0 to maxParticles-1 </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">desc</td><td>Describes the copy region, if NULL the solver will try to access the entire buffer (maxParticles length) </td></tr>
   </table>
   </dd>
@@ -3096,6 +3147,48 @@ time</td>
 
 </div>
 </div>
+<a class="anchor" id="ab1924ab797971290931b32258b847767"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">NV_FLEX_API int NvFlexGetTriangleMeshes </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="_nv_flex_8h.html#a3078976e98f370a9fbdb11db80f1f318">NvFlexLibrary</a> *&#160;</td>
+          <td class="paramname"><em>lib</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="_nv_flex_8h.html#a2aea4c3d772b4dbccb7dd9ba37c1bdc0">NvFlexTriangleMeshId</a> *&#160;</td>
+          <td class="paramname"><em>meshes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Get the list of triangle meshes in the library If the size of the array is smaller than the number of triangle meshes, only the first n entries are copied.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">lib</td><td>The library instance to use </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshes</td><td>Pointer to array </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">n</td><td>Size of array </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The number of triangle meshes in the library </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="a4958c555f0ed65dee54c37af32529356"></a>
 <div class="memitem">
 <div class="memproto">
@@ -3160,7 +3253,7 @@ time</td>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">lib</td><td>The library instance to use </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">mesh</td><td>A triangle mesh created with <a class="el" href="_nv_flex_8h.html#afdda5a5210938a1e8a7c3a8218ad468e">NvFlexCreateTriangleMesh()</a> </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">vertices</td><td>Pointer to a buffer of float3 vertex positions </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">vertices</td><td>Pointer to a buffer of float4 vertex positions </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">indices</td><td>Pointer to a buffer of triangle indices, should be length numTriangles*3 </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">numVertices</td><td>The number of vertices in the vertices array </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">numTriangles</td><td>The number of triangles in the mesh </td></tr>
@@ -3275,6 +3368,48 @@ time</td>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a class="anchor" id="a554d54b930dad17e638ddd30c6dac46f"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">NV_FLEX_API int NvFlexGetDistanceFields </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="_nv_flex_8h.html#a3078976e98f370a9fbdb11db80f1f318">NvFlexLibrary</a> *&#160;</td>
+          <td class="paramname"><em>lib</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="_nv_flex_8h.html#a56e990c5bfbc89677988cbf2471c0ade">NvFlexDistanceFieldId</a> *&#160;</td>
+          <td class="paramname"><em>sdfs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Get the list of signed distance fields in the library If the size of the array is smaller than the number of signed distance fields, only the first n entries are copied.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">lib</td><td>The library instance to use </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">sdfs</td><td>Pointer to array </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">n</td><td>Size of array </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The number of signed distance fields in the library </dd></dl>
 
 </div>
 </div>
@@ -3395,6 +3530,48 @@ time</td>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a class="anchor" id="aa392608715b2304f06606d498bd69312"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">NV_FLEX_API int NvFlexGetConvexMeshes </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="_nv_flex_8h.html#a3078976e98f370a9fbdb11db80f1f318">NvFlexLibrary</a> *&#160;</td>
+          <td class="paramname"><em>lib</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="_nv_flex_8h.html#a7ab5aa68da7ca1f69211a900f1a1c586">NvFlexConvexMeshId</a> *&#160;</td>
+          <td class="paramname"><em>meshes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Get the list of convex meshes in the library If the size of the array is smaller than the number of convex meshes, only the first n entries are copied.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">lib</td><td>The library instance to use </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshes</td><td>Pointer to array </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">n</td><td>Size of array </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The number of convex meshes in the library </dd></dl>
 
 </div>
 </div>
@@ -4071,17 +4248,17 @@ time</td>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">solver</td><td>A valid solver </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">planes</td><td>Pointer to a destination buffer containing the contact planes for the particle, each particle can have up to 6 contact planes so this buffer should be 4*6*maxParticles floats in length </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">velocities</td><td>Pointer to a destination buffer containing the velocity of the contact point on the shape in world space, the index of the shape (corresponding to the shape in <a class="el" href="_nv_flex_8h.html#aea4e7117722df53dfe44c676496117fa">NvFlexSetShapes()</a> is stored in the w component), each particle can have up to 6 contact planes so this buffer should be 4*6*maxParticles floats in length </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">indices</td><td>Pointer to a buffer of indices into the contacts buffer, the first contact plane for the i'th particle is given by planes[indices[i]*sizeof(float)*4*6] and subsequent contact planes for that particle are stored sequentially, this array should be maxParticles in length </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">counts</td><td>Pointer to a buffer of contact counts for each particle (will be &lt;= 6), this buffer should be maxParticles in length </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">planes</td><td>Pointer to a destination buffer containing the contact planes for the particle, each particle can have up to maxContactsPerParticle contact planes (see <a class="el" href="_nv_flex_8h.html#struct_nv_flex_solver_desc">NvFlexSolverDesc</a>) so this buffer should be 4*maxContactsPerParticle*maxParticles floats in length </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">velocities</td><td>Pointer to a destination buffer containing the velocity of the contact point on the shape in world space, the index of the shape (corresponding to the shape in <a class="el" href="_nv_flex_8h.html#aea4e7117722df53dfe44c676496117fa">NvFlexSetShapes()</a> is stored in the w component), each particle can have up to maxContactsPerParticle contact planes so this buffer should be 4*maxContactsPerParticle*maxParticles floats in length </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">indices</td><td>Pointer to a buffer of indices into the contacts buffer, the first contact plane for the i'th particle is given by planes[indices[i]*sizeof(float)*4*maxContactsPerParticle] and subsequent contact planes for that particle are stored sequentially, this array should be maxParticles in length </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">counts</td><td>Pointer to a buffer of contact counts for each particle (will be &lt;= maxContactsPerParticle), this buffer should be maxParticles in length </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a class="anchor" id="ade1ef600ada4d7567e515258b289e209"></a>
+<a class="anchor" id="abbee38b5413bbfd1db914c66fcdfc616"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -4107,7 +4284,13 @@ time</td>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="_nv_flex_8h.html#a50a3933d3f7b77d0500c702b1fa9ba9a">NvFlexBuffer</a> *&#160;</td>
-          <td class="paramname"><em>remap</em>&#160;</td>
+          <td class="paramname"><em>apiToInternal</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="_nv_flex_8h.html#a50a3933d3f7b77d0500c702b1fa9ba9a">NvFlexBuffer</a> *&#160;</td>
+          <td class="paramname"><em>internalToApi</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -4117,11 +4300,12 @@ time</td>
       </table>
 </div><div class="memdoc">
 <p>Get the particle neighbor lists, these are stored in a strided format, and can be iterated in the following manner:</p>
-<div class="fragment"><div class="line"><a class="code" href="_nv_flex_8h.html#ade1ef600ada4d7567e515258b289e209">NvFlexGetNeighbors</a>(solver, neighborsBuffer, countsBuffer, indicesBuffer);</div>
+<div class="fragment"><div class="line"><a class="code" href="_nv_flex_8h.html#abbee38b5413bbfd1db914c66fcdfc616">NvFlexGetNeighbors</a>(solver, neighborsBuffer, countsBuffer, apiToInternalBuffer, internalToApiBuffer);</div>
 <div class="line"></div>
 <div class="line"><span class="keywordtype">int</span>* neighbors = (<span class="keywordtype">int</span>*)<a class="code" href="_nv_flex_8h.html#a0898bb9210440b159688d4647f6eb083">NvFlexMap</a>(neighborsBuffer, 0);</div>
 <div class="line"><span class="keywordtype">int</span>* counts = (<span class="keywordtype">int</span>*)<a class="code" href="_nv_flex_8h.html#a0898bb9210440b159688d4647f6eb083">NvFlexMap</a>(countsBuffer, 0);</div>
-<div class="line"><span class="keywordtype">int</span>* remap = (<span class="keywordtype">int</span>*)<a class="code" href="_nv_flex_8h.html#a0898bb9210440b159688d4647f6eb083">NvFlexMap</a>(remapBuffer, 0);</div>
+<div class="line"><span class="keywordtype">int</span>* apiToInternal = (<span class="keywordtype">int</span>*)<a class="code" href="_nv_flex_8h.html#a0898bb9210440b159688d4647f6eb083">NvFlexMap</a>(apiToInternalBuffer, 0);</div>
+<div class="line"><span class="keywordtype">int</span>* internalToApi = (<span class="keywordtype">int</span>*)<a class="code" href="_nv_flex_8h.html#a0898bb9210440b159688d4647f6eb083">NvFlexMap</a>(internalToApiBuffer, 0);</div>
 <div class="line"></div>
 <div class="line"><span class="comment">// neighbors are stored in a strided format so that the first neighbor</span></div>
 <div class="line"><span class="comment">// of each particle is stored sequentially, then the second, and so on</span></div>
@@ -4131,12 +4315,12 @@ time</td>
 <div class="line"><span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i &lt; maxParticles; ++i)</div>
 <div class="line">{</div>
 <div class="line">    <span class="comment">// find offset in the neighbors buffer</span></div>
-<div class="line">    <span class="keywordtype">int</span> offset = remap[i];</div>
+<div class="line">    <span class="keywordtype">int</span> offset = apiToInternal[i];</div>
 <div class="line">    <span class="keywordtype">int</span> count = counts[offset];</div>
 <div class="line"></div>
 <div class="line">    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> c=0; c &lt; count; ++c)</div>
 <div class="line">    {</div>
-<div class="line">        <span class="keywordtype">int</span> neighbor = remap[neighbors[c*stride + offset]];</div>
+<div class="line">        <span class="keywordtype">int</span> neighbor = internalToApi[neighbors[c*stride + offset]];</div>
 <div class="line"></div>
 <div class="line">        printf(<span class="stringliteral">&quot;Particle %d&#39;s neighbor %d is particle %d\n&quot;</span>, i, c, neighbor);</div>
 <div class="line">    }</div>
@@ -4144,13 +4328,15 @@ time</td>
 <div class="line"></div>
 <div class="line"><a class="code" href="_nv_flex_8h.html#a054cb27646a389ea257d1bbde46a6e97">NvFlexUnmap</a>(neighborsBuffer);</div>
 <div class="line"><a class="code" href="_nv_flex_8h.html#a054cb27646a389ea257d1bbde46a6e97">NvFlexUnmap</a>(countsBuffer);</div>
-<div class="line"><a class="code" href="_nv_flex_8h.html#a054cb27646a389ea257d1bbde46a6e97">NvFlexUnmap</a>(remapBuffer);</div>
+<div class="line"><a class="code" href="_nv_flex_8h.html#a054cb27646a389ea257d1bbde46a6e97">NvFlexUnmap</a>(apiToInternalBuffer);</div>
+<div class="line"><a class="code" href="_nv_flex_8h.html#a054cb27646a389ea257d1bbde46a6e97">NvFlexUnmap</a>(internalToApiBuffer);</div>
 </div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">solver</td><td>A valid solver </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">neighbors</td><td>Pointer to a destination buffer containing the the neighbors for all particles, this should be maxParticles*maxParticleNeighbors ints (passed to <a class="el" href="_nv_flex_8h.html#a687e5ec141948f779faa9183b68cb743">NvFlexInit()</a> in length) </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">counts</td><td>Pointer to a buffer of neighbor counts per-particle, should be maxParticles ints in length </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">remap</td><td>Pointer to a buffer of indices, because Flex internally re-orders particles these are used to map from an API particle index to it internal index</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">apiToInternal</td><td>Pointer to a buffer of indices, because Flex internally re-orders particles these are used to map from an API particle index to it internal index </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">internalToApi</td><td>Pointer to a buffer of indices, because Flex internally re-orders particles these are used to map from an internal index to an API index</td></tr>
   </table>
   </dd>
 </dl>
@@ -4754,7 +4940,7 @@ time</td>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jun 9 2017 09:57:25 for FLEX by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Mar 19 2018 14:53:17 for FLEX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

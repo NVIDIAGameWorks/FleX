@@ -65,6 +65,7 @@ struct FluidRendererD3D11
 {	
 	void init(ID3D11Device* device, ID3D11DeviceContext* context, int width, int height);
 	
+	void drawThickness(const FluidDrawParamsD3D* params, const FluidRenderBuffersD3D11* buffers);
 	void drawEllipsoids(const FluidDrawParamsD3D* params, const FluidRenderBuffersD3D11* buffers);
 	void drawBlurDepth(const FluidDrawParamsD3D* params);
 	void drawComposite(const FluidDrawParamsD3D* params, ID3D11ShaderResourceView* sceneMap);
@@ -78,6 +79,11 @@ struct FluidRendererD3D11
 
 	ID3D11Device* m_device;
 	ID3D11DeviceContext* m_deviceContext;
+
+	ComPtr<ID3D11InputLayout> m_pointThicknessLayout;
+	ComPtr<ID3D11VertexShader> m_pointThicknessVs;
+	ComPtr<ID3D11GeometryShader> m_pointThicknessGs;
+	ComPtr<ID3D11PixelShader> m_pointThicknessPs;
 
 	ComPtr<ID3D11InputLayout> m_ellipsoidDepthLayout;
 	ComPtr<ID3D11VertexShader> m_ellipsoidDepthVs;
@@ -98,9 +104,9 @@ struct FluidRendererD3D11
 	ComPtr<ID3D11Buffer> m_quadVertexBuffer;
 	ComPtr<ID3D11Buffer> m_quadIndexBuffer;
 
+	RenderTargetD3D11 m_thicknessTexture;
 	RenderTargetD3D11 m_depthTexture;
 	RenderTargetD3D11 m_depthSmoothTexture;
-	RenderTargetD3D11 m_thicknessTexture;
 
 	int m_sceneWidth;
 	int m_sceneHeight;

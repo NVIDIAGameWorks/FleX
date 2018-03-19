@@ -51,6 +51,8 @@ The example code below shows how to initialize the library, create a new solver 
 	NvFlexBuffer* particleBuffer = NvFlexAllocBuffer(library, n, sizeof(float4), eNvFlexBufferHost);
 	NvFlexBuffer* velocityBuffer = NvFlexAllocBuffer(library, n, sizeof(float4), eNvFlexBufferHost);
 	NvFlexBuffer* phaseBuffer = NvFlexAllocBuffer(library, n, sizeof(int), eNvFlexBufferHost);
+    
+    int numParticles = 0;
 
 	while(!done)
 	{
@@ -60,10 +62,10 @@ The example code below shows how to initialize the library, create a new solver 
 		int* phases = (int*)NvFlexMap(phaseBuffer, eNvFlexMapWait);
 
 		// spawn (user method)
-		SpawnParticles(particles, velocities, phases);
+		numParticles = SpawnParticles(particles, velocities, phases, numParticles);
 
 		// render (user method)
-		RenderParticles(particles, velocities, phases);
+		RenderParticles(particles, velocities, phases, numParticles);
 
 		// unmap buffers
 		NvFlexUnmap(particleBuffer);
@@ -74,6 +76,9 @@ The example code below shows how to initialize the library, create a new solver 
 		NvFlexSetParticles(solver, particleBuffer, NULL);
 		NvFlexSetVelocities(solver, velocityBuffer, NULL);
 		NvFlexSetPhases(solver, phaseBuffer, NULL);
+    
+        // set active count
+        NvFlexSetActiveCount(solver, numParticles);
 
 		// tick
 		NvFlexUpdateSolver(solver, dt, 1, false);
@@ -181,7 +186,7 @@ The API comes with a helper function, **NvFlexMakePhase()**, that generates phas
 Active Set
 **********
 
-Each solver has a fixed maximum number of particles specified at creation time (see **NvFlexCreateSolver()**), but not all particles need to be active at one time. Before a particle will be simulated, it must be added to the *active set*. This is an array of unique particle indices that the solver will simulate. Inactive particles have very low computational overhead, so this mechanism can be used to implement more general particle allocation strategies on top of the solver. 
+Each solver has a fixed maximum number of particles specified at creation time (see **NvFlexCreateSolver()**), but not all particles need to be active at one time. Before a particle will be simulated, it must be added to the *active set*. This is an array of unique particle indices that the solver will simulate. Inactive particles have very low computational overhead, so this mechanism can be used to implement more general particle allocation strategies on top of the solver. By default the active indices array is initialized with successive numbers from 0 to maxParticles-1, so by just setting the active count value to N user can make the firts N particles active.
 
 The example code below shows how to create an active set which enables simulation on the first 10 particles in the solver::
 

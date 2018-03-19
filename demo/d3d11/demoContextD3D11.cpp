@@ -16,7 +16,7 @@
 
 #include "appD3D11Ctx.h"
 
-#include "../d3d/demoContext.h"
+#include "demoContext.h"
 #include "../d3d/loader.h"
 
 #include <d3d11.h>
@@ -82,6 +82,7 @@ DemoContextD3D11::DemoContextD3D11()
 
 	m_fluidResolvedTarget = nullptr;
 	m_fluidResolvedTargetSRV = nullptr;
+	m_fluidResolvedStage = nullptr;
 
 	m_debugLineRender = new DebugLineRenderD3D11;
 	m_meshRenderer = new MeshRendererD3D11;
@@ -139,6 +140,7 @@ DemoContextD3D11::~DemoContextD3D11()
 
 	COMRelease(m_fluidResolvedTarget);
 	COMRelease(m_fluidResolvedTargetSRV);
+	COMRelease(m_fluidResolvedStage);
 
 	delete m_immediateMesh;
 	delete m_debugLineRender;
@@ -264,10 +266,10 @@ void DemoContextD3D11::_onWindowSizeChanged(int width, int height, bool minimize
 
 		COMRelease(m_fluidResolvedTarget);
 		COMRelease(m_fluidResolvedTargetSRV);
+		COMRelease(m_fluidResolvedStage);
 	}
 
 	// Recreate...
-
 	ID3D11Device* device = m_appGraphCtxD3D11->m_device;
 
 	// resolved texture target (for refraction / scene sampling)
@@ -297,6 +299,15 @@ void DemoContextD3D11::_onWindowSizeChanged(int width, int height, bool minimize
 		srvDesc.Texture2D.MostDetailedMip = 0;
 
 		if (FAILED(device->CreateShaderResourceView(m_fluidResolvedTarget, &srvDesc, &m_fluidResolvedTargetSRV)))
+		{
+			return;
+		}
+
+		texDesc.Usage = D3D11_USAGE_STAGING;
+		texDesc.BindFlags = 0u;
+		texDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+
+		if (FAILED(device->CreateTexture2D(&texDesc, nullptr, &m_fluidResolvedStage)))
 		{
 			return;
 		}
@@ -345,6 +356,29 @@ void DemoContextD3D11::endFrame()
 void DemoContextD3D11::presentFrame(bool fullsync)
 {
 	AppGraphCtxFramePresent(m_appGraphCtx, fullsync);
+}
+
+void DemoContextD3D11::readFrame(int* buffer, int width, int height)
+{
+	auto deviceContext = m_appGraphCtxD3D11->m_deviceContext;
+	if (m_msaaSamples > 1)
+	{
+		deviceContext->ResolveSubresource(m_fluidResolvedTarget, 0, m_appGraphCtxD3D11->m_backBuffer, 0, DXGI_FORMAT_R8G8B8A8_UNORM);
+		deviceContext->CopyResource(m_fluidResolvedStage, m_fluidResolvedTarget);
+	}
+	else
+	{
+		deviceContext->CopyResource(m_fluidResolvedStage, m_appGraphCtxD3D11->m_backBuffer);
+	}
+
+	D3D11_MAPPED_SUBRESOURCE mapped;
+	deviceContext->Map(m_fluidResolvedStage, 0u, D3D11_MAP_READ, 0, &mapped);
+	// y-coordinate is flipped for DirectX
+	for (int i = 0; i < height; i++)
+	{
+		memcpy(buffer + (width * i), ((int *)mapped.pData) + (width * (height - i)), width * sizeof(int));
+	}
+	deviceContext->Unmap(m_fluidResolvedStage, 0u);
 }
 
 void DemoContextD3D11::getViewRay(int x, int y, Vec3& origin, Vec3& dir)
@@ -902,6 +936,11 @@ void DemoContextD3D11::drawPoints(FluidRenderBuffers* buffersIn, int n, int offs
 	m_pointRenderer->draw(&params, buffers.m_positions.Get(), buffers.m_densities.Get(), buffers.m_indices.Get(), n, offset);
 }
 
+#if 0
+extern Mesh* g_mesh;
+void DrawShapes();
+#endif
+
 void DemoContextD3D11::renderEllipsoids(FluidRenderer* rendererIn, FluidRenderBuffers* buffersIn, int n, int offset, float radius, float screenWidth, float screenAspect, float fov, Vec3 lightPos, Vec3 lightTarget, Matrix44 lightTransform, ShadowMap* shadowMap, Vec4 color, float blur, float ior, bool debug)
 {
 	FluidRenderBuffersD3D11& buffers = *reinterpret_cast<FluidRenderBuffersD3D11*>(buffersIn);
@@ -914,7 +953,7 @@ void DemoContextD3D11::renderEllipsoids(FluidRenderer* rendererIn, FluidRenderBu
 	FluidDrawParamsD3D params;
 
 	params.renderMode = FLUID_RENDER_SOLID;
-	params.cullMode = FLUID_CULL_BACK;
+	params.cullMode = FLUID_CULL_NONE;// FLUID_CULL_BACK;
 	params.model = (const XMMATRIX&)Matrix44::kIdentity;
 	params.view = (const XMMATRIX&)m_view;
 	params.projection = (XMMATRIX&)m_proj;
@@ -927,15 +966,32 @@ void DemoContextD3D11::renderEllipsoids(FluidRenderer* rendererIn, FluidRenderBu
 	params.invViewport = float3(1.0f / screenWidth, screenAspect / screenWidth, 1.0f);
 	params.invProjection = float3(screenAspect * viewHeight, viewHeight, 1.0f);
 
+	// make sprites larger to get smoother thickness texture
+	const float thicknessScale = 4.0f;
+	params.pointRadius = thicknessScale * radius;
+
 	params.shadowMap = (ShadowMapD3D*)m_shadowMap;
 
+	renderer.m_thicknessTexture.bindAndClear(m_appGraphCtxD3D11->m_deviceContext);
+#if 0
+	// This seems redundant.
+	{
+		m_meshDrawParams.renderStage = MESH_DRAW_LIGHT;
+		m_meshDrawParams.cullMode = MESH_CULL_NONE;
+
+		if (g_mesh)
+			DrawMesh(g_mesh, Vec3(1.0f));
+
+		DrawShapes();
+
+		m_meshDrawParams.renderStage = MESH_DRAW_NULL;
+		m_meshDrawParams.cullMode = MESH_CULL_BACK;
+	}
+#endif
+	renderer.drawThickness(&params, &buffers);
+
 	renderer.m_depthTexture.bindAndClear(m_appGraphCtxD3D11->m_deviceContext);
-
-	// draw static shapes into depth buffer
-	//DrawShapes();
-
 	renderer.drawEllipsoids(&params, &buffers);
-
 
 	//---------------------------------------------------------------
 	// build smooth depth
@@ -949,7 +1005,7 @@ void DemoContextD3D11::renderEllipsoids(FluidRenderer* rendererIn, FluidRenderBu
 	params.debug = debug;
 
 	renderer.drawBlurDepth(&params);
-	
+
 	//---------------------------------------------------------------
 	// composite
 
@@ -975,17 +1031,17 @@ void DemoContextD3D11::renderEllipsoids(FluidRenderer* rendererIn, FluidRenderBu
 	params.lightPos = (const float3&)lightPos;
 	params.lightDir = (const float3&)-Normalize(lightTarget - lightPos);
 	params.lightTransform = (const XMMATRIX&)(ConvertToD3DProjection(lightTransform));
-	
+
 	// Resolve MS back buffer/copy
 	if (m_msaaSamples > 1)
 	{
 		deviceContext->ResolveSubresource(m_fluidResolvedTarget, 0, m_appGraphCtxD3D11->m_backBuffer, 0, DXGI_FORMAT_R8G8B8A8_UNORM);
-	}	
+	}
 	else
 	{
 		deviceContext->CopyResource(m_fluidResolvedTarget, m_appGraphCtxD3D11->m_backBuffer);
 	}
-	
+
 	renderer.drawComposite(&params, m_fluidResolvedTargetSRV);
 
 	deviceContext->OMSetBlendState(nullptr, 0, 0xffff);

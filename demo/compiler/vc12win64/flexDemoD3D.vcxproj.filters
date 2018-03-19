@@ -108,9 +108,6 @@
 		<ClInclude Include="..\..\scenes\pasta.h">
 			<Filter>demo\scenes</Filter>
 		</ClInclude>
-		<ClInclude Include="..\..\scenes\plasticbody.h">
-			<Filter>demo\scenes</Filter>
-		</ClInclude>
 		<ClInclude Include="..\..\scenes\player.h">
 			<Filter>demo\scenes</Filter>
 		</ClInclude>
@@ -121,9 +118,6 @@
 			<Filter>demo\scenes</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\scenes\restitution.h">
-			<Filter>demo\scenes</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\scenes\ridigbody.h">
 			<Filter>demo\scenes</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\scenes\rigidfluidcoupling.h">
@@ -182,7 +176,13 @@
 		<ClCompile Include="..\..\main.cpp">
 			<Filter>demo</Filter>
 		</ClCompile>
+		<ClCompile Include="..\..\shadersDemoContext.cpp">
+			<Filter>demo</Filter>
+		</ClCompile>
 		<ClInclude Include="..\..\benchmark.h">
+			<Filter>demo</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\demoContext.h">
 			<Filter>demo</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\helpers.h">
@@ -195,6 +195,9 @@
 			<Filter>demo</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\shaders.h">
+			<Filter>demo</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\shadersDemoContext.h">
 			<Filter>demo</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\stb_truetype.h">
@@ -243,6 +246,9 @@
 			<Filter>core</Filter>
 		</ClCompile>
 		<ClCompile Include="..\..\..\core\platform.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\..\core\png.cpp">
 			<Filter>core</Filter>
 		</ClCompile>
 		<ClCompile Include="..\..\..\core\sdf.cpp">
@@ -296,6 +302,9 @@
 		<ClInclude Include="..\..\..\core\platform.h">
 			<Filter>core</Filter>
 		</ClInclude>
+		<ClInclude Include="..\..\..\core\png.h">
+			<Filter>core</Filter>
+		</ClInclude>
 		<ClInclude Include="..\..\..\core\point3.h">
 			<Filter>core</Filter>
 		</ClInclude>
@@ -303,9 +312,6 @@
 			<Filter>core</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\..\core\sdf.h">
-			<Filter>core</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\..\core\skylight.h">
 			<Filter>core</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\..\core\tga.h">
@@ -351,6 +357,9 @@
 			<Filter>d3d12</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\d3d12\fluidSmoothRenderPipelineD3D12.h">
+			<Filter>d3d12</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\fluidThicknessRenderPipelineD3D12.h">
 			<Filter>d3d12</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\d3d12\imguiGraphD3D12.h">
@@ -435,6 +444,9 @@
 			<Filter>d3d12</Filter>
 		</ClCompile>
 		<ClCompile Include="..\..\d3d12\fluidSmoothRenderPipelineD3D12.cpp">
+			<Filter>d3d12</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\fluidThicknessRenderPipelineD3D12.cpp">
 			<Filter>d3d12</Filter>
 		</ClCompile>
 		<ClCompile Include="..\..\d3d12\imguiGraphD3D12.cpp">
@@ -575,9 +587,6 @@
 		<ClInclude Include="..\..\d3d\appGraphCtx.h">
 			<Filter>d3d</Filter>
 		</ClInclude>
-		<ClInclude Include="..\..\d3d\demoContext.h">
-			<Filter>d3d</Filter>
-		</ClInclude>
 		<ClInclude Include="..\..\d3d\imguiGraph.h">
 			<Filter>d3d</Filter>
 		</ClInclude>
@@ -593,9 +602,6 @@
 		<ClInclude Include="..\..\d3d\shaderCommonD3D.h">
 			<Filter>d3d</Filter>
 		</ClInclude>
-		<ClInclude Include="..\..\d3d\shadersDemoContext.h">
-			<Filter>d3d</Filter>
-		</ClInclude>
 		<ClCompile Include="..\..\d3d\appGraphCtxLoader.cpp">
 			<Filter>d3d</Filter>
 		</ClCompile>
@@ -609,9 +615,6 @@
 			<Filter>d3d</Filter>
 		</ClCompile>
 		<ClCompile Include="..\..\d3d\renderParamsD3D.cpp">
-			<Filter>d3d</Filter>
-		</ClCompile>
-		<ClCompile Include="..\..\d3d\shadersDemoContext.cpp">
 			<Filter>d3d</Filter>
 		</ClCompile>
 	</ItemGroup>
@@ -678,6 +681,15 @@
 			<Filter>Shader Files</Filter>
 		</FxCompile>
 		<FxCompile Include="./../../d3d/shaders/compositePS.hlsl">
+			<Filter>Shader Files</Filter>
+		</FxCompile>
+		<FxCompile Include="./../../d3d/shaders/pointThicknessVS.hlsl">
+			<Filter>Shader Files</Filter>
+		</FxCompile>
+		<FxCompile Include="./../../d3d/shaders/pointThicknessGS.hlsl">
+			<Filter>Shader Files</Filter>
+		</FxCompile>
+		<FxCompile Include="./../../d3d/shaders/pointThicknessPS.hlsl">
 			<Filter>Shader Files</Filter>
 		</FxCompile>
 	</ItemGroup>

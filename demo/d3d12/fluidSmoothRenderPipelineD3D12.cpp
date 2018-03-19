@@ -58,13 +58,13 @@ int FluidSmoothRenderPipelineD3D12::initialize(const RenderStateD3D12& state, co
 				param.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 			}
 
-			const int numSrvs = 1;
+			const int numSrvs = 2;
 			if (numSrvs > 0)
 			{
 				ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, numSrvs, 0);
 				params[rootIndex++].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
 			}
-			const int numSamplers = 0;
+			const int numSamplers = 1;
 			if (numSamplers > 0)
 			{
 				ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, numSamplers, 0);
@@ -147,6 +147,8 @@ int FluidSmoothRenderPipelineD3D12::bind(const void* paramsIn, const void* platf
 
 	// Bind the srvs
 	commandList->SetGraphicsRootDescriptorTable(1, state.m_srvCbvUavDescriptorHeap->getGpuHandle(m_fluidPointDepthSrvIndex));
+	// Bind the samplers
+	commandList->SetGraphicsRootDescriptorTable(2, state.m_samplerDescriptorHeap->getGpuHandle(params.m_sampleDescriptorBase));
 	return NV_OK;
 }
 

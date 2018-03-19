@@ -10,6 +10,10 @@
 
 #pragma once
 
+#ifndef _DEBUG
+#define ENABLE_AFTERMATH_SUPPORT 1
+#endif
+
 #define APP_GRAPH_CTX_API extern "C" __declspec(dllexport)
 
 struct SDL_Window;
@@ -44,4 +48,3 @@ APP_GRAPH_CTX_API void AppGraphCtxProfileEnd(AppGraphCtx* context, const char* l
 APP_GRAPH_CTX_API bool AppGraphCtxProfileGet(AppGraphCtx* context, const char** plabel, float* cpuTime, float* gpuTime, int index);
 
 APP_GRAPH_CTX_API size_t AppGraphCtxDedicatedVideoMemory(AppGraphCtx* context);
-

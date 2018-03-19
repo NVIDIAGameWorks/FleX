@@ -56,7 +56,8 @@
 			<PrecompiledHeaderFile></PrecompiledHeaderFile>
 		</ClCompile>
 		<Link>
-			<AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;d3dcompiler.lib;./../../../external/SDL2-2.0.4/lib/x64/SDL2.lib;./../../../external/SDL2-2.0.4/lib/x64/SDL2main.lib;./../../../external/NvToolsExt/lib/x64/nvToolsExt64_1.lib;./../../../external/D3D12/libs/x64/d3d12.lib;./../../../lib/win64/NvFlexDebugD3D_x64.lib;./../../../lib/win64/NvFlexExtDebugD3D_x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+			<AdditionalOptions>/DELAYLOAD:d3d11.dll /DELAYLOAD:d3d12.dll /DELAYLOAD:dxgi.dll</AdditionalOptions>
+			<AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;d3dcompiler.lib;delayimp.lib;./../../../external/SDL2-2.0.4/lib/x64/SDL2.lib;./../../../external/SDL2-2.0.4/lib/x64/SDL2main.lib;./../../../external/NvToolsExt/lib/x64/nvToolsExt64_1.lib;./../../../external/D3D12/libs/x64/d3d12.lib;./../../../lib/win64/NvFlexDebugD3D_x64.lib;./../../../lib/win64/NvFlexExtDebugD3D_x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
 			<OutputFile>$(OutDir)NvFlexDemoDebugD3D_x64.exe</OutputFile>
 			<AdditionalLibraryDirectories>$(CUDA_PATH)/lib/x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
 			<ProgramDatabaseFile>$(OutDir)/NvFlexDemoDebugD3D_x64.exe.pdb</ProgramDatabaseFile>
@@ -95,7 +96,8 @@
 			<PrecompiledHeaderFile></PrecompiledHeaderFile>
 		</ClCompile>
 		<Link>
-			<AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;d3dcompiler.lib;./../../../external/SDL2-2.0.4/lib/x64/SDL2.lib;./../../../external/SDL2-2.0.4/lib/x64/SDL2main.lib;./../../../external/NvToolsExt/lib/x64/nvToolsExt64_1.lib;./../../../external/D3D12/libs/x64/d3d12.lib;./../../../lib/win64/NvFlexReleaseD3D_x64.lib;./../../../lib/win64/NvFlexExtReleaseD3D_x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+			<AdditionalOptions>/DELAYLOAD:d3d11.dll /DELAYLOAD:d3d12.dll /DELAYLOAD:dxgi.dll</AdditionalOptions>
+			<AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;d3dcompiler.lib;delayimp.lib;./../../../external/SDL2-2.0.4/lib/x64/SDL2.lib;./../../../external/SDL2-2.0.4/lib/x64/SDL2main.lib;./../../../external/NvToolsExt/lib/x64/nvToolsExt64_1.lib;./../../../external/D3D12/libs/x64/d3d12.lib;./../../../lib/win64/NvFlexReleaseD3D_x64.lib;./../../../lib/win64/NvFlexExtReleaseD3D_x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
 			<OutputFile>$(OutDir)NvFlexDemoReleaseD3D_x64.exe</OutputFile>
 			<AdditionalLibraryDirectories>$(CUDA_PATH)/lib/x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
 			<ProgramDatabaseFile>$(OutDir)/NvFlexDemoReleaseD3D_x64.exe.pdb</ProgramDatabaseFile>
@@ -182,8 +184,6 @@
 		</ClInclude>
 		<ClInclude Include="..\..\scenes\pasta.h">
 		</ClInclude>
-		<ClInclude Include="..\..\scenes\plasticbody.h">
-		</ClInclude>
 		<ClInclude Include="..\..\scenes\player.h">
 		</ClInclude>
 		<ClInclude Include="..\..\scenes\potpourri.h">
@@ -191,8 +191,6 @@
 		<ClInclude Include="..\..\scenes\rayleightaylor.h">
 		</ClInclude>
 		<ClInclude Include="..\..\scenes\restitution.h">
-		</ClInclude>
-		<ClInclude Include="..\..\scenes\ridigbody.h">
 		</ClInclude>
 		<ClInclude Include="..\..\scenes\rigidfluidcoupling.h">
 		</ClInclude>
@@ -232,7 +230,11 @@
 		</ClCompile>
 		<ClCompile Include="..\..\main.cpp">
 		</ClCompile>
+		<ClCompile Include="..\..\shadersDemoContext.cpp">
+		</ClCompile>
 		<ClInclude Include="..\..\benchmark.h">
+		</ClInclude>
+		<ClInclude Include="..\..\demoContext.h">
 		</ClInclude>
 		<ClInclude Include="..\..\helpers.h">
 		</ClInclude>
@@ -241,6 +243,8 @@
 		<ClInclude Include="..\..\scenes.h">
 		</ClInclude>
 		<ClInclude Include="..\..\shaders.h">
+		</ClInclude>
+		<ClInclude Include="..\..\shadersDemoContext.h">
 		</ClInclude>
 		<ClInclude Include="..\..\stb_truetype.h">
 		</ClInclude>
@@ -269,6 +273,8 @@
 		<ClCompile Include="..\..\..\core\pfm.cpp">
 		</ClCompile>
 		<ClCompile Include="..\..\..\core\platform.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\..\core\png.cpp">
 		</ClCompile>
 		<ClCompile Include="..\..\..\core\sdf.cpp">
 		</ClCompile>
@@ -304,13 +310,13 @@
 		</ClInclude>
 		<ClInclude Include="..\..\..\core\platform.h">
 		</ClInclude>
+		<ClInclude Include="..\..\..\core\png.h">
+		</ClInclude>
 		<ClInclude Include="..\..\..\core\point3.h">
 		</ClInclude>
 		<ClInclude Include="..\..\..\core\quat.h">
 		</ClInclude>
 		<ClInclude Include="..\..\..\core\sdf.h">
-		</ClInclude>
-		<ClInclude Include="..\..\..\core\skylight.h">
 		</ClInclude>
 		<ClInclude Include="..\..\..\core\tga.h">
 		</ClInclude>
@@ -339,6 +345,8 @@
 		<ClInclude Include="..\..\d3d12\fluidEllipsoidRenderPipelineD3D12.h">
 		</ClInclude>
 		<ClInclude Include="..\..\d3d12\fluidSmoothRenderPipelineD3D12.h">
+		</ClInclude>
+		<ClInclude Include="..\..\d3d12\fluidThicknessRenderPipelineD3D12.h">
 		</ClInclude>
 		<ClInclude Include="..\..\d3d12\imguiGraphD3D12.h">
 		</ClInclude>
@@ -395,6 +403,8 @@
 		<ClCompile Include="..\..\d3d12\fluidEllipsoidRenderPipelineD3D12.cpp">
 		</ClCompile>
 		<ClCompile Include="..\..\d3d12\fluidSmoothRenderPipelineD3D12.cpp">
+		</ClCompile>
+		<ClCompile Include="..\..\d3d12\fluidThicknessRenderPipelineD3D12.cpp">
 		</ClCompile>
 		<ClCompile Include="..\..\d3d12\imguiGraphD3D12.cpp">
 		</ClCompile>
@@ -484,8 +494,6 @@
 	<ItemGroup>
 		<ClInclude Include="..\..\d3d\appGraphCtx.h">
 		</ClInclude>
-		<ClInclude Include="..\..\d3d\demoContext.h">
-		</ClInclude>
 		<ClInclude Include="..\..\d3d\imguiGraph.h">
 		</ClInclude>
 		<ClInclude Include="..\..\d3d\loader.h">
@@ -496,8 +504,6 @@
 		</ClInclude>
 		<ClInclude Include="..\..\d3d\shaderCommonD3D.h">
 		</ClInclude>
-		<ClInclude Include="..\..\d3d\shadersDemoContext.h">
-		</ClInclude>
 		<ClCompile Include="..\..\d3d\appGraphCtxLoader.cpp">
 		</ClCompile>
 		<ClCompile Include="..\..\d3d\imguiGraph.cpp">
@@ -507,8 +513,6 @@
 		<ClCompile Include="..\..\d3d\loader.cpp">
 		</ClCompile>
 		<ClCompile Include="..\..\d3d\renderParamsD3D.cpp">
-		</ClCompile>
-		<ClCompile Include="..\..\d3d\shadersDemoContext.cpp">
 		</ClCompile>
 	</ItemGroup>
 	<ItemGroup>
@@ -886,6 +890,60 @@
 			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</EnableDebuggingInformation>
 			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</DisableOptimizations>
 			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|x64'">compositePS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'"> </ObjectFileOutput>
+		</FxCompile>
+		<FxCompile Include="./../../d3d/shaders/pointThicknessVS.hlsl">
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|x64'">Vertex</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|x64'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|x64'">pointThicknessVS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'"> </ObjectFileOutput>
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|x64'">Vertex</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|x64'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|x64'">pointThicknessVS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'"> </ObjectFileOutput>
+		</FxCompile>
+		<FxCompile Include="./../../d3d/shaders/pointThicknessGS.hlsl">
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|x64'">Geometry</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|x64'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|x64'">pointThicknessGS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'"> </ObjectFileOutput>
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|x64'">Geometry</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|x64'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|x64'">pointThicknessGS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'"> </ObjectFileOutput>
+		</FxCompile>
+		<FxCompile Include="./../../d3d/shaders/pointThicknessPS.hlsl">
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='debug|x64'">Pixel</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='debug|x64'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='debug|x64'">pointThicknessPS</EntryPointName>
+			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</TreatWarningAsError>
+			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
+			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='debug|x64'"> </ObjectFileOutput>
+			<ShaderType Condition="'$(Configuration)|$(Platform)'=='release|x64'">Pixel</ShaderType>
+			<ShaderModel Condition="'$(Configuration)|$(Platform)'=='release|x64'">5.0</ShaderModel>
+			<EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</EnableDebuggingInformation>
+			<DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</DisableOptimizations>
+			<EntryPointName Condition="'$(Configuration)|$(Platform)'=='release|x64'">pointThicknessPS</EntryPointName>
 			<TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</TreatWarningAsError>
 			<HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'">../../../demo/d3d/shaders/%(Filename).hlsl.h</HeaderFileOutput>
 			<ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='release|x64'"> </ObjectFileOutput>

@@ -94,6 +94,7 @@ AppGraphCtx* AppGraphCtxCreateD3D12(int deviceID)
 	HRESULT hr = S_OK;
 
 #if defined(_DEBUG)
+#if !ENABLE_AFTERMATH_SUPPORT	// we cannot use debug layer together with aftermath
 	// Enable the D3D12 debug layer.
 	{
 		ID3D12Debug* debugController;
@@ -103,6 +104,7 @@ AppGraphCtx* AppGraphCtxCreateD3D12(int deviceID)
 		}
 		COMRelease(debugController);
 	}
+#endif
 #endif
 
 	UINT debugFlags = 0;
@@ -397,7 +399,7 @@ void AppGraphCtxInitRenderTargetD3D12(AppGraphCtx* contextIn, SDL_Window* window
 				// Set the target format
 				context->m_targetInfo.m_renderTargetFormats[0] = targetFormat;
 
-				D3D12_CLEAR_VALUE clearValue = {};
+				D3D12_CLEAR_VALUE clearValue = {}; clearValue.Color[3] = 1.0f;
 				clearValue.Format = targetFormat;
 
 				desc.Format = resourceFormat;
@@ -473,7 +475,12 @@ bool AppGraphCtxUpdateSizeD3D12(AppGraphCtx* contextIn, SDL_Window* window, bool
 {
 	auto context = cast_to_AppGraphCtxD3D12(contextIn);
 
+	// TODO: fix iflip fullscreen support
+	fullscreen = false;
+
 	bool sizeChanged = false;
+	int width, height;
+	SDL_GetWindowSize(window, &width, &height);
 
 	// sync with window
 	{
@@ -493,11 +500,6 @@ bool AppGraphCtxUpdateSizeD3D12(AppGraphCtx* contextIn, SDL_Window* window, bool
 
 		HRESULT hr = S_OK;
 
-		RECT rc;
-		GetClientRect(context->m_hWnd, &rc);
-		UINT width = rc.right - rc.left;
-		UINT height = rc.bottom - rc.top;
-
 		if (context->m_winW != width || context->m_winH != height)
 		{
 			context->m_winW = width;
@@ -512,11 +514,18 @@ bool AppGraphCtxUpdateSizeD3D12(AppGraphCtx* contextIn, SDL_Window* window, bool
 
 	if (sizeChanged)
 	{
+		const bool wasValid = context->m_valid;
+		// Release
 		AppGraphCtxReleaseRenderTargetD3D12(cast_from_AppGraphCtxD3D12(context));
-	}
-	if (sizeChanged && context->m_valid)
-	{
-		AppGraphCtxInitRenderTargetD3D12(cast_from_AppGraphCtxD3D12(context), window, fullscreen, numMSAASamples);
+		// If was valid recreate it
+		if (wasValid)
+		{
+			// Reset the size (the release sets it, to 0,0)
+			context->m_winW = width;
+			context->m_winH = height;
+			// 
+			AppGraphCtxInitRenderTargetD3D12(cast_from_AppGraphCtxD3D12(context), window, fullscreen, numMSAASamples);
+		}
 	}
 
 	return context->m_valid;
@@ -547,11 +556,14 @@ void AppGraphCtxReleaseRenderTargetD3D12(AppGraphCtx* contextIn)
 	context->m_swapChain->GetFullscreenState(&bFullscreen, nullptr);
 	if (bFullscreen == TRUE) context->m_swapChain->SetFullscreenState(FALSE, nullptr);
 
+	for (int i = 0; i != context->m_renderTargetCount; i++)
+	{
+		context->m_backBuffers[i].setResourceNull();
+		if (context->m_numMsaaSamples > 1)
+			context->m_renderTargets[i]->setResourceNull();
+	}
 	COMRelease(context->m_swapChain);
 	COMRelease(context->m_depthStencil);
-
-	for(int i=0;i!= context->m_renderTargetCount; i++)
-		context->m_renderTargets[i]->setResourceNull();
 
 	context->m_valid = false;
 	context->m_winW = 0u;

@@ -147,7 +147,8 @@ struct FluidShaderConst
 	float spotMin;
 	float spotMax;
 	float ior;
-	float _pad3;
+	//float _pad3;
+	float pointRadius;  // point size in world space
 
 	float4 shadowTaps[12];
 };

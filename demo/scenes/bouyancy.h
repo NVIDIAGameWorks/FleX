@@ -37,7 +37,6 @@ public:
 		g_params.viscosity = 2.0f;
 		g_params.numIterations = 4;
 		g_params.vorticityConfinement = 180.f;
-		g_params.anisotropyScale = 20.0f;
 		g_params.fluidRestDistance = restDistance;
 		g_params.numPlanes = 5;
 		g_params.cohesion = 0.001625f;

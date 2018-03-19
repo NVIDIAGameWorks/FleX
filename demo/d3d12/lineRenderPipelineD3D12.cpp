@@ -92,6 +92,7 @@ int LineRenderPipelineD3D12::initialize(const RenderStateD3D12& state, const std
 
 			PipelineStateD3D12& pipeState = m_states[PIPELINE_STATE_SHADOW];
 			pipeState.m_rootSignature = signiture.Get();
+			// In D3D12, debug will warn that render target is not bounded and writes to RTV are discarded. This is the correct behavior as what we want is the depth buffer.
 			NV_RETURN_ON_FAIL(device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pipeState.m_pipelineState)));
 		}
 	}

@@ -159,19 +159,29 @@
 <div class="section" id="id1">
 <h2>1.2.0<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
+<li>Improved collision against moving shapes, solver now correctly interpolates shape transforms for substeps</li>
+<li>Improved Linux support, removed GLUT/GLEW dependencies</li>
+<li>New API for adding soft-joints (dynamic shape-matching constraints) via. the extensions API, see NvFlexExtCreateSoftJoint()</li>
 <li>New API to retrieve particle neighbor information, see NvFlexGetNeighbors()</li>
 <li>New API to support shape collision filtering, collision channels can be assigned to particles and shapes to specify which pairs collide, see NvFlexPhase</li>
 <li>New API to support per-shape plastic deformation, it is now possible to specify plastic creep and threshold coefficient on a per-shape basis (previous global settings), see NvFlexSetRigids()</li>
 <li>New API to selectively disable solver features, this can lead to improved performance, see NvFlexFeatureMode, replaces global FlexParams::fluid option</li>
 <li>New API to allow sub-range particle buffer updates, see NvFlexCopyDesc</li>
 <li>New API for asynchronous compute, see NvFlexInitDesc</li>
+<li>New API change, NvFlexUpdateTriangleMesh() now takes vertices with 16-byte stride to remove CPU synchronization step in D3D implementations</li>
+<li>Fix for NvFlexParams::anisotropyScale, this change improves the fitting of ellipsoids to fluid particle distributions, it should now typically be left at 1.0</li>
+<li>Fix for NvFlexGetTimers() reporting incorrect values on D3D12</li>
+<li>Fix for vsync in D3D12</li>
+<li>Fix for crash when using Flex with NVIDIA driver 384.76</li>
 <li>Fix for unnecessary synchronization when calling NvFlexMap() on a device buffer</li>
 <li>Fix numerical precision for shape-matching constraints with large coordinates</li>
 <li>Fix for uninitialized contact indices returned from NvFlexGetContacts() if NvFlexUpdateSolver() has not been called</li>
 <li>Fix for SDF collision in D3D12</li>
+<li>Fix for free after delete in CUDA when using SDFs</li>
 <li>Fix for D3D warning when using NvFlexSetRigids()</li>
 <li>Add D3D12 rendering support to the demo</li>
 <li>Add support for device NvFlexBuffers on D3D</li>
+<li>Enable NvToolkit profiling zones so to provide annotations in NSight profiles by default, this requires nvToolsExt64_1.dll be present</li>
 </ul>
 </div>
 <div class="section" id="id2">
@@ -381,6 +391,30 @@
     </div>
 </div>
 </footer>
+
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      processEscapes: true,
+      skipTags: ["script","noscript","style","textarea"]
+    },
+    "HTML-CSS": { availableFonts: ["TeX"] },
+    TeX: {
+        Macros: {
+          Lrg: ['\\displaystyle{#1}', 1, ""]
+        }
+      }
+  });
+</script>
+
+
+<script type="text/javascript" async
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
 <script>
 var treestatename = 'GWDocsTreeState';
 var protocol = location.href.split('/')[0].toLowerCase();

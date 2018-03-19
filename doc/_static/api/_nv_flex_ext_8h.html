@@ -57,6 +57,8 @@ Data Structures</h2></td></tr>
 <tr class="separator:struct_nv_flex_ext_asset"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:struct_nv_flex_ext_instance"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_flex_ext_8h.html#struct_nv_flex_ext_instance">NvFlexExtInstance</a></td></tr>
 <tr class="separator:struct_nv_flex_ext_instance"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:struct_nv_flex_ext_soft_joint"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_flex_ext_8h.html#struct_nv_flex_ext_soft_joint">NvFlexExtSoftJoint</a></td></tr>
+<tr class="separator:struct_nv_flex_ext_soft_joint"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:struct_nv_flex_ext_tearing_particle_clone"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_flex_ext_8h.html#struct_nv_flex_ext_tearing_particle_clone">NvFlexExtTearingParticleClone</a></td></tr>
 <tr class="separator:struct_nv_flex_ext_tearing_particle_clone"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:struct_nv_flex_ext_tearing_mesh_edit"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_flex_ext_8h.html#struct_nv_flex_ext_tearing_mesh_edit">NvFlexExtTearingMeshEdit</a></td></tr>
@@ -157,6 +159,12 @@ Functions</h2></td></tr>
 <tr class="separator:ad08da77f432ca56bc59647bf73da86cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa36d43b9e53b9b66d43c2bc5eb5abf98"><td class="memItemLeft" align="right" valign="top">NV_FLEX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_flex_ext_8h.html#aa36d43b9e53b9b66d43c2bc5eb5abf98">NvFlexExtSetForceFields</a> (<a class="el" href="_nv_flex_ext_8h.html#a1117ce527b6b483cc756ab5352f6dc3f">NvFlexExtForceFieldCallback</a> *callback, const <a class="el" href="_nv_flex_ext_8h.html#struct_nv_flex_ext_force_field">NvFlexExtForceField</a> *forceFields, int numForceFields)</td></tr>
 <tr class="separator:aa36d43b9e53b9b66d43c2bc5eb5abf98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af52527c58c7bd671d26b2985b078aff4"><td class="memItemLeft" align="right" valign="top">NV_FLEX_API <a class="el" href="_nv_flex_ext_8h.html#struct_nv_flex_ext_soft_joint">NvFlexExtSoftJoint</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_flex_ext_8h.html#af52527c58c7bd671d26b2985b078aff4">NvFlexExtCreateSoftJoint</a> (<a class="el" href="_nv_flex_ext_8h.html#afaf84632a42346a718009bcda5efc8b4">NvFlexExtContainer</a> *container, const int *particleIndices, const float *particleLocalPositions, const int numJointParticles, const float stiffness)</td></tr>
+<tr class="separator:af52527c58c7bd671d26b2985b078aff4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a021a25caa64e7f9e9542ea0bc7e6d632"><td class="memItemLeft" align="right" valign="top">NV_FLEX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_flex_ext_8h.html#a021a25caa64e7f9e9542ea0bc7e6d632">NvFlexExtDestroySoftJoint</a> (<a class="el" href="_nv_flex_ext_8h.html#afaf84632a42346a718009bcda5efc8b4">NvFlexExtContainer</a> *container, <a class="el" href="_nv_flex_ext_8h.html#struct_nv_flex_ext_soft_joint">NvFlexExtSoftJoint</a> *joint)</td></tr>
+<tr class="separator:a021a25caa64e7f9e9542ea0bc7e6d632"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3fea23644fb7b0840132eee46ea971e4"><td class="memItemLeft" align="right" valign="top">NV_FLEX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_nv_flex_ext_8h.html#a3fea23644fb7b0840132eee46ea971e4">NvFlexExtSoftJointSetTransform</a> (<a class="el" href="_nv_flex_ext_8h.html#afaf84632a42346a718009bcda5efc8b4">NvFlexExtContainer</a> *container, <a class="el" href="_nv_flex_ext_8h.html#struct_nv_flex_ext_soft_joint">NvFlexExtSoftJoint</a> *joint, const float *position, const float *rotation)</td></tr>
+<tr class="separator:a3fea23644fb7b0840132eee46ea971e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The main include file for the Flex extensions API, this is a collection of helper functions for asset creation, scene management, and sample code that builds on the Flex core API. </p>
@@ -427,6 +435,70 @@ Source asset used to create this instance. </td></tr>
 userData</td>
 <td class="fielddoc">
 User data pointer. </td></tr>
+</table>
+
+</div>
+</div>
+<a name="struct_nv_flex_ext_soft_joint" id="struct_nv_flex_ext_soft_joint"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct NvFlexExtSoftJoint</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="textblock"><p>Represents a soft joint with a radius overlapping different flex objects Each soft joint can be spawned into a container using <a class="el" href="_nv_flex_ext_8h.html#af52527c58c7bd671d26b2985b078aff4">NvFlexExtCreateSoftJoint()</a> </p>
+</div><table class="fieldtable">
+<tr><th colspan="3">Data Fields</th></tr>
+<tr><td class="fieldtype">
+<a class="anchor" id="a9b81cabbc738fc2650c978bd39ae3bad"></a>int *</td>
+<td class="fieldname">
+particleIndices</td>
+<td class="fielddoc">
+Global indices. </td></tr>
+<tr><td class="fieldtype">
+<a class="anchor" id="a284e220726302e761f7cf5aa07884723"></a>float *</td>
+<td class="fieldname">
+particleLocalPositions</td>
+<td class="fielddoc">
+Relative offsets from the particles of the joint to the center. </td></tr>
+<tr><td class="fieldtype">
+<a class="anchor" id="a7850f47d32a8fe6107aae7a098de8f01"></a>int</td>
+<td class="fieldname">
+shapeIndex</td>
+<td class="fielddoc">
+Index in the container's shape body constraints array. </td></tr>
+<tr><td class="fieldtype">
+<a class="anchor" id="a77c2b96e59d92c49f902c2707df095f0"></a>int</td>
+<td class="fieldname">
+numParticles</td>
+<td class="fielddoc">
+Number of particles in the joint. </td></tr>
+<tr><td class="fieldtype">
+<a class="anchor" id="a0a01f7b650db1077ffc165762703552b"></a>float</td>
+<td class="fieldname">
+shapeTranslations[3]</td>
+<td class="fielddoc">
+Joint shape matching group translations (vec3s) </td></tr>
+<tr><td class="fieldtype">
+<a class="anchor" id="aad1bc1104e48d8839d1b9c4c41b8ed42"></a>float</td>
+<td class="fieldname">
+shapeRotations[4]</td>
+<td class="fielddoc">
+Joint shape matching group rotations (quaternions) </td></tr>
+<tr><td class="fieldtype">
+<a class="anchor" id="a53b814424d9b4cd111a95a2b8ea16f14"></a>float</td>
+<td class="fieldname">
+stiffness</td>
+<td class="fielddoc">
+Joint stiffness. </td></tr>
+<tr><td class="fieldtype">
+<a class="anchor" id="ad5a3a0aed59d8fb5dedbabe189749bc3"></a>bool</td>
+<td class="fieldname">
+initialized</td>
+<td class="fielddoc">
+Joint status flag. </td></tr>
 </table>
 
 </div>
@@ -2136,10 +2208,148 @@ Linear or no falloff. </td></tr>
 
 </div>
 </div>
+<a class="anchor" id="af52527c58c7bd671d26b2985b078aff4"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">NV_FLEX_API <a class="el" href="_nv_flex_ext_8h.html#struct_nv_flex_ext_soft_joint">NvFlexExtSoftJoint</a>* NvFlexExtCreateSoftJoint </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="_nv_flex_ext_8h.html#afaf84632a42346a718009bcda5efc8b4">NvFlexExtContainer</a> *&#160;</td>
+          <td class="paramname"><em>container</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *&#160;</td>
+          <td class="paramname"><em>particleIndices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>particleLocalPositions</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>numJointParticles</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float&#160;</td>
+          <td class="paramname"><em>stiffness</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Create a soft joint, the container will internally store a reference to the joint array</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">container</td><td>The container to spawn into </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">particleIndices</td><td>A pointer to an array of particle indices </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">particleLocalPositions</td><td>A pointer to an array of particle local positions </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">numJointParticles</td><td>The number of particles in the joint </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">stiffness</td><td>The stiffness of the joint </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A pointer to the soft joint </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a021a25caa64e7f9e9542ea0bc7e6d632"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">NV_FLEX_API void NvFlexExtDestroySoftJoint </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="_nv_flex_ext_8h.html#afaf84632a42346a718009bcda5efc8b4">NvFlexExtContainer</a> *&#160;</td>
+          <td class="paramname"><em>container</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="_nv_flex_ext_8h.html#struct_nv_flex_ext_soft_joint">NvFlexExtSoftJoint</a> *&#160;</td>
+          <td class="paramname"><em>joint</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Destroy a soft joint</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">container</td><td>The container the joint belongs to </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">joint</td><td>The soft joint to destroy </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a3fea23644fb7b0840132eee46ea971e4"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">NV_FLEX_API void NvFlexExtSoftJointSetTransform </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="_nv_flex_ext_8h.html#afaf84632a42346a718009bcda5efc8b4">NvFlexExtContainer</a> *&#160;</td>
+          <td class="paramname"><em>container</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="_nv_flex_ext_8h.html#struct_nv_flex_ext_soft_joint">NvFlexExtSoftJoint</a> *&#160;</td>
+          <td class="paramname"><em>joint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>position</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>rotation</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Transform all the local particles of the soft joint</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">container</td><td>The container to spawn into </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">joint</td><td>The soft joint to destroy </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">position</td><td>A pointer to a vec3 storing the soft joint new position </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">rotation</td><td>A pointer to a quaternion storing the soft joint new rotation </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jun 9 2017 09:57:25 for FLEX by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Mar 19 2018 14:53:17 for FLEX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

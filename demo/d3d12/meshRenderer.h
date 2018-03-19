@@ -147,12 +147,14 @@ struct RenderAllocation
 	{
 		m_numPositions = -1;
 		m_numPrimitives = -1;
-		m_primitiveType = primType; 
+		m_offset = 0;
+		m_primitiveType = primType;
 	}
 
 	PrimitiveType m_primitiveType;					///< The primitive type to draw
-	ptrdiff_t m_numPositions;							///< The total number of positions
-	ptrdiff_t m_numPrimitives;							///< The total number of primitives
+	ptrdiff_t m_numPositions;						///< The total number of positions
+	ptrdiff_t m_numPrimitives;						///< The total number of primitives
+	ptrdiff_t m_offset;								///< The start location in the render buffer to offset
 };
 
 struct MeshRenderer

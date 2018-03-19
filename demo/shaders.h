@@ -93,6 +93,48 @@ void ShadowDestroy(ShadowMap* map);
 void ShadowBegin(ShadowMap* map);
 void ShadowEnd();
 
+struct RenderTexture;
+RenderTexture* CreateRenderTexture(const char* filename);
+RenderTexture* CreateRenderTarget(int with, int height, bool depth);
+void DestroyRenderTexture(RenderTexture* tex);
+
+void SetRenderTarget(RenderTexture* target);
+
+struct RenderMaterial
+{
+	RenderMaterial()
+	{
+		frontColor = 0.5f;//Vec4(SrgbToLinear(Colour(71.0f/255.0f, 165.0f/255.0f, 1.0f)));
+		backColor = 0.5f;//Vec4(SrgbToLinear(Colour(165.0f/255.0f, 71.0f/255.0f, 1.0f)));
+
+		roughness = 0.5f;
+		metallic = 0.0f;
+		specular = 0.5f;
+
+		colorTex = NULL;
+
+		hidden = false;
+	}
+
+	Vec3 frontColor;
+	Vec3 backColor;
+	
+	float roughness;
+	float metallic;
+	float specular;
+
+	bool hidden;
+
+	RenderTexture* colorTex;
+};
+
+
+struct RenderMesh;
+RenderMesh* CreateRenderMesh(const Mesh* m);
+void DestroyRenderMesh(RenderMesh* m);
+void DrawRenderMesh(RenderMesh* m, const Matrix44& xform, const RenderMaterial& mat);
+void DrawRenderMeshInstances(RenderMesh* m, const Matrix44* xforms, int n, const RenderMaterial& mat);
+
 // primitive draw methods
 void DrawPlanes(Vec4* planes, int n, float bias);
 void DrawPoints(FluidRenderBuffers* buffer, int n, int offset, float radius, float screenWidth, float screenAspect, float fov, Vec3 lightPos, Vec3 lightTarget, Matrix44 lightTransform, ShadowMap* shadowTex, bool showDensity);
@@ -111,6 +153,7 @@ void DrawGpuMeshInstances(GpuMesh* m, const Matrix44* xforms, int n, const Vec3&
 // main lighting shader
 void BindSolidShader(Vec3 lightPos, Vec3 lightTarget, Matrix44 lightTransform, ShadowMap* shadowTex, float bias, Vec4 fogColor);
 void UnbindSolidShader();
+
 
 float RendererGetDeviceTimestamps(unsigned long long* begin, unsigned long long* end, unsigned long long* freq);
 void* GetGraphicsCommandQueue();
@@ -162,5 +205,4 @@ void RenderEllipsoids(FluidRenderer* render, FluidRenderBuffers* buffers, int n,
 void RenderDiffuse(FluidRenderer* render, DiffuseRenderBuffers* buffer, int n, float radius, float screenWidth, float screenAspect, float fov, Vec4 color, Vec3 lightPos, Vec3 lightTarget, Matrix44 lightTransform, ShadowMap* shadowTex, float motionBlur,  float inscatter, float outscatter, bool shadow, bool front);
 
 // UI rendering
-
 void DrawImguiGraph();

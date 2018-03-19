@@ -33,8 +33,10 @@
 #include "../../core/extrude.h"
 
 #include "../../external/SDL2-2.0.4/include/SDL.h"
+#include "../../external/glad/src/glad.c"
 
 #include "imguiRenderGL.h"
+#include "utilsGL.h"
 
 #include "shader.h"
 
@@ -43,6 +45,7 @@
 #include "android/AndroidDefine.h"
 #include "android/AndroidMatrixTool.h"
 #endif
+
 
 #define CudaCheck(x) { cudaError_t err = x; if (err != cudaSuccess) { printf("Cuda error: %d in %s at %s:%d\n", err, #x, __FILE__, __LINE__); assert(0); } }
 
@@ -133,6 +136,92 @@ struct DiffuseRenderBuffersGL
 	NvFlexBuffer* mDiffuseVelocitiesBuf;
 };
 
+struct FluidRenderer
+{
+	GLuint mDepthFbo;
+	GLuint mDepthTex;
+	GLuint mDepthSmoothTex;
+	GLuint mSceneFbo;
+	GLuint mSceneTex;
+	GLuint mReflectTex;
+
+	GLuint mThicknessFbo;
+	GLuint mThicknessTex;
+
+	GLuint mPointThicknessProgram;
+	//GLuint mPointDepthProgram;
+
+	GLuint mEllipsoidThicknessProgram;
+	GLuint mEllipsoidDepthProgram;
+
+	GLuint mCompositeProgram;
+	GLuint mDepthBlurProgram;
+
+	int mSceneWidth;
+	int mSceneHeight;
+};
+
+struct ShadowMap
+{
+	GLuint texture;
+	GLuint framebuffer;
+};
+
+struct GpuMesh
+{
+	GLuint mPositionsVBO;
+	GLuint mNormalsVBO;
+	GLuint mIndicesIBO;
+
+	int mNumVertices;
+	int mNumFaces;
+};
+
+// texture pool
+#include "../../core/png.h"
+
+GLuint LoadTexture(const char* filename)
+{
+    PngImage img;
+    if (PngLoad(filename, img))
+    {
+        GLuint tex;
+
+        glVerify(glGenTextures(1, &tex));
+        glVerify(glActiveTexture(GL_TEXTURE0));
+        glVerify(glBindTexture(GL_TEXTURE_2D, tex));
+
+        glVerify(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
+        glVerify(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+        glVerify(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
+        glVerify(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
+        glVerify(glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE));
+        glVerify(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img.m_width, img.m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, img.m_data));
+
+        PngFree(img);
+
+        return tex;
+    }
+    else
+    {
+        return NULL;
+    }
+}
+
+struct RenderTexture
+{
+    GLuint colorTex;
+    GLuint colorFrameBuffer;
+
+    GLuint depthTex;
+    GLuint depthFrameBuffer;
+
+    RenderTexture()
+    {
+        memset(this, 0, sizeof(*this));
+    }
+};
+
 namespace
 {
 
@@ -152,14 +241,14 @@ float g_shadowBias = 0.05f;
 
 } // anonymous namespace
 
+extern NvFlexLibrary* g_flexLib;
 extern Colour g_colors[];
 
-struct ShadowMap
-{
-	GLuint texture;
-	GLuint framebuffer;
-};
+extern Mesh* g_mesh;
+void DrawShapes();
 
+namespace OGL_Renderer
+{
 
 void InitRender(const RenderInitOptions& options)
 {
@@ -181,8 +270,10 @@ void InitRender(const RenderInitOptions& options)
 	// This makes our buffer swap syncronized with the monitor's vertical refresh
 	SDL_GL_SetSwapInterval(1);
 
-	glewExperimental = GL_TRUE;
-	glewInit();
+	if (!gladLoadGLLoader(SDL_GL_GetProcAddress))
+	{
+		printf("Could not initialize GL extensions\n");
+	}
 
 	imguiRenderGLInit(GetFilePathByPlatform("../../data/DroidSans.ttf").c_str());
 
@@ -192,7 +283,6 @@ void InitRender(const RenderInitOptions& options)
 
 void DestroyRender()
 {
-
 }
 
 void StartFrame(Vec4 clearColor)
@@ -305,11 +395,8 @@ void imguiGraphDraw()
 	glPopMatrix();
 }
 
-void ReshapeRender(SDL_Window* window)
+void ReshapeRender(int width, int height, bool minimized)
 {
-	int width, height;
-	SDL_GetWindowSize(window, &width, &height);
-
 	if (g_msaaSamples)
 	{
 		glVerify(glBindFramebuffer(GL_FRAMEBUFFER, 0));
@@ -352,35 +439,39 @@ void ReshapeRender(SDL_Window* window)
 
 void GetViewRay(int x, int y, Vec3& origin, Vec3& dir)
 {
-	double modelview[16];
-	glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+	float modelview[16];
+	glGetFloatv(GL_MODELVIEW_MATRIX, modelview);
 
-	double projection[16];
-	glGetDoublev(GL_PROJECTION_MATRIX, projection);
+	float projection[16];
+	glGetFloatv(GL_PROJECTION_MATRIX, projection);
 
 	int viewport[4];
 	glGetIntegerv(GL_VIEWPORT, viewport);
 
-	double nearPos[3];
-// Begin Add Android Support
-#ifdef ANDROID
-	glhUnProjectf(double(x), double(y), 0.0f, modelview, projection, viewport, nearPos);
-#else
-	gluUnProject(double(x), double(y), 0.0f, modelview, projection, viewport, &nearPos[0], &nearPos[1], &nearPos[2]);
-#endif
-// End Add Android Support
+	float nearPos[3];
+	UnProjectf(float(x), float(y), 0.0f, modelview, projection, viewport, nearPos);
 
-	double farPos[3];
-// Begin Add Android Support
-#ifdef ANDROID
-	glhUnProjectf(double(x), double(y), 1.0f, modelview, projection, viewport, farPos);
-#else
-	gluUnProject(double(x), double(y), 1.0f, modelview, projection, viewport, &farPos[0], &farPos[1], &farPos[2]);
-#endif	
-// End Add Android Support
+	float farPos[3];
+	UnProjectf(float(x), float(y), 1.0f, modelview, projection, viewport, farPos);
 
 	origin = Vec3(float(nearPos[0]), float(nearPos[1]), float(nearPos[2]));
 	dir = Normalize(Vec3(float(farPos[0]-nearPos[0]), float(farPos[1]-nearPos[1]), float(farPos[2]-nearPos[2])));
+}
+
+Vec3 GetScreenCoord(Vec3& pos) {
+	float modelview[16];
+	glGetFloatv(GL_MODELVIEW_MATRIX, modelview);
+
+	float projection[16];
+	glGetFloatv(GL_PROJECTION_MATRIX, projection);
+
+	int viewport[4];
+	glGetIntegerv(GL_VIEWPORT, viewport);
+
+	float screen[3];
+	Projectf(pos.x, pos.y, pos.z, modelview, projection, viewport, screen);
+
+	return Vec3((float)screen[0], (float)screen[1], (float)screen[2]);
 }
 
 void ReadFrame(int* backbuffer, int width, int height)
@@ -396,7 +487,50 @@ void PresentFrame(bool fullsync)
 	glFinish();
 	SDL_GL_SwapWindow(g_window);
 #endif
+}
 
+RenderTexture* CreateRenderTexture(const char* filename)
+{
+	GLuint tex = LoadTexture(filename);
+
+	if (tex)
+	{
+		RenderTexture* t = new RenderTexture();
+		t->colorTex = tex;
+
+		return t;
+	}
+	else
+	{
+		return NULL;
+	}
+}
+
+RenderTexture* CreateRenderTarget(int width, int height, bool depth)
+{
+	return NULL;
+}
+
+void DestroyRenderTexture(RenderTexture* t)
+{
+	if (t)
+	{
+		if (t->colorTex)
+			glDeleteTextures(1, &t->colorTex);
+
+		if (t->colorFrameBuffer)
+			glDeleteFramebuffers(1, &t->colorFrameBuffer);
+
+		if (t->depthTex)
+			glDeleteTextures(1, &t->depthTex);
+
+		if (t->depthFrameBuffer)
+			glDeleteFramebuffers(1, &t->depthFrameBuffer);
+
+		delete t;
+
+		
+	}
 }
 
 
@@ -801,6 +935,7 @@ void DrawPoints(FluidRenderBuffers* buffersIn, int n, int offset, float radius, 
 		glDisable(GL_VERTEX_PROGRAM_POINT_SIZE);		
 	}
 }
+
 void DrawPlane(const Vec4& p);
 
 static GLuint s_diffuseProgram = GLuint(-1);
@@ -920,6 +1055,47 @@ void UnbindSolidShader()
 
 	glUseProgram(0);
 }
+
+
+void SetMaterial(const Matrix44& xform, const RenderMaterial& mat)
+{
+	GLint program;
+	glGetIntegerv(GL_CURRENT_PROGRAM, &program);
+
+	if (program)
+	{
+		glUniformMatrix4fv( glGetUniformLocation(program, "objectTransform"), 1, false, xform);
+
+		const float maxSpecularPower = 2048.0f;
+
+		glVerify(glUniform1f(glGetUniformLocation(program, "specularPower"), powf(maxSpecularPower, 1.0f-mat.roughness)));
+		glVerify(glUniform3fv(glGetUniformLocation(program, "specularColor"), 1, Lerp(Vec3(mat.specular*0.08f), mat.frontColor, mat.metallic)));
+		glVerify(glUniform1f(glGetUniformLocation(program, "roughness"), mat.roughness));
+		glVerify(glUniform1f(glGetUniformLocation(program, "metallic"), mat.metallic));
+
+		// set material properties
+		if (mat.colorTex)
+		{
+			GLuint tex = mat.colorTex->colorTex;
+
+			glActiveTexture(GL_TEXTURE1);
+			glEnable(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D, tex);
+
+			glVerify(glUniform1i(glGetUniformLocation(program, "tex"), 1));		// use slot one
+			glVerify(glUniform1i(glGetUniformLocation(program, "texture"), 1)); // enable tex sampling
+		}
+		else
+		{
+			glVerify(glUniform1i(glGetUniformLocation(program, "tex"), 1));		// use slot one
+			glVerify(glUniform1i(glGetUniformLocation(program, "texture"), 0)); // disable tex sampling}
+		}
+	}
+
+	glVerify(glColor3fv(mat.frontColor));
+	glVerify(glSecondaryColor3fv(mat.backColor));
+}
+
 
 void DrawPlanes(Vec4* planes, int n, float bias)
 {
@@ -1741,31 +1917,6 @@ void main()
 );
 
 
-struct FluidRenderer
-{
-	GLuint mDepthFbo;
-	GLuint mDepthTex;
-	GLuint mDepthSmoothTex;
-	GLuint mSceneFbo;
-	GLuint mSceneTex;
-	GLuint mReflectTex;
-
-	GLuint mThicknessFbo;
-	GLuint mThicknessTex;
-
-	GLuint mPointThicknessProgram;
-	//GLuint mPointDepthProgram;
-
-	GLuint mEllipsoidThicknessProgram;
-	GLuint mEllipsoidDepthProgram;
-
-	GLuint mCompositeProgram;
-	GLuint mDepthBlurProgram;
-
-	int mSceneWidth;
-	int mSceneHeight;
-};
-
 FluidRenderer* CreateFluidRenderer(uint32_t width, uint32_t height)
 {
 	FluidRenderer* renderer = new FluidRenderer();
@@ -1918,8 +2069,6 @@ FluidRenderBuffers* CreateFluidRenderBuffers(int numFluidParticles, bool enableI
 
 	if (enableInterop)
 	{
-		extern NvFlexLibrary* g_flexLib;
-
 		buffers->mPositionBuf = NvFlexRegisterOGLBuffer(g_flexLib, buffers->mPositionVBO, numFluidParticles, sizeof(Vec4));
 		buffers->mDensitiesBuf = NvFlexRegisterOGLBuffer(g_flexLib, buffers->mDensityVBO, numFluidParticles, sizeof(float));
 		buffers->mIndicesBuf = NvFlexRegisterOGLBuffer(g_flexLib, buffers->mIndices, numFluidParticles, sizeof(int));
@@ -2026,8 +2175,6 @@ DiffuseRenderBuffers* CreateDiffuseRenderBuffers(int numDiffuseParticles, bool& 
 
 		if (enableInterop)
 		{
-			extern NvFlexLibrary* g_flexLib;
-
 			buffers->mDiffusePositionsBuf = NvFlexRegisterOGLBuffer(g_flexLib, buffers->mDiffusePositionVBO, numDiffuseParticles, sizeof(Vec4));
 			buffers->mDiffuseVelocitiesBuf = NvFlexRegisterOGLBuffer(g_flexLib, buffers->mDiffuseVelocityVBO, numDiffuseParticles, sizeof(Vec4));
 		}
@@ -2093,9 +2240,6 @@ void RenderFullscreenQuad()
 	glEnd();
 }
 
-extern Mesh* g_mesh;
-void DrawShapes();
-
 void RenderEllipsoids(FluidRenderer* render, FluidRenderBuffers* buffersIn, int n, int offset, float radius, float screenWidth, float screenAspect, float fov, Vec3 lightPos, Vec3 lightTarget, Matrix44 lightTransform, ShadowMap* shadowMap, Vec4 color, float blur, float ior, bool debug)
 {
 	FluidRenderBuffersGL* buffers = reinterpret_cast<FluidRenderBuffersGL*>(buffersIn);
@@ -2119,7 +2263,7 @@ void RenderEllipsoids(FluidRenderer* render, FluidRenderBuffers* buffersIn, int 
 	glDisable(GL_CULL_FACE);
 
 	if (g_mesh)
-		DrawMesh(g_mesh, Vec3(1.0f));
+		OGL_Renderer::DrawMesh(g_mesh, Vec3(1.0f));
 
 	DrawShapes();
 
@@ -2423,7 +2567,6 @@ void main()
 	}	
 	
 	{
-		
 		gl_TexCoord[1] = gl_TexCoordIn[0][1];	// vertex world pos (life in w)
 		gl_TexCoord[2] = gl_TexCoordIn[0][2];	// vertex eye pos
 		gl_TexCoord[3] = gl_TexCoordIn[0][3];	// vertex velocity in view space
@@ -2532,7 +2675,6 @@ void RenderDiffuse(FluidRenderer* render, DiffuseRenderBuffers* buffersIn, int n
 		glEnable(GL_BLEND);
 		glDisable(GL_CULL_FACE);
 		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-
 		
 		glUseProgram(sprogram);
 		glUniform1f( glGetUniformLocation(sprogram, "motionBlurScale"), motionBlur);
@@ -2662,17 +2804,6 @@ void RenderDiffuse(FluidRenderer* render, DiffuseRenderBuffers* buffersIn, int n
 
 	}
 }
-
-
-struct GpuMesh
-{
-	GLuint mPositionsVBO;
-	GLuint mNormalsVBO;
-	GLuint mIndicesIBO;
-
-	int mNumVertices;
-	int mNumFaces;
-};
 
 GpuMesh* CreateGpuMesh(const Mesh* m)
 {
@@ -2841,8 +2972,6 @@ void EndPoints()
 	glEnd();
 }
 
-
-
 float SyncAndGetRenderTime(unsigned long long* begin, unsigned long long* end, unsigned long long* freq)
 {
 	*begin = 0;
@@ -2868,4 +2997,270 @@ void GetRenderDevice(void** deviceOut, void** contextOut)
 void DrawImguiGraph()
 {
 	imguiGraphDraw();
+}
+
+}	// OGL Renderer
+
+
+#include "../demoContext.h"
+#include "demoContextOGL.h"
+
+DemoContext* CreateDemoContextOGL()
+{
+	return new DemoContextOGL;
+}
+
+bool DemoContextOGL::initialize(const RenderInitOptions& options)
+{
+	OGL_Renderer::InitRender(options);
+	return true;
+}
+
+void DemoContextOGL::startFrame(Vec4 colorIn)
+{
+	OGL_Renderer::StartFrame(colorIn);
+}
+
+void DemoContextOGL::endFrame()
+{
+	OGL_Renderer::EndFrame();
+}
+
+void DemoContextOGL::presentFrame(bool fullsync)
+{
+	OGL_Renderer::PresentFrame(fullsync);
+}
+
+void DemoContextOGL::readFrame(int* buffer, int width, int height)
+{
+	OGL_Renderer::ReadFrame(buffer, width, height);
+}
+
+void DemoContextOGL::getViewRay(int x, int y, Vec3& origin, Vec3& dir)
+{
+	OGL_Renderer::GetViewRay(x, y, origin, dir);
+}
+
+void DemoContextOGL::setView(Matrix44 view, Matrix44 projection)
+{
+	OGL_Renderer::SetView(view, projection);
+}
+
+void DemoContextOGL::renderEllipsoids(FluidRenderer* renderer, FluidRenderBuffers* buffers, int n, int offset, float radius, float screenWidth, float screenAspect, float fov, Vec3 lightPos, Vec3 lightTarget, Matrix44 lightTransform, ::ShadowMap* shadowMap, Vec4 color, float blur, float ior, bool debug)
+{
+	OGL_Renderer::RenderEllipsoids(renderer, buffers, n, offset, radius, screenWidth, screenAspect, fov, lightPos, lightTarget, lightTransform, shadowMap, color, blur, ior, debug);
+}
+
+void DemoContextOGL::drawMesh(const Mesh* m, Vec3 color)
+{
+	OGL_Renderer::DrawMesh(m, color);
+}
+
+void DemoContextOGL::drawCloth(const Vec4* positions, const Vec4* normals, const float* uvs, const int* indices, int numTris, int numPositions, int colorIndex, float expand, bool twosided, bool smooth)
+{
+	OGL_Renderer::DrawCloth(positions, normals, uvs, indices, numTris, numPositions, colorIndex, expand, twosided, smooth);
+}
+
+void DemoContextOGL::drawRope(Vec4* positions, int* indices, int numIndices, float radius, int color)
+{
+	OGL_Renderer::DrawRope(positions, indices, numIndices, radius, color);
+}
+
+void DemoContextOGL::drawPlane(const Vec4& p, bool color)
+{
+	OGL_Renderer::DrawPlane(p, color);
+}
+
+void DemoContextOGL::drawPlanes(Vec4* planes, int n, float bias)
+{
+	OGL_Renderer::DrawPlanes(planes, n, bias);
+}
+
+void DemoContextOGL::drawPoints(FluidRenderBuffers* buffers, int n, int offset, float radius, float screenWidth, float screenAspect, float fov, Vec3 lightPos, Vec3 lightTarget, Matrix44 lightTransform, ::ShadowMap* shadowTex, bool showDensity)
+{
+	OGL_Renderer::DrawPoints(buffers, n, offset, radius, screenWidth, screenAspect, fov, lightPos, lightTarget, lightTransform, shadowTex, showDensity);
+}
+
+void DemoContextOGL::graphicsTimerBegin()
+{
+	OGL_Renderer::GraphicsTimerBegin();
+}
+
+void DemoContextOGL::graphicsTimerEnd()
+{
+	OGL_Renderer::GraphicsTimerEnd();
+}
+
+float DemoContextOGL::rendererGetDeviceTimestamps(unsigned long long* begin, unsigned long long* end, unsigned long long* freq)
+{
+	return OGL_Renderer::RendererGetDeviceTimestamps(begin, end, freq);
+}
+
+void DemoContextOGL::bindSolidShader(Vec3 lightPos, Vec3 lightTarget, Matrix44 lightTransform, ::ShadowMap* shadowMap, float bias, Vec4 fogColor)
+{
+	OGL_Renderer::BindSolidShader(lightPos, lightTarget, lightTransform, shadowMap, bias, fogColor);
+}
+
+void DemoContextOGL::unbindSolidShader()
+{
+	OGL_Renderer::UnbindSolidShader();
+}
+
+ShadowMap* DemoContextOGL::shadowCreate()
+{
+	return OGL_Renderer::ShadowCreate();
+}
+
+void DemoContextOGL::shadowDestroy(ShadowMap* map)
+{
+	OGL_Renderer::ShadowDestroy(map);
+}
+
+void DemoContextOGL::shadowBegin(ShadowMap* map)
+{
+	OGL_Renderer::ShadowBegin(map);
+}
+
+void DemoContextOGL::shadowEnd()
+{
+	OGL_Renderer::ShadowEnd();
+}
+
+FluidRenderer* DemoContextOGL::createFluidRenderer(uint32_t width, uint32_t height)
+{
+	return OGL_Renderer::CreateFluidRenderer(width, height);
+}
+
+void DemoContextOGL::destroyFluidRenderer(FluidRenderer* renderer)
+{
+	OGL_Renderer::DestroyFluidRenderer(renderer);
+}
+
+FluidRenderBuffers* DemoContextOGL::createFluidRenderBuffers(int numParticles, bool enableInterop)
+{
+	return OGL_Renderer::CreateFluidRenderBuffers(numParticles, enableInterop);
+}
+
+void DemoContextOGL::updateFluidRenderBuffers(FluidRenderBuffers* buffers, NvFlexSolver* flex, bool anisotropy, bool density)
+{
+	OGL_Renderer::UpdateFluidRenderBuffers(buffers, flex, anisotropy, density);
+}
+
+void DemoContextOGL::updateFluidRenderBuffers(FluidRenderBuffers* buffers, Vec4* particles, float* densities, Vec4* anisotropy1, Vec4* anisotropy2, Vec4* anisotropy3, int numParticles, int* indices, int numIndices)
+{
+	OGL_Renderer::UpdateFluidRenderBuffers(buffers, particles, densities, anisotropy1, anisotropy2, anisotropy3, numParticles, indices, numIndices);
+}
+
+void DemoContextOGL::destroyFluidRenderBuffers(FluidRenderBuffers* buffers)
+{
+	OGL_Renderer::DestroyFluidRenderBuffers(buffers);
+}
+
+GpuMesh* DemoContextOGL::createGpuMesh(const Mesh* m)
+{
+	return OGL_Renderer::CreateGpuMesh(m);
+}
+
+void DemoContextOGL::destroyGpuMesh(GpuMesh* mesh)
+{
+	OGL_Renderer::DestroyGpuMesh(mesh);
+}
+
+void DemoContextOGL::drawGpuMesh(GpuMesh* m, const Matrix44& xform, const Vec3& color)
+{
+	OGL_Renderer::DrawGpuMesh(m, xform, color);
+}
+
+void DemoContextOGL::drawGpuMeshInstances(GpuMesh* m, const Matrix44* xforms, int n, const Vec3& color)
+{
+	OGL_Renderer::DrawGpuMeshInstances(m, xforms, n, color);
+}
+
+DiffuseRenderBuffers* DemoContextOGL::createDiffuseRenderBuffers(int numDiffuseParticles, bool& enableInterop)
+{
+	return OGL_Renderer::CreateDiffuseRenderBuffers(numDiffuseParticles, enableInterop);
+}
+
+void DemoContextOGL::destroyDiffuseRenderBuffers(DiffuseRenderBuffers* buffers)
+{
+	OGL_Renderer::DestroyDiffuseRenderBuffers(buffers);
+}
+
+void DemoContextOGL::updateDiffuseRenderBuffers(DiffuseRenderBuffers* buffers, Vec4* diffusePositions, Vec4* diffuseVelocities, int numDiffuseParticles)
+{
+	OGL_Renderer::UpdateDiffuseRenderBuffers(buffers, diffusePositions, diffuseVelocities, numDiffuseParticles);
+}
+
+void DemoContextOGL::updateDiffuseRenderBuffers(DiffuseRenderBuffers* buffers, NvFlexSolver* solver)
+{
+	OGL_Renderer::UpdateDiffuseRenderBuffers(buffers, solver);
+}
+
+void DemoContextOGL::drawDiffuse(FluidRenderer* render, const DiffuseRenderBuffers* buffers, int n, float radius, float screenWidth, float screenAspect, float fov, Vec4 color, Vec3 lightPos, Vec3 lightTarget, Matrix44 lightTransform, ::ShadowMap* shadowMap, float motionBlur, float inscatter, float outscatter, bool shadowEnabled, bool front)
+{
+	OGL_Renderer::RenderDiffuse(render, (DiffuseRenderBuffers*)buffers, n, radius, screenWidth, screenAspect, fov, color, lightPos, lightTarget, lightTransform, shadowMap, motionBlur, inscatter, outscatter, shadowEnabled, front);
+}
+
+int DemoContextOGL::getNumDiffuseRenderParticles(DiffuseRenderBuffers* buffers)
+{
+	return OGL_Renderer::GetNumDiffuseRenderParticles(buffers);
+}
+
+void DemoContextOGL::beginLines()
+{
+	OGL_Renderer::BeginLines();
+}
+
+void DemoContextOGL::drawLine(const Vec3& p, const Vec3& q, const Vec4& color)
+{
+	OGL_Renderer::DrawLine(p, q, color);
+}
+
+void DemoContextOGL::endLines()
+{
+	OGL_Renderer::EndLines();
+}
+
+void DemoContextOGL::onSizeChanged(int width, int height, bool minimized)
+{
+	OGL_Renderer::ReshapeRender(width, height, minimized);
+}
+
+void DemoContextOGL::startGpuWork()
+{
+	OGL_Renderer::StartGpuWork();
+}
+
+void DemoContextOGL::endGpuWork()
+{
+	OGL_Renderer::EndGpuWork();
+}
+
+void DemoContextOGL::flushGraphicsAndWait()
+{
+}
+
+void DemoContextOGL::setFillMode(bool wire)
+{
+	OGL_Renderer::SetFillMode(wire);
+}
+
+void DemoContextOGL::setCullMode(bool enabled)
+{
+	OGL_Renderer::SetCullMode(enabled);
+}
+
+void DemoContextOGL::drawImguiGraph()
+{
+	OGL_Renderer::DrawImguiGraph();
+}
+
+void* DemoContextOGL::getGraphicsCommandQueue()
+{
+	return OGL_Renderer::GetGraphicsCommandQueue();
+}
+
+void DemoContextOGL::getRenderDevice(void** device, void** context)
+{
+	OGL_Renderer::GetRenderDevice(device, context);
 }

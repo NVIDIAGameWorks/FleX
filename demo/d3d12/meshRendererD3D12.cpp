@@ -1,10 +1,8 @@
-
-// this
 #include "meshRendererD3D12.h"
 
 namespace FlexSample {
 
-/* static */ const D3D12_INPUT_ELEMENT_DESC MeshRendererD3D12::MeshInputElementDescs[4] =
+const D3D12_INPUT_ELEMENT_DESC MeshRendererD3D12::MeshInputElementDescs[4] =
 {
 	{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 	{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 1, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
@@ -12,7 +10,7 @@ namespace FlexSample {
 	{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 3, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
 };
 
-/* static */ const D3D12_INPUT_ELEMENT_DESC MeshRendererD3D12::PointInputElementDescs[3] =
+const D3D12_INPUT_ELEMENT_DESC MeshRendererD3D12::PointInputElementDescs[3] =
 {
 	{ "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 	{ "DENSITY", 0, DXGI_FORMAT_R32_FLOAT, 1, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
@@ -67,7 +65,6 @@ void RenderMeshD3D12::_setBufferNames()
 }
 
 /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Dx12MeshRenderer !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
-
 
 MeshRendererD3D12::MeshRendererD3D12()
 {
@@ -326,8 +323,7 @@ RenderMesh* MeshRendererD3D12::createMesh(const MeshData2& meshData)
 	return mesh;
 }
 
-
-/* static */int MeshRendererD3D12::defaultDraw(const RenderAllocation& allocIn, size_t sizeOfAlloc, const void* platformState)
+int MeshRendererD3D12::defaultDraw(const RenderAllocation& allocIn, size_t sizeOfAlloc, const void* platformState)
 {
 	const RenderStateD3D12& state = *(RenderStateD3D12*)platformState;
 	ID3D12GraphicsCommandList* commandList = state.m_commandList;
@@ -352,11 +348,11 @@ RenderMesh* MeshRendererD3D12::createMesh(const MeshData2& meshData)
 
 			if (alloc.m_indexBufferView.SizeInBytes)
 			{
-				commandList->DrawIndexedInstanced((UINT)allocIn.m_numPrimitives, 1, 0, 0, 0);
+				commandList->DrawIndexedInstanced((UINT)allocIn.m_numPrimitives, 1, (UINT)allocIn.m_offset, 0, 0);
 			}
 			else
 			{
-				commandList->DrawInstanced((UINT)allocIn.m_numPrimitives, 1, 0, 0);
+				commandList->DrawInstanced((UINT)allocIn.m_numPrimitives, 1, (UINT)allocIn.m_offset, 0);
 			}
 			break;
 		}
@@ -372,7 +368,7 @@ RenderMesh* MeshRendererD3D12::createMesh(const MeshData2& meshData)
 
 			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
 			commandList->IASetVertexBuffers(0, 1, &alloc.m_vertexBufferView);
-			
+
 			if (alloc.m_indexBufferView.SizeInBytes)
 			{
 				commandList->IASetIndexBuffer(nullptr);

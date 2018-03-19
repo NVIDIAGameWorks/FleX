@@ -25,7 +25,7 @@ PointRenderPipelineD3D12::PointRenderPipelineD3D12():
 {
 }
 
-/* static */PointRenderPipelineD3D12::PipelineStateType PointRenderPipelineD3D12::getPipelineStateType(PointDrawStage stage, PointRenderMode mode, PointCullMode cull)
+PointRenderPipelineD3D12::PipelineStateType PointRenderPipelineD3D12::getPipelineStateType(PointDrawStage stage, PointRenderMode mode, PointCullMode cull)
 {
 	switch (stage)
 	{

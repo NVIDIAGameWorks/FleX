@@ -1383,7 +1383,7 @@ CUDA_CALLABLE inline bool PointInTriangle(Vec3 a, Vec3 b, Vec3 c, Vec3 p)
 	return true;
 }
 
-inline void ClosestPointBetweenLineSegments(const Vec3& p, const Vec3& q, const Vec3& r, const Vec3& s, float& u, float& v)
+CUDA_CALLABLE inline void ClosestPointBetweenLineSegments(const Vec3& p, const Vec3& q, const Vec3& r, const Vec3& s, float& u, float& v)
 	{
 		Vec3 d1 = q-p;
 		Vec3 d2 = s-r;

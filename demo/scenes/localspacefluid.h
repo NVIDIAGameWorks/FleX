@@ -57,7 +57,6 @@ public:
 		g_params.numIterations = 4;
 
 		g_params.smoothing = 0.4f;
-		g_params.anisotropyScale = 3.0f / radius;
 		g_params.viscosity = 0.001f;
 		g_params.cohesion = 0.05f;
 		g_params.surfaceTension = 0.0f;

@@ -806,6 +806,7 @@ NvFlexDistanceFieldId CreateSDF(const char* meshFile, int dim, float margin = 0.
 	g_fields[sdf] = CreateGpuMesh(mesh);
 
 	delete mesh;
+	delete[] pfm.m_data;
 
 	return sdf;
 }

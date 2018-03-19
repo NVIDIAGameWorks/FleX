@@ -52,10 +52,10 @@ int Dx12RenderTarget::init(AppGraphCtxD3D12* renderContext, const Desc& desc)
 		// Depending on usage this format may not be right...
 		D3D12_CLEAR_VALUE clearValue;
 		clearValue.Format = targetFormat;
-		clearValue.Color[0] = FLT_MAX;
-		clearValue.Color[1] = FLT_MAX;
-		clearValue.Color[2] = FLT_MAX;
-		clearValue.Color[3] = FLT_MAX;
+		clearValue.Color[0] = desc.m_targetClearColor[0];
+		clearValue.Color[1] = desc.m_targetClearColor[1];
+		clearValue.Color[2] = desc.m_targetClearColor[2];
+		clearValue.Color[3] = desc.m_targetClearColor[3];
 
 		NV_RETURN_ON_FAIL(m_renderTarget.initCommitted(device, heapProps, D3D12_HEAP_FLAG_NONE, resourceDesc, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, &clearValue));
 

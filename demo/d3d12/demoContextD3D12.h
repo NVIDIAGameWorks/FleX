@@ -23,7 +23,7 @@
 #include <SDL_video.h>
 
 #include "shaders.h"
-#include "d3d/demoContext.h"
+#include "demoContext.h"
 
 #define NOMINMAX
 #include <d3d12.h>
@@ -120,6 +120,8 @@ public:
 	virtual void endFrame() override;
 	virtual void presentFrame(bool fullsync) override;
 
+	virtual void readFrame(int* backbuffer, int width, int height) override;
+
 	virtual void getViewRay(int x, int y, Vec3& origin, Vec3& dir) override;
 	virtual void setView(Matrix44 view, Matrix44 projection) override;
 	virtual void renderEllipsoids(FluidRenderer* renderer, FluidRenderBuffers* buffers, int n, int offset, float radius, float screenWidth, float screenAspect, float fov, Vec3 lightPos, Vec3 lightTarget, Matrix44 lightTransform, ::ShadowMap* shadowMap, Vec4 color, float blur, float ior, bool debug) override;
@@ -198,11 +200,11 @@ public:
 	Matrix44 m_proj;
 
 	// NOTE! These are allocated such that they are in order. This is required because on compositePS.hlsl, I need s0, and s1 to be linear, and then shadowMap samplers.
-	int m_linearSamplerIndex;					///< Index to a linear sample on the m_samplerDescriptorHeap
+	int m_linearSamplerIndex;				///< Index to a linear sample on the m_samplerDescriptorHeap
 	int m_shadowMapLinearSamplerIndex;		///< Index to shadow map depth comparator sampler descriptor in m_samplerDescriptorHeap
 	
 	int m_fluidPointDepthSrvIndex;			///< Index into srv heap that holds srv for the m_flexMeshPipeline
-	int m_fluidCompositeSrvBaseIndex;			///< We have a set of NUM_COMPOSITE_SRVS for every back buffer there is								
+	int m_fluidCompositeSrvBaseIndex;		///< We have a set of NUM_COMPOSITE_SRVS for every back buffer there is								
 
 	AppGraphCtx* m_appGraphCtx;
 	AppGraphCtxD3D12* m_renderContext;
@@ -212,12 +214,14 @@ public:
 	// Render pipelines
 	std::unique_ptr<RenderPipeline> m_meshPipeline;
 	std::unique_ptr<RenderPipeline> m_pointPipeline;
+	std::unique_ptr<RenderPipeline> m_fluidThicknessPipeline;
 	std::unique_ptr<RenderPipeline> m_fluidPointPipeline;
 	std::unique_ptr<RenderPipeline> m_fluidSmoothPipeline;
 	std::unique_ptr<RenderPipeline> m_fluidCompositePipeline;
 	std::unique_ptr<RenderPipeline> m_diffusePointPipeline;
 	std::unique_ptr<RenderPipeline> m_linePipeline;
 
+	std::unique_ptr<NvCo::Dx12RenderTarget> m_fluidThicknessRenderTarget;
 	std::unique_ptr<NvCo::Dx12RenderTarget> m_fluidPointRenderTarget;
 	std::unique_ptr<NvCo::Dx12RenderTarget> m_fluidSmoothRenderTarget;
 	std::unique_ptr<NvCo::Dx12RenderTarget> m_fluidResolvedTarget;					///< The main render target resolved, such that it can be sampled from
@@ -246,6 +250,10 @@ public:
 	UINT64			 m_graphicsCompleteFenceValue;
 	ID3D12QueryHeap* m_queryHeap;
 	ID3D12Resource*  m_queryResults;
+
+	// Staging buffer
+	ID3D12Resource* m_bufferStage;
+	D3D12_PLACED_SUBRESOURCE_FOOTPRINT m_footprint;
 
 	bool m_inLineDraw;
 	std::vector<LineData::Vertex> m_debugLineVertices;

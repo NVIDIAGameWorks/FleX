@@ -6,12 +6,16 @@ cbuffer constBuf : register(b0)
 };
 
 Texture2D<float> depthTex : register(t0);
+Texture2D<float> thicknessTex : register(t1);
+
+SamplerState texSampler : register(s0);
 
 float sqr(float x) { return x*x; }
 
 float blurDepthPS(PassthroughVertexOut input) : SV_TARGET
 {
 	float4 inPosition = input.position;
+	float2 gl_TexCoord[1] = { input.texCoord };
 
 	// debug: return the center depth sample
 	//return depthTex.Load(int3(inPosition.xy, 0)).x;
@@ -22,7 +26,8 @@ float blurDepthPS(PassthroughVertexOut input) : SV_TARGET
 
 	// eye-space depth of center sample
 	float depth = depthTex.Load(int3(inPosition.xy, 0)).x;
-	float thickness = 0.0f; //texture2D(thicknessTex, gl_TexCoord[0].xy).x;
+	//float thickness = 0.0f; //texture2D(thicknessTex, gl_TexCoord[0].xy).x;
+	float thickness = thicknessTex.Sample(texSampler, gl_TexCoord[0].xy).x;
 
 	/*
 	// threshold on thickness to create nice smooth silhouettes

@@ -23,6 +23,9 @@
 
 #include "fluidRenderD3D11.h"
 
+#include "../d3d/shaders/pointThicknessVS.hlsl.h"
+#include "../d3d/shaders/pointThicknessGS.hlsl.h"
+#include "../d3d/shaders/pointThicknessPS.hlsl.h"
 #include "../d3d/shaders/ellipsoidDepthVS.hlsl.h"
 #include "../d3d/shaders/ellipsoidDepthGS.hlsl.h"
 #include "../d3d/shaders/ellipsoidDepthPS.hlsl.h"
@@ -54,11 +57,30 @@ void FluidRendererD3D11::init(ID3D11Device* device, ID3D11DeviceContext* context
 	m_sceneWidth = width;
 	m_sceneHeight = height;
 
+	m_thicknessTexture.init(device, width, height);
 	m_depthTexture.init(device, width, height);
 	m_depthSmoothTexture.init(device, width, height, false);
 
 	m_device = device;
 	m_deviceContext = context;
+
+	// create the input layout
+	{
+		D3D11_INPUT_ELEMENT_DESC inputElementDescs[] =
+		{
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "U", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "V", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "W", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		};
+
+		m_device->CreateInputLayout(inputElementDescs, 4, g_pointThicknessVS, sizeof(g_pointThicknessVS), &m_pointThicknessLayout);
+	}
+
+	// create the shaders
+	m_device->CreateVertexShader(g_pointThicknessVS, sizeof(g_pointThicknessVS), nullptr, &m_pointThicknessVs);
+	m_device->CreateGeometryShader(g_pointThicknessGS, sizeof(g_pointThicknessGS), nullptr, &m_pointThicknessGs);
+	m_device->CreatePixelShader(g_pointThicknessPS, sizeof(g_pointThicknessPS), nullptr, &m_pointThicknessPs);
 	
 	// create the input layout
 	{
@@ -180,6 +202,72 @@ void FluidRendererD3D11::_createScreenQuad()
 	}
 }
 
+void FluidRendererD3D11::drawThickness(const FluidDrawParamsD3D* params, const FluidRenderBuffersD3D11* buffers)
+{
+	ID3D11DeviceContext* deviceContext = m_deviceContext;
+
+	// update constant buffer
+	{
+
+		D3D11_BUFFER_DESC desc;
+		m_constantBuffer->GetDesc(&desc);
+
+		D3D11_MAPPED_SUBRESOURCE mappedResource = {};
+		if (SUCCEEDED(deviceContext->Map(m_constantBuffer.Get(), 0u, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
+		{
+			Hlsl::FluidShaderConst constBuf;
+			RenderParamsUtilD3D::calcFluidConstantBuffer(*params, constBuf);
+			memcpy(mappedResource.pData, &constBuf, sizeof(Hlsl::FluidShaderConst));
+			deviceContext->Unmap(m_constantBuffer.Get(), 0u);
+		}
+	}
+
+	deviceContext->VSSetShader(m_pointThicknessVs.Get(), nullptr, 0u);
+	deviceContext->GSSetShader(m_pointThicknessGs.Get(), nullptr, 0u);
+	deviceContext->PSSetShader(m_pointThicknessPs.Get(), nullptr, 0u);
+
+	deviceContext->IASetInputLayout(m_pointThicknessLayout.Get());
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+
+	deviceContext->VSSetConstantBuffers(0, 1, m_constantBuffer.GetAddressOf());
+	deviceContext->GSSetConstantBuffers(0, 1, m_constantBuffer.GetAddressOf());
+	deviceContext->PSSetConstantBuffers(0, 1, m_constantBuffer.GetAddressOf());
+
+	ID3D11Buffer* vertexBuffers[4] =
+	{
+		buffers->m_positions.Get(),
+		buffers->m_anisotropiesArr[0].Get(),
+		buffers->m_anisotropiesArr[1].Get(),
+		buffers->m_anisotropiesArr[2].Get()
+	};
+
+	unsigned int vertexBufferStrides[4] =
+	{
+		sizeof(float4),
+		sizeof(float4),
+		sizeof(float4),
+		sizeof(float4)
+	};
+
+	unsigned int vertexBufferOffsets[4] = { 0 };
+
+	deviceContext->IASetVertexBuffers(0, 4, vertexBuffers, vertexBufferStrides, vertexBufferOffsets);
+	deviceContext->IASetIndexBuffer(buffers->m_indices.Get(), DXGI_FORMAT_R32_UINT, 0u);
+
+	float depthSign = DirectX::XMVectorGetW(params->projection.r[2]);
+	if (depthSign < 0.f)
+	{
+		deviceContext->RSSetState(m_rasterizerState[params->renderMode][params->cullMode].Get());
+	}
+
+	deviceContext->DrawIndexed(params->n, params->offset, 0);
+
+	if (depthSign < 0.f)
+	{
+		deviceContext->RSSetState(nullptr);
+	}
+}
+
 void FluidRendererD3D11::drawEllipsoids(const FluidDrawParamsD3D* params, const FluidRenderBuffersD3D11* buffers)
 {
 	ID3D11DeviceContext* deviceContext = m_deviceContext;
@@ -211,7 +299,7 @@ void FluidRendererD3D11::drawEllipsoids(const FluidDrawParamsD3D* params, const 
 	deviceContext->GSSetConstantBuffers(0, 1, m_constantBuffer.GetAddressOf());
 	deviceContext->PSSetConstantBuffers(0, 1, m_constantBuffer.GetAddressOf());
 
-	ID3D11Buffer* vertexBuffers[4] = 
+	ID3D11Buffer* vertexBuffers[4] =
 	{
 		buffers->m_positions.Get(),
 		buffers->m_anisotropiesArr[0].Get(),
@@ -237,7 +325,7 @@ void FluidRendererD3D11::drawEllipsoids(const FluidDrawParamsD3D* params, const 
 	{
 		deviceContext->RSSetState(m_rasterizerState[params->renderMode][params->cullMode].Get());
 	}
-	
+
 	deviceContext->DrawIndexed(params->n, params->offset, 0);
 
 	if (depthSign < 0.f)
@@ -266,8 +354,11 @@ void FluidRendererD3D11::drawBlurDepth(const FluidDrawParamsD3D* params)
 	deviceContext->GSSetShader(nullptr, nullptr, 0u);
 	deviceContext->PSSetShader(m_blurDepthPs.Get(), nullptr, 0u);
 
-	ID3D11ShaderResourceView* srvs[1] = { m_depthTexture.m_backSrv.Get() };
-	deviceContext->PSSetShaderResources(0, 1, srvs);
+	ID3D11ShaderResourceView* srvs[2] = { m_depthTexture.m_backSrv.Get(), m_thicknessTexture.m_backSrv.Get() };
+	deviceContext->PSSetShaderResources(0, 2, srvs);
+
+	ID3D11SamplerState* samps[1] = { m_thicknessTexture.m_linearSampler.Get() };
+	deviceContext->PSSetSamplers(0, 1, samps);
 
 	deviceContext->IASetInputLayout(m_passThroughLayout.Get());
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
@@ -331,8 +422,7 @@ void FluidRendererD3D11::drawComposite(const FluidDrawParamsD3D* params, ID3D11S
 		depthMap->m_linearSampler.Get() ,
 		shadowMap->m_linearSampler.Get()
 	};
-	deviceContext->PSSetSamplers(0, 2, samps);	
-
+	deviceContext->PSSetSamplers(0, 2, samps);
 
 	deviceContext->IASetInputLayout(m_passThroughLayout.Get());
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);

@@ -49,12 +49,15 @@
 #include "shaders.h"
 #include "imgui.h"
 
+#include "shadersDemoContext.h"
+
 #if FLEX_DX
-#include "d3d/shadersDemoContext.h"
-class DemoContext;
-extern DemoContext* CreateDemoContextD3D12();
-extern DemoContext* CreateDemoContextD3D11();
-#endif // FLEX_DX
+#include "d3d\appGraphCtx.h"
+#endif
+
+#if ENABLE_AFTERMATH_SUPPORT
+#include <external/GFSDK_Aftermath_v1.21/include/GFSDK_Aftermath.h>
+#endif
 
 SDL_Window* g_window;			// window handle
 unsigned int g_windowId;		// window id
@@ -125,6 +128,7 @@ bool g_interop = true;
 bool g_d3d12 = false;
 bool g_useAsyncCompute = true;		
 bool g_increaseGfxLoadForAsyncComputeTesting = false;
+int g_graphics = 0;	// 0=ogl, 1=DX11, 2=DX12
 
 FluidRenderer* g_fluidRenderer;
 FluidRenderBuffers* g_fluidRenderBuffers;
@@ -139,9 +143,10 @@ int g_numDetailTimers;
 NvFlexDetailTimer * g_detailTimers;
 
 int g_maxDiffuseParticles;
-unsigned char g_maxNeighborsPerParticle;
+int g_maxNeighborsPerParticle;
 int g_numExtraParticles;
 int g_numExtraMultiplier = 1;
+int g_maxContactsPerParticle;
 
 // mesh used for deformable object rendering
 Mesh* g_mesh;
@@ -559,13 +564,6 @@ void Init(int scene, bool centerCamera = true)
 {
 	RandInit();
 
-	if (g_buffers)
-	{
-		// Wait for any running GPU work to finish
-		MapBuffers(g_buffers);
-		UnmapBuffers(g_buffers);
-	}
-
 	if (g_solver)
 	{
 		if (g_buffers)
@@ -764,6 +762,7 @@ void Init(int scene, bool centerCamera = true)
 	g_maxDiffuseParticles = 0;	// number of diffuse particles
 	g_maxNeighborsPerParticle = 96;
 	g_numExtraParticles = 0;	// number of particles allocated but not made active	
+	g_maxContactsPerParticle = 6;
 
 	g_sceneLower = FLT_MAX;
 	g_sceneUpper = -FLT_MAX;
@@ -867,6 +866,7 @@ void Init(int scene, bool centerCamera = true)
 	g_solverDesc.maxParticles = maxParticles;
 	g_solverDesc.maxDiffuseParticles = g_maxDiffuseParticles;
 	g_solverDesc.maxNeighborsPerParticle = g_maxNeighborsPerParticle;
+	g_solverDesc.maxContactsPerParticle = g_maxContactsPerParticle;
 
 	// main create method for the Flex solver
 	g_solver = NvFlexCreateSolver(g_flexLib, &g_solverDesc);
@@ -2206,7 +2206,6 @@ void UpdateFrame()
 		NvFlexGetDiffuseParticles(g_solver, NULL, NULL, g_buffers->diffuseCount.buffer);
 	}
 
-
 	double updateEndTime = GetSeconds();
 
 	//-------------------------------------------------------
@@ -2237,6 +2236,17 @@ void UpdateFrame()
 		Init(g_scene);
 	}
 }
+
+#if ENABLE_AFTERMATH_SUPPORT
+void DumpAftermathData()
+{
+	GFSDK_Aftermath_ContextData dataOut;
+	GFSDK_Aftermath_Status statusOut;
+
+	NvFlexGetDataAftermath(g_flexLib, &dataOut, &statusOut);
+	wprintf(L"Last Aftermath event: %s\n", (wchar_t *)dataOut.markerData);
+}
+#endif
 
 void ReshapeWindow(int width, int height)
 {
@@ -2517,6 +2527,11 @@ bool InputKeyboardDown(unsigned char key, int x, int y)
 		// return quit = true
 		return true;
 	}
+#if ENABLE_AFTERMATH_SUPPORT
+	case 'l':
+		DumpAftermathData();
+		break;
+#endif
 	};
 
 	g_scenes[g_scene]->KeyDown(key);
@@ -2665,10 +2680,13 @@ void SDLInit(const char* title)
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0)	// Initialize SDL's Video subsystem and game controllers
 		printf("Unable to initialize SDL");
 
-#if FLEX_DX
 	unsigned int flags = SDL_WINDOW_RESIZABLE;
-#else
-	unsigned int flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL;
+#if !FLEX_DX
+	if (g_graphics == 0)
+	{
+		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+		flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL;
+	}
 #endif
 
 	g_window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
@@ -2679,70 +2697,80 @@ void SDLInit(const char* title)
 
 void SDLMainLoop()
 {
-	bool quit = false;
-	SDL_Event e;
-	while (!quit)
+#if ENABLE_AFTERMATH_SUPPORT
+	__try
+#endif
 	{
-		UpdateFrame();
-
-		while (SDL_PollEvent(&e))
+		bool quit = false;
+		SDL_Event e;
+		while (!quit)
 		{
-			switch (e.type)
+			UpdateFrame();
+
+			while (SDL_PollEvent(&e))
 			{
-			case SDL_QUIT:
-				quit = true;
-				break;
-
-			case SDL_KEYDOWN:
-				if (e.key.keysym.sym < 256 && (e.key.keysym.mod == KMOD_NONE || (e.key.keysym.mod & KMOD_NUM)))
-					quit = InputKeyboardDown(e.key.keysym.sym, 0, 0);
-				InputArrowKeysDown(e.key.keysym.sym, 0, 0);
-				break;
-
-			case SDL_KEYUP:
-				if (e.key.keysym.sym < 256 && (e.key.keysym.mod == 0 || (e.key.keysym.mod & KMOD_NUM)))
-					InputKeyboardUp(e.key.keysym.sym, 0, 0);
-				InputArrowKeysUp(e.key.keysym.sym, 0, 0);
-				break;
-
-			case SDL_MOUSEMOTION:
-				if (e.motion.state)
-					MouseMotionFunc(e.motion.state, e.motion.x, e.motion.y);
-				else
-					MousePassiveMotionFunc(e.motion.x, e.motion.y);
-				break;
-
-			case SDL_MOUSEBUTTONDOWN:
-			case SDL_MOUSEBUTTONUP:
-				MouseFunc(e.button.button, e.button.state, e.motion.x, e.motion.y);
-				break;
-
-			case SDL_WINDOWEVENT:
-				if (e.window.windowID == g_windowId)
+				switch (e.type)
 				{
-					if (e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
-						ReshapeWindow(e.window.data1, e.window.data2);
+				case SDL_QUIT:
+					quit = true;
+					break;
+
+				case SDL_KEYDOWN:
+					if (e.key.keysym.sym < 256 && (e.key.keysym.mod == KMOD_NONE || (e.key.keysym.mod & KMOD_NUM)))
+						quit = InputKeyboardDown(e.key.keysym.sym, 0, 0);
+					InputArrowKeysDown(e.key.keysym.sym, 0, 0);
+					break;
+
+				case SDL_KEYUP:
+					if (e.key.keysym.sym < 256 && (e.key.keysym.mod == 0 || (e.key.keysym.mod & KMOD_NUM)))
+						InputKeyboardUp(e.key.keysym.sym, 0, 0);
+					InputArrowKeysUp(e.key.keysym.sym, 0, 0);
+					break;
+
+				case SDL_MOUSEMOTION:
+					if (e.motion.state)
+						MouseMotionFunc(e.motion.state, e.motion.x, e.motion.y);
+					else
+						MousePassiveMotionFunc(e.motion.x, e.motion.y);
+					break;
+
+				case SDL_MOUSEBUTTONDOWN:
+				case SDL_MOUSEBUTTONUP:
+					MouseFunc(e.button.button, e.button.state, e.motion.x, e.motion.y);
+					break;
+
+				case SDL_WINDOWEVENT:
+					if (e.window.windowID == g_windowId)
+					{
+						if (e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
+							ReshapeWindow(e.window.data1, e.window.data2);
+					}
+					break;
+
+				case SDL_WINDOWEVENT_LEAVE:
+					g_camVel = Vec3(0.0f, 0.0f, 0.0f);
+					break;
+
+				case SDL_CONTROLLERBUTTONUP:
+				case SDL_CONTROLLERBUTTONDOWN:
+					ControllerButtonEvent(e.cbutton);
+					break;
+
+				case SDL_JOYDEVICEADDED:
+				case SDL_JOYDEVICEREMOVED:
+					ControllerDeviceUpdate();
+					break;
 				}
-				break;
-
-			case SDL_WINDOWEVENT_LEAVE:
-				g_camVel = Vec3(0.0f, 0.0f, 0.0f);
-				break;
-
-			case SDL_CONTROLLERBUTTONUP:
-			case SDL_CONTROLLERBUTTONDOWN:
-				ControllerButtonEvent(e.cbutton);
-				break;
-
-			case SDL_JOYDEVICEADDED:
-			case SDL_JOYDEVICEREMOVED:
-				ControllerDeviceUpdate();
-				break;
 			}
 		}
 	}
+#if ENABLE_AFTERMATH_SUPPORT
+	__except (true)
+	{
+		DumpAftermathData();
+	}
+#endif
 }
-
 
 int main(int argc, char* argv[])
 {
@@ -2831,14 +2859,21 @@ int main(int argc, char* argv[])
 		{
 			g_interop = false;
 		}
+
 		if (sscanf(argv[i], "-asynccompute=%d", &d) == 1)
 		{
 			g_useAsyncCompute = (d != 0);
 		}
+
+		if (sscanf(argv[i], "-graphics=%d", &d) == 1)
+		{
+			if (d >= 0 && d <= 2)
+				g_graphics = d;
+		}
 	}
 
 	// opening scene
-	g_scenes.push_back(new PotPourri("Pot Pourri"));	
+	g_scenes.push_back(new PotPourri("Pot Pourri"));
 
 	// soft body scenes
 	SoftBody::Instance octopus("../../data/softs/octopus.obj");
@@ -2996,11 +3031,12 @@ int main(int argc, char* argv[])
 	g_scenes.push_back(new FrictionMovingShape("Friction Moving Box", 0));
 	g_scenes.push_back(new FrictionMovingShape("Friction Moving Sphere", 1));
 	g_scenes.push_back(new FrictionMovingShape("Friction Moving Capsule", 2));
+	g_scenes.push_back(new FrictionMovingShape("Friction Moving Mesh", 3));
 	g_scenes.push_back(new ShapeCollision("Shape Collision"));
 	g_scenes.push_back(new ShapeChannels("Shape Channels"));
 	g_scenes.push_back(new TriangleCollision("Triangle Collision"));
 	g_scenes.push_back(new LocalSpaceFluid("Local Space Fluid"));
-	g_scenes.push_back(new LocalSpaceCloth("Local Space Cloth"));	
+	g_scenes.push_back(new LocalSpaceCloth("Local Space Cloth"));
 	g_scenes.push_back(new CCDFluid("World Space Fluid"));
 
 	// cloth scenes
@@ -3010,7 +3046,7 @@ int main(int argc, char* argv[])
 	g_scenes.push_back(new Inflatable("Inflatables"));
 	g_scenes.push_back(new ClothLayers("Cloth Layers"));
 	g_scenes.push_back(new SphereCloth("Sphere Cloth"));
-	g_scenes.push_back(new Tearing("Tearing"));	
+	g_scenes.push_back(new Tearing("Tearing"));
 	g_scenes.push_back(new Pasta("Pasta"));
 
 	// game mesh scenes
@@ -3063,43 +3099,70 @@ int main(int argc, char* argv[])
 	g_scenes.push_back(new FluidClothCoupling("Fluid Cloth Coupling Goo", true));
 	g_scenes.push_back(new BunnyBath("Bunny Bath Dam", true));
 
-	// init gl
-#ifndef ANDROID
+	// init graphics
+	RenderInitOptions options;
 
+#ifndef ANDROID
+	DemoContext* demoContext = nullptr;
 #if FLEX_DX
-	const char* title = "Flex Demo (Direct Compute)";
+	// Flex DX demo will always create the renderer using the same DX api as the flex lib
+	if (g_d3d12)
+	{
+		// workaround for a driver issue with D3D12 with msaa, force it to off
+		// options.numMsaaSamples = 1;
+		g_graphics = 2;
+	}
+	else
+	{
+		g_graphics = 1;
+	}
 #else
-	const char* title = "Flex Demo (CUDA)";
+	switch (g_graphics)
+	{
+	case 0: break;
+	case 1: break;
+	case 2:
+		// workaround for a driver issue with D3D12 with msaa, force it to off
+		// options.numMsaaSamples = 1;
+		// Currently interop doesn't work on d3d12
+		g_interop = false;
+		break;
+	default: assert(0);
+	}
 #endif
+	// Create the demo context
+	CreateDemoContext(g_graphics);
+
+	std::string str;
+#if FLEX_DX
+	if (g_d3d12)
+		str = "Flex Demo (Compute: DX12) ";
+	else
+		str = "Flex Demo (Compute: DX11) ";
+#else
+	str = "Flex Demo (Compute: CUDA) ";
+#endif
+	switch (g_graphics)
+	{
+	case 0:
+		str += "(Graphics: OpenGL)";
+		break;
+	case 1:
+		str += "(Graphics: DX11)";
+		break;
+	case 2:
+		str += "(Graphics: DX12)";
+		break;
+	}
+	const char* title = str.c_str();
 
 	SDLInit(title);
 
-	RenderInitOptions options;
 	options.window = g_window;
 	options.numMsaaSamples = g_msaaSamples;
 	options.asyncComputeBenchmark = g_asyncComputeBenchmark;
 	options.defaultFontHeight = -1;
 	options.fullscreen = g_fullscreen;
-
-#if FLEX_DX
-	{
-		DemoContext* demoContext = nullptr;
-
-		if (g_d3d12)
-		{
-			// workaround for a driver issue with D3D12 with msaa, force it to off
-			options.numMsaaSamples = 1;
-
-			demoContext = CreateDemoContextD3D12();
-		}
-		else
-		{
-			demoContext = CreateDemoContextD3D11();
-		}
-		// Set the demo context
-		SetDemoContext(demoContext);
-	}
-#endif
 
 	InitRender(options);
 
@@ -3110,24 +3173,22 @@ int main(int argc, char* argv[])
 
 #endif // ifndef ANDROID
 
-#if !FLEX_DX
-
+#if _WIN32 && !FLEX_DX
 	// use the PhysX GPU selected from the NVIDIA control panel	
 	if (g_device == -1)
 		g_device = NvFlexDeviceGetSuggestedOrdinal();
-		
+
 	// Create an optimized CUDA context for Flex and set it on the 
 	// calling thread. This is an optional call, it is fine to use 
 	// a regular CUDA context, although creating one through this API
 	// is recommended for best performance.
 	bool success = NvFlexDeviceCreateCudaContext(g_device);
-	
+
 	if (!success)
 	{
 		printf("Error creating CUDA context.\n");
 		exit(-1);
 	}
-	
 #endif
 
 	NvFlexInitDesc desc;
@@ -3137,9 +3198,8 @@ int main(int argc, char* argv[])
 	desc.renderContext = 0;
 	desc.computeContext = 0;
 	desc.computeType = eNvFlexCUDA;
-	
-#if FLEX_DX
 
+#if FLEX_DX
 	if (g_d3d12)
 		desc.computeType = eNvFlexD3D12;
 	else
@@ -3161,10 +3221,10 @@ int main(int argc, char* argv[])
 		GetRenderDevice(&desc.renderDevice,
 			&desc.renderContext);
 	}
-	
+
 	// Shared resources are unimplemented on D3D12,
 	// so disable it for now.
-	if (g_d3d12) 
+	if (g_d3d12)
 		g_interop = false;
 
 	// Setting runOnRenderContext = true doesn't prevent async compute, it just 
@@ -3175,6 +3235,11 @@ int main(int argc, char* argv[])
 	//
 	// Search for g_useAsyncCompute for details
 	desc.runOnRenderContext = false;
+#else
+	// Shared resources are unimplemented on D3D12,
+	// so disable it for now.
+	if (g_d3d12)
+		g_interop = false;
 #endif
 
 	// Init Flex library, note that no CUDA methods should be called before this 
@@ -3203,7 +3268,7 @@ int main(int argc, char* argv[])
 	EndGpuWork();
 
 	SDLMainLoop();
-		
+
 	if (g_fluidRenderer)
 		DestroyFluidRenderer(g_fluidRenderer);
 
@@ -3211,7 +3276,7 @@ int main(int argc, char* argv[])
 	DestroyDiffuseRenderBuffers(g_diffuseRenderBuffers);
 
 	ShadowDestroy(g_shadowMap);
-	
+
 	Shutdown();
 	DestroyRender();
 
