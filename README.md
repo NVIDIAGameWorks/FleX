@@ -28,7 +28,7 @@ To build the demo at least one of the following is required:
 
 And either: 
 
-* CUDA 9.1.85 toolkit
+* CUDA 9.2.148 toolkit
 * DirectX 11/12 SDK
 
 Demo 
