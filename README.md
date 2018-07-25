@@ -16,7 +16,7 @@ Requirements
 
 A D3D11 capable graphics card with the following driver versions:
 
-* NVIDIA GeForce Game Ready Driver 396.94 or above
+* NVIDIA GeForce Game Ready Driver 396.45 or above
 * AMD Radeon Software Version 16.9.1 or above
 * Intel® Graphics Version 15.33.43.4425 or above
 
