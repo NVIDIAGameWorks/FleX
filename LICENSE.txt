@@ -39,15 +39,15 @@ itself.
 3.3 Patent Claims. If you bring or threaten to bring a patent claim against any
 Licensor (including any claim, cross-claim or counterclaim in a lawsuit) to
 enforce any patents that you allege are infringed by any Work, then your rights
-under this License from such Licensor (including the grants in Sections 2.1 and
-2.2) will terminate immediately.
+under this License from such Licensor (including the grant in Sections 2.1)
+will terminate immediately.
 
 3.4 Trademarks. This License does not grant any rights to use any Licensor’s or
 its affiliates’ names, logos, or trademarks, except as necessary to reproduce
 the notices described in this License.
 
 3.5 Termination. If you violate any term of this License, then your rights under
-this License (including the grants in Sections 2.1 and 2.2) will terminate
+this License (including the grant in Section 2.1) will terminate
 immediately.
 
 4. Disclaimer of Warranty.
@@ -65,6 +65,5 @@ LICENSOR BE LIABLE TO YOU FOR DAMAGES, INCLUDING ANY DIRECT, INDIRECT, SPECIAL,
 INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING OUT OF OR RELATED TO THIS LICENSE,
 THE USE OR INABILITY TO USE THE WORK (INCLUDING BUT NOT LIMITED TO LOSS OF
 GOODWILL, BUSINESS INTERRUPTION, LOST PROFITS OR DATA, COMPUTER FAILURE OR
-MALFUNCTION, OR ANY OTHER COMM ERCIAL DAMAGES OR LOSSES), EVEN IF THE LICENSOR
+MALFUNCTION, OR ANY OTHER COMMERCIAL DAMAGES OR LOSSES), EVEN IF THE LICENSOR
 HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
-
