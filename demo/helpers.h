@@ -700,6 +700,60 @@ void CreateRandomBody(int numPlanes, Vec3 position, float minDist, float maxDist
 	g_buffers->triangleNormals.resize(g_buffers->triangleNormals.size() + builder.mIndices.size()/3, Vec3(0.0f));
 }
 
+void CreateInflatableMesh(const Mesh* mesh, float overPressure, int phase) {
+	const int startVertex = g_buffers->positions.size();
+
+	// add mesh to system
+	for (size_t i = 0; i < mesh->GetNumVertices(); ++i)
+	{
+		const Vec3 p = Vec3(mesh->m_positions[i]);
+
+		g_buffers->positions.push_back(Vec4(p.x, p.y, p.z, 1.0f));
+		g_buffers->velocities.push_back(0.0f);
+		g_buffers->phases.push_back(phase);
+	}
+
+	int triOffset = g_buffers->triangles.size();
+	int triCount = mesh->GetNumFaces();
+
+	g_buffers->inflatableTriOffsets.push_back(triOffset / 3);
+	g_buffers->inflatableTriCounts.push_back(mesh->GetNumFaces());
+	g_buffers->inflatablePressures.push_back(overPressure);
+
+	for (size_t i = 0; i < mesh->m_indices.size(); i += 3)
+	{
+		int a = mesh->m_indices[i + 0];
+		int b = mesh->m_indices[i + 1];
+		int c = mesh->m_indices[i + 2];
+
+		Vec3 n = -Normalize(Cross(mesh->m_positions[b] - mesh->m_positions[a], mesh->m_positions[c] - mesh->m_positions[a]));
+		g_buffers->triangleNormals.push_back(n);
+
+		g_buffers->triangles.push_back(a + startVertex);
+		g_buffers->triangles.push_back(b + startVertex);
+		g_buffers->triangles.push_back(c + startVertex);
+
+	}
+
+	// create a cloth mesh using the global positions / indices
+	ClothMesh* cloth = new ClothMesh(&g_buffers->positions[0], g_buffers->positions.size(), &g_buffers->triangles[triOffset], triCount * 3, strechStiffness, bendStiffness);
+
+	for (size_t i = 0; i < cloth->mConstraintIndices.size(); ++i)
+		g_buffers->springIndices.push_back(cloth->mConstraintIndices[i]);
+
+	for (size_t i = 0; i < cloth->mConstraintCoefficients.size(); ++i)
+		g_buffers->springStiffness.push_back(cloth->mConstraintCoefficients[i]);
+
+	for (size_t i = 0; i < cloth->mConstraintRestLengths.size(); ++i)
+		g_buffers->springLengths.push_back(cloth->mConstraintRestLengths[i]);
+
+	mCloths.push_back(cloth);
+
+	// add inflatable params
+	g_buffers->inflatableVolumes.push_back(cloth->mRestVolume);
+	g_buffers->inflatableCoefficients.push_back(cloth->mConstraintScale);
+}
+
 NvFlexTriangleMeshId CreateTriangleMesh(Mesh* m)
 {
 	if (!m)
